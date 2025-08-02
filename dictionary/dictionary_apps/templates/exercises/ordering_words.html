@@ -1,0 +1,190 @@
+{% extends 'main_page.html' %}
+
+{% block title %}Переведи слова | Игры в слова{% endblock %}
+
+{% block content %}
+<main class="container mx-auto p-4">
+  <!-- Заголовок -->
+  <section class="text-center my-8">
+    <h1 class="text-3xl font-bold mb-4">Упражнение: Переведи слова</h1>
+    <p class="mb-6 text-lg">Нажмите на соответствующие пары слов на двух языках.</p>
+  </section>
+  <div class="flex justify-center items-center mb-4 gap-4 text-lg font-semibold">
+    <div id="user-name" class="text-blue-700">{{ user.username }}</div>
+    <div id="lifes" class="text-red-600">❤️ {{ user.lifes }}</div>
+    <div id="score" class="text-green-600">Баллы: 0</div>
+  </div>
+
+  <div id="error-message" class="text-red-600 font-bold text-center mb-4 opacity-0 transition-opacity duration-300">
+    Ошибка!
+  </div>
+  <!-- Два столбца с кнопками -->
+  <section class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <!-- Левая колонка -->
+    <div class="space-y-4">
+
+      {% for word in german_list %}
+
+      <button data-id="{{ word_id }}"  class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md">
+        {% if word.type == 'Noun' %}
+          {{ word.article }} {{ word.word}} ({{word.id}})
+        {% elif word.type == 'Verb' %}
+          {{ word.word}} ({{word.id}})
+        {% endif%}
+      </button>
+      {% endfor %}
+    </div>
+
+    <!-- Правая колонка -->
+    <div class="space-y-4">
+     {% for word in russian_list %}
+      <button data-id="{{ word_id }}"  class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-md">
+        {{ word.word_translate }}
+      </button>
+    {% endfor %}
+    </div>
+    <!-- Кнопки "Продолжить" и "Стоп", скрыты по умолчанию -->
+    <div id="game-controls" class="flex justify-center gap-4 mt-8 hidden">
+      <button id="continue-btn" class="bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded">
+        Продолжить
+      </button>
+      <button id="stop-btn" class="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded">
+        Стоп
+      </button>
+    </div>
+    <div id="output" class="mt-6 text-xl font-semibold text-center text-gray-800"></div>
+  </section>
+</main>
+{% endblock %}
+
+{% block scripts %}
+
+
+
+<!-- Кнопки управления (появятся позже) -->
+<div id="controls" class="flex justify-center gap-4 mt-6 hidden">
+  <button id="continue-btn" class="bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded">Продолжить</button>
+  <button id="stop-btn" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded">Стоп</button>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+  const germanButtons = document.querySelectorAll('.md\\:grid-cols-2 > div:nth-child(1) button');
+  const russianButtons = document.querySelectorAll('.md\\:grid-cols-2 > div:nth-child(2) button');
+  const lifesDiv = document.getElementById('lifes');
+  const scoreDiv = document.getElementById('score');
+  const gameControls = document.getElementById('game-controls');
+  const stopBtn = document.getElementById('stop-btn');
+  const continueBtn = document.getElementById('continue-btn');
+  const errorMsg = document.getElementById('error-message');
+
+  let selectedGerman = null;
+  let selectedRussian = null;
+  let lifes = parseInt(lifesDiv.textContent.replace(/[^\d]/g, '')) || 3;
+  let score = 0;
+
+  function updateLifesAndScore() {
+    lifesDiv.innerHTML = `❤️ ${lifes}`;
+    scoreDiv.innerHTML = `Баллы: ${score}`;
+  }
+
+  function resetSelections() {
+    if (selectedGerman) selectedGerman.classList.remove('bg-blue-800');
+    if (selectedRussian) selectedRussian.classList.remove('bg-green-800');
+    selectedGerman = null;
+    selectedRussian = null;
+  }
+
+  function markMatched(btn1, btn2) {
+    btn1.classList.remove('bg-blue-600', 'hover:bg-blue-700');
+    btn1.classList.add('bg-yellow-300', 'text-black');
+    btn1.disabled = true;
+
+    btn2.classList.remove('bg-green-600', 'hover:bg-green-700');
+    btn2.classList.add('bg-yellow-300', 'text-black');
+    btn2.disabled = true;
+  }
+
+  function showError() {
+    errorMsg.classList.remove('opacity-0');
+    setTimeout(() => {
+      errorMsg.classList.add('opacity-0');
+    }, 1000);
+  }
+
+  function checkMatch() {
+    if (!selectedGerman || !selectedRussian) return;
+
+    const id1 = selectedGerman.dataset.id;
+    const id2 = selectedRussian.dataset.id;
+
+    if (id1 === id2) {
+      score += 1;
+      markMatched(selectedGerman, selectedRussian);
+    } else {
+      lifes -= 1;
+      showError();
+    }
+
+    updateLifesAndScore();
+    resetSelections();
+
+    if (score >= 5) {
+      gameControls.classList.remove('hidden');
+    }
+  }
+
+  germanButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.disabled) return;
+      if (selectedGerman) selectedGerman.classList.remove('bg-blue-800');
+      selectedGerman = btn;
+      btn.classList.add('bg-blue-800');
+      checkMatch();
+    });
+  });
+
+  russianButtons.forEach(btn => {
+    btn.addEventListener('click', () => {
+      if (btn.disabled) return;
+      if (selectedRussian) selectedRussian.classList.remove('bg-green-800');
+      selectedRussian = btn;
+      btn.classList.add('bg-green-800');
+      checkMatch();
+    });
+  });
+
+  // Кнопка "Стоп"
+  stopBtn.addEventListener('click', () => {
+    fetch('{% url "api:exercises:save_progress" %}', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': '{{ csrf_token }}',
+      },
+      body: JSON.stringify({
+        lifes: lifes,
+        score: score,
+      }),
+    })
+    .then(res => res.json())
+    .then(data => {
+      if (data.status === 'ok') {
+        window.location.href = '/api/exercises/'; // заменить на нужный маршрут
+      } else {
+        alert('Ошибка при сохранении.');
+      }
+    })
+    .catch(err => {
+      console.error('Ошибка:', err);
+    });
+  });
+
+  // Кнопка "Продолжить"
+  continueBtn.addEventListener('click', () => {
+    window.location.reload(); // или AJAX подгрузка новых слов
+  });
+});
+</script>
+
+
+{% endblock %}

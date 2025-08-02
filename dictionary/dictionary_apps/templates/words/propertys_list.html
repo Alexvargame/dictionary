@@ -1,0 +1,63 @@
+{% extends "main_page.html" %}
+
+{% block title %}Объекты - Недвижимость +{% endblock %}
+
+{% block content %}
+<main class="container mx-auto p-4">
+
+  <h2 class="text-3xl font-bold text-center mb-6">Все объекты</h2>
+
+  <!-- 🔍 Форма фильтра -->
+  <form method="get" class="grid grid-cols-1 md:grid-cols-4 gap-4 bg-white text-black p-4 rounded-md mb-8">
+    <div>
+      <label class="block mb-1">Район</label>
+      <select name="district" class="w-full p-2 rounded border">
+        <option value="">Все</option>
+        {% for district in districts %}
+          <option value="{{ district.id }}" {% if request.GET.district == district.id|stringformat:"s" %}selected{% endif %}>{{ district.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div>
+      <label class="block mb-1">Тип</label>
+      <select name="property_type" class="w-full p-2 rounded border">
+        <option value="">Все</option>
+        {% for type in property_types %}
+          <option value="{{ type.id }}" {% if request.GET.property_type == type.id|stringformat:"s" %}selected{% endif %}>{{ type.name }}</option>
+        {% endfor %}
+      </select>
+    </div>
+
+    <div>
+      <label class="block mb-1">Комнаты</label>
+      <input type="number" name="rooms_count" value="{{ request.GET.rooms_count }}" class="w-full p-2 rounded border" placeholder="например, 2">
+    </div>
+
+    <div>
+      <label class="block mb-1">Цена до</label>
+      <input type="number" name="price_max" value="{{ request.GET.price}}" class="w-full p-2 rounded border" placeholder="Например, 50000">
+    </div>
+
+    <div class="md:col-span-4 text-center">
+      <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded mt-2">Применить фильтр</button>
+    </div>
+  </form>
+
+  <!-- 🏠 Список объектов -->
+  <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+    {% for obj in propertys %}
+      <div class="bg-white text-black p-4 rounded-md shadow-md">
+        <img src="house1.jpg" alt="Фото объекта" class="w-full h-40 object-cover mb-2">
+        <h3 class="text-xl font-bold mb-2">{{ obj.title }}</h3>
+        <p class="text-gray-600 mb-2">{{ obj.description|truncatewords:15 }}</p>
+        <p class="text-gray-800 mb-4">Цена: ${{ obj.price }}</p>
+        <a href="{% url 'api:propertys:property_detail_frontend' property_id=obj.id %}" class="bg-blue-500 text-white px-4 py-2 rounded-md inline-block">Подробнее</a>
+      </div>
+    {% empty %}
+      <p class="col-span-3 text-center text-gray-400">Нет объектов по выбранным параметрам.</p>
+    {% endfor %}
+  </section>
+
+</main>
+{% endblock %}

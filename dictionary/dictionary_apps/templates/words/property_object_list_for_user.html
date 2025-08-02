@@ -1,0 +1,40 @@
+{% extends 'main_page.html'%}
+
+{% block title %}
+    Объекты недвижимости – Пользователь {{employee.username}}
+{% endblock %}
+{% block head_extra %}
+    <style>
+        .bg-custom-dark {
+            background-color: rgb(24, 28, 49);
+        }
+        .bg-custom-light {
+            background-color: rgba(8, 33, 54, 1);
+        }
+    </style>
+{% endblock %}
+
+{% block content %}
+    Объекты недвижимости – Пользователь {{employee.username}}
+
+    <main class="container mx-auto p-4">
+        <section class="bg-white text-black p-6 rounded-md shadow-lg max-w-4xl mx-auto my-10">
+
+            {% for obj in propertys %}
+                <img src="house1.jpg" alt="Фото объекта" class="w-full h-64 object-cover rounded-md mb-4">
+
+                <h1 class="text-3xl font-bold mb-2">{{obj.title}}</h1>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 text-gray-800 mb-6">
+                    <div><strong>Тип объекта:</strong>{{obj.property_type}}</div>
+                    <div><strong>Цена:</strong> {{obj.price}}</div>
+                    <div><strong>Район:</strong> {{obj.district}}</div>
+                </div>
+                <a href="{% url 'api:propertys:property_detail_frontend' property_id=obj.id %}" class="bg-blue-500 text-white px-4 py-2 rounded-md inline-block">
+                 Подробнее
+                </a>
+            {% endfor%}
+        </section>
+    </main>
+{% endblock %}
+{% block advantages %} {% endblock %}
