@@ -24,21 +24,20 @@
     <div class="space-y-4">
 
       {% for word in german_list %}
-
-      <button data-id="{{ word_id }}"  class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md">
-        {% if word.type == 'Noun' %}
-          {{ word.article }} {{ word.word}} ({{word.id}})
-        {% elif word.type == 'Verb' %}
-          {{ word.word}} ({{word.id}})
-        {% endif%}
-      </button>
+        <button data-id="{{ word.id }}"  class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md">
+          {% if word.type == 'Noun' %}
+            {{ word.article }} {{ word.word}} ({{word.id}})
+          {% elif word.type == 'Verb' %}
+            {{ word.word}} ({{word.id}})
+          {% endif%}
+        </button>
       {% endfor %}
     </div>
 
     <!-- Правая колонка -->
     <div class="space-y-4">
      {% for word in russian_list %}
-      <button data-id="{{ word_id }}"  class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-md">
+      <button data-id="{{ word.id }}"  class="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-md">
         {{ word.word_translate }}
       </button>
     {% endfor %}
@@ -67,6 +66,9 @@
   <button id="stop-btn" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded">Стоп</button>
 </div>
 <script>
+    const limit = {{ limit }};
+
+
 document.addEventListener('DOMContentLoaded', function () {
   const germanButtons = document.querySelectorAll('.md\\:grid-cols-2 > div:nth-child(1) button');
   const russianButtons = document.querySelectorAll('.md\\:grid-cols-2 > div:nth-child(2) button');
@@ -128,7 +130,7 @@ document.addEventListener('DOMContentLoaded', function () {
     updateLifesAndScore();
     resetSelections();
 
-    if (score >= 5) {
+    if (score >= limit) {
       gameControls.classList.remove('hidden');
     }
   }
@@ -180,9 +182,33 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // Кнопка "Продолжить"
-  continueBtn.addEventListener('click', () => {
-    window.location.reload(); // или AJAX подгрузка новых слов
-  });
+
+  // Кнопка "Продолжить"
+    continueBtn.addEventListener('click', () => {
+      fetch('{% url "api:exercises:save_progress" %}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': '{{ csrf_token }}',
+        },
+        body: JSON.stringify({
+          lifes: lifes,
+          score: score,
+        }),
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.status === 'ok') {
+          window.location.reload();  // запускаем новое упражнение
+        } else {
+          alert('Ошибка при сохранении.');
+        }
+      })
+      .catch(err => {
+        console.error('Ошибка при сохранении прогресса:', err);
+      });
+    });
+
 });
 </script>
 

@@ -31,12 +31,12 @@ class VerbDTO:
     wir_form: str
     ihr_form: str
     Sie_sie_form: str
-    past_prefect_form: str
-    past_pretorium_ich_form: str
-    past_pretorium_du_form: str
-    past_pretorium_er_sie_es_form: str
-    past_pretorium_wir_form: str
-    past_pretorium_ihr_form: str
-    past_pretorium_Sie_sie_form: str
+    past_perfect_form: str
+    past_prateritum_ich_form: str
+    past_prateritum_du_form: str
+    past_prateritum_er_sie_es_form: str
+    past_prateritum_wir_form: str
+    past_prateritum_ihr_form: str
+    past_prateritum_Sie_sie_form: str
     lection: Lection
     word_type: WordType

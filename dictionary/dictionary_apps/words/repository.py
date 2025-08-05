@@ -128,6 +128,7 @@ class VerbRepository:
 
     @transaction.atomic
     def create_object(self, dto):
+        print(' DTOOTTTT', dto)
         verb = self.model.objects.create(
             word=dto.word,
             word_type=dto.word_type,
@@ -139,13 +140,13 @@ class VerbRepository:
             wir_form=dto.wir_form,
             ihr_form=dto.ihr_form,
             Sie_sie_form=dto.Sie_sie_form,
-            past_prefect_form=dto.past_perfect_form,
-            past_pretorium_ich_form=dto.past_prateritum_ich_form,
-            past_pretorium_du_form=dto.past_prateritum_du_form,
-            past_pretorium_er_sie_es_form=dto.past_prateritum_er_sie_es_form,
-            past_pretorium_wir_form=dto.past_prateritum_wir_form,
-            past_pretorium_ihr_form=dto.past_prateritum_ihr_form,
-            past_pretorium_Sie_sie_form=dto.past_prateritum_Sie_sie_form,
+            past_perfect_form=dto.past_perfect_form,
+            past_prateritum_ich_form=dto.past_prateritum_ich_form,
+            past_prateritum_du_form=dto.past_prateritum_du_form,
+            past_prateritum_er_sie_es_form=dto.past_prateritum_er_sie_es_form,
+            past_prateritum_wir_form=dto.past_prateritum_wir_form,
+            past_prateritum_ihr_form=dto.past_prateritum_ihr_form,
+            past_prateritum_Sie_sie_form=dto.past_prateritum_Sie_sie_form,
         )
         return verb
 
@@ -162,13 +163,13 @@ class VerbRepository:
             wir_form=obj.wir_form,
             ihr_form=obj.ihr_form,
             Sie_sie_form=obj.Sie_sie_form,
-            past_prefect_form=obj.past_perfect_form,
-            past_pretorium_ich_form=obj.past_prateritum_ich_form,
-            past_pretorium_du_form=obj.past_prateritum_du_form,
-            past_pretorium_er_sie_es_form=obj.past_prateritum_er_sie_es_form,
-            past_pretorium_wir_form=obj.past_prateritum_wir_form,
-            past_pretorium_ihr_form=obj.past_prateritum_ihr_form,
-            past_pretorium_Sie_sie_form=obj.past_prateritum_Sie_sie_form,
+            past_perfect_form=obj.past_perfect_form,
+            past_prateritum_ich_form=obj.past_prateritum_ich_form,
+            past_prateritum_du_form=obj.past_prateritum_du_form,
+            past_prateritum_er_sie_es_form=obj.past_prateritum_er_sie_es_form,
+            past_prateritum_wir_form=obj.past_prateritum_wir_form,
+            past_prateritum_ihr_form=obj.past_prateritum_ihr_form,
+            past_prateritum_Sie_sie_form=obj.past_prateritum_Sie_sie_form,
         )
         return dto
 
@@ -187,13 +188,13 @@ class VerbRepository:
                 wir_form=obj.wir_form,
                 ihr_form=obj.ihr_form,
                 Sie_sie_form=obj.Sie_sie_form,
-                past_prefect_form=obj.past_perfect_form,
-                past_pretorium_ich_form=obj.past_prateritum_ich_form,
-                past_pretorium_du_form=obj.past_prateritum_du_form,
-                past_pretorium_er_sie_es_form=obj.past_prateritum_er_sie_es_form,
-                past_pretorium_wir_form=obj.past_prateritum_wir_form,
-                past_pretorium_ihr_form=obj.past_prateritum_ihr_form,
-                past_pretorium_Sie_sie_form=obj.past_prateritum_Sie_sie_form,
+                past_perfect_form=obj.past_perfect_form,
+                past_prateritum_ich_form=obj.past_prateritum_ich_form,
+                past_prateritum_du_form=obj.past_prateritum_du_form,
+                past_prateritum_er_sie_es_form=obj.past_prateritum_er_sie_es_form,
+                past_prateritum_wir_form=obj.past_prateritum_wir_form,
+                past_prateritum_ihr_form=obj.past_prateritum_ihr_form,
+                past_prateritum_Sie_sie_form=obj.past_prateritum_Sie_sie_form,
             )
             lst_dto.append(tmp_dto)
         return lst_dto
