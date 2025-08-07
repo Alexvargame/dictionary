@@ -4,21 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="7b2be013-ade3-4009-9d21-2bfb23507e56" name="Changes" comment="Исправления в упражнении пар">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dictionary/dictionary_apps/dtos/words/request_dto.py" beforeDir="false" afterPath="$PROJECT_DIR$/dictionary/dictionary_apps/dtos/words/request_dto.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dictionary/dictionary_apps/dtos/words/response_dto.py" beforeDir="false" afterPath="$PROJECT_DIR$/dictionary/dictionary_apps/dtos/words/response_dto.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dictionary/dictionary_apps/exercises/apis/exercises.py" beforeDir="false" afterPath="$PROJECT_DIR$/dictionary/dictionary_apps/exercises/apis/exercises.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dictionary/dictionary_apps/exercises/apis/odering_words.py" beforeDir="false" afterPath="$PROJECT_DIR$/dictionary/dictionary_apps/exercises/apis/odering_words.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dictionary/dictionary_apps/exercises/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/dictionary/dictionary_apps/exercises/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dictionary/dictionary_apps/templates/exercises/exercises.html" beforeDir="false" afterPath="$PROJECT_DIR$/dictionary/dictionary_apps/templates/exercises/exercises.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dictionary/dictionary_apps/templates/exercises/ordering_words.html" beforeDir="false" afterPath="$PROJECT_DIR$/dictionary/dictionary_apps/templates/exercises/ordering_words.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dictionary/dictionary_apps/templates/include/header.html" beforeDir="false" afterPath="$PROJECT_DIR$/dictionary/dictionary_apps/templates/include/header.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dictionary/dictionary_apps/users/auth_function.py" beforeDir="false" afterPath="$PROJECT_DIR$/dictionary/dictionary_apps/users/auth_function.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dictionary/dictionary_apps/users/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/dictionary/dictionary_apps/users/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dictionary/dictionary_apps/words/admin.py" beforeDir="false" afterPath="$PROJECT_DIR$/dictionary/dictionary_apps/words/admin.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dictionary/dictionary_apps/words/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/dictionary/dictionary_apps/words/models.py" afterDir="false" />
-    </list>
+    <list default="true" id="7b2be013-ade3-4009-9d21-2bfb23507e56" name="Changes" comment="Verb_exercises" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -114,7 +100,15 @@
       <option name="project" value="LOCAL" />
       <updated>1754388298521</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="Verb_exercises">
+      <option name="closed" value="true" />
+      <created>1754565499741</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1754565499741</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="Vcs.Log.Tabs.Properties">
@@ -132,7 +126,8 @@
     <MESSAGE value="First" />
     <MESSAGE value="requirements" />
     <MESSAGE value="Исправления в упражнении пар" />
-    <option name="LAST_COMMIT_MESSAGE" value="Исправления в упражнении пар" />
+    <MESSAGE value="Verb_exercises" />
+    <option name="LAST_COMMIT_MESSAGE" value="Verb_exercises" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
