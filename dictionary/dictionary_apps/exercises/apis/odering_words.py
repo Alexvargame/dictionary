@@ -24,6 +24,8 @@ from dictionary.dictionary_apps.words.repository import WordRepository
 
 from dictionary.dictionary_apps.users.models import BaseUser
 
+from dictionary.dictionary_apps.dtos.words.response_dto import (NounPaarExerciseGermanDTO, VerbPaarExerciseGermanDTO,
+                                                                RussianPaarExerciseGermanDTO)
 # class OrderingWordsDRF(LoginRequiredMixin, APIView):
 #     class OutputSerializer(serializers.ModelSerializer):
 #         class Meta:
@@ -55,9 +57,18 @@ class OrderingWords(LoginRequiredMixin, APIView):
     template_name = 'exercises/ordering_words.html'
 
     def get(self, request):
+
         german_list = []
         russian_list = []
-        all_ids = list(Word.objects.values_list('id', flat=True))
+        lection_ids = request.GET.getlist('lections')  # Получаем ID лекций из запроса
+        filters = {}
+        if lection_ids:
+            filters['lection_id__in'] = lection_ids
+        else:
+            # Если ничего не выбрано — можно взять все
+            pass  # или
+
+        all_ids = list(Word.objects.filter(**filters).values_list('id', flat=True))
         print('iDS', all_ids)
         if len(all_ids) >= 5:
             random_ids = random.sample(all_ids, 5)
@@ -65,31 +76,39 @@ class OrderingWords(LoginRequiredMixin, APIView):
         selected_words = WordService(WordRepository()).list_objects(filters)
         for word in selected_words:
             if word.word_type.name == 'Noun':
-                german_list.append({
-                            'id': word.id,
-                            'article': word.article.name,
-                            'word': word.word,
-                            'type': 'Noun'}
-                            )
-                russian_list.append({
-                    'id':word.id,
-                    'word_translate':word.word_translate
-                })
-            elif word.word_type.name == 'Verb':
-                german_list.append({
-                                'id': word.id,
-                                'article': '',
-                                'word': word.word,
-                                'type': 'Verb'}
-                            )
+                german_list.append(
+                    NounPaarExerciseGermanDTO(
+                        **{'id': word.id, 'article': word.article.name,
+                           'word': word.word, 'word_type':word.word_type.name}
+                    )
+                )
                 russian_list.append(
-                    {
-                        'id': word.id,
-                        'word_translate': word.word_translate
-                    }
+                    RussianPaarExerciseGermanDTO(
+                        **{
+                            'id': word.id,
+                            'word_translate': word.word_translate
+                        }
+                    )
+                )
+
+            elif word.word_type.name == 'Verb':
+                german_list.append(
+                    VerbPaarExerciseGermanDTO(
+                        **{'id': word.id, 'article': '',
+                           'word': word.word, 'word_type': word.word_type.name}
+                    )
+                )
+                russian_list.append(
+                    RussianPaarExerciseGermanDTO(
+                        **{
+                            'id': word.id,
+                            'word_translate': word.word_translate
+                        }
+                    )
                 )
         random.shuffle(german_list)
         random.shuffle(russian_list)
+        print(german_list)
         context = {
             'german_list': german_list,
             'russian_list': russian_list,

@@ -41,4 +41,5 @@ class VerbAdmin(admin.ModelAdmin):
                       'past_prateritum_du_form', 'past_prateritum_er_sie_es_form',
                       'past_prateritum_wir_form', 'past_prateritum_ihr_form',
                       'past_prateritum_Sie_sie_form', 'lection', 'word_type',
+                    'regal'
                     )

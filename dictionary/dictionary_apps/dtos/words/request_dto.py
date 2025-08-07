@@ -42,3 +42,13 @@ class CreateVerbDTO:
     past_prateritum_wir_form: Optional[str] = None
     past_prateritum_ihr_form: Optional[str] = None
     past_prateritum_Sie_sie_form: Optional[str] = None
+
+
+@dataclass
+class CreateExerciseDTO:
+    verb_id: int
+    verb: str
+    question: str
+    correct_answer: str
+    person: str
+    tense: str

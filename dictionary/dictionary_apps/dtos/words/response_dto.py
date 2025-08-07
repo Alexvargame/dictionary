@@ -40,3 +40,22 @@ class VerbDTO:
     past_prateritum_Sie_sie_form: str
     lection: Lection
     word_type: WordType
+
+@dataclass
+class NounPaarExerciseGermanDTO:
+    id: int
+    word: str
+    article: str
+    word_type: str
+
+@dataclass
+class VerbPaarExerciseGermanDTO:
+    id: int
+    word: str
+    article: str
+    word_type: str
+
+@dataclass
+class RussianPaarExerciseGermanDTO:
+    id: int
+    word_translate: str

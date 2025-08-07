@@ -25,9 +25,9 @@
 
       {% for word in german_list %}
         <button data-id="{{ word.id }}"  class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md">
-          {% if word.type == 'Noun' %}
+          {% if word.word_type == 'Noun' %}
             {{ word.article }} {{ word.word}} ({{word.id}})
-          {% elif word.type == 'Verb' %}
+          {% elif word.word_type == 'Verb' %}
             {{ word.word}} ({{word.id}})
           {% endif%}
         </button>
