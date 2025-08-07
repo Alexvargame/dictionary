@@ -94,6 +94,7 @@ class OrderingWords(LoginRequiredMixin, APIView):
             'german_list': german_list,
             'russian_list': russian_list,
             'user': request.user,
+            'limit': len(german_list)
         }
         return Response(context)
 
