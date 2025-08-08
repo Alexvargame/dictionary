@@ -13,6 +13,13 @@ def select_lections_ordering_words(request):
     }
     return render(request, 'exercises/select_lection_ordering_words.html', context=context)
 
+def select_lections_article_words(request):
+    lections = Lection.objects.all()
+    context = {
+        'lections': lections
+    }
+    return render(request, 'exercises/select_lection_article_words.html', context=context)
+
 def select_lections_verbs(request):
     lections = Lection.objects.all()
     context = {

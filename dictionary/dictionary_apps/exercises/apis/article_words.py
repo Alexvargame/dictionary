@@ -2,83 +2,71 @@ import random
 import json
 
 from django.http import Http404, JsonResponse
+from django.shortcuts import redirect
 from rest_framework import serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import TemplateHTMLRenderer
-from django.shortcuts import redirect
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
-
-from dictionary.dictionary_apps.words.models import Verb, Word
-from dictionary.dictionary_apps.words.repository import WordRepository
-from dictionary.dictionary_apps.words.services import WordService
-
-from dictionary.dictionary_apps.dtos.words.request_dto import CreateExerciseDTO
+from django.views.decorators.csrf import csrf_exempt  # если нет CSRF токена в fetch, но лучше с ним
 
 
-PERSONS = [
-    ("ich", "ich_form", "past_prateritum_ich_form"),
-    ("du", "du_form", "past_prateritum_du_form"),
-    ("er/sie/es", "er_sie_es_form", "past_prateritum_er_sie_es_form"),
-    ("wir", "wir_form", "past_prateritum_wir_form"),
-    ("ihr", "ihr_form", "past_prateritum_ihr_form"),
-    ("Sie/sie", "Sie_sie_form", "past_prateritum_Sie_sie_form"),
-]
-def generate_exercise(tense=None, verbs=None, count=5):
-    # Получаем ID лекций из запроса
-    exercises = []
-    selected_persons = random.sample(PERSONS, k=count)
-    for verb, (person, present_field, prateritum_field) in zip(verbs, selected_persons):
-        if tense == "present":
-            answer = getattr(verb, present_field)
-            question = f"{verb.word} — {person}?"
-        elif tense == "prateritum":
-            answer = getattr(verb, prateritum_field)
-            question = f"{verb.word} в Präteritum — {person}?"
-        elif tense == "perfect":
-            answer = verb.past_perfect_form
-            question = f"{verb.word} — Partizip II?"
-    # else:
-    #     continue
-        exercises.append(
-            CreateExerciseDTO(
-                verb_id=verb.id,
-                verb=verb.word,
-                question=question,
-                correct_answer=answer,
-                person=person,
-                tense=tense
-            )
-        )
-    return exercises
+from dictionary.dictionary_apps.words.models import Noun
+
+from dictionary.dictionary_apps.words.selectors import (lection_get, article_get,
+                                                        word_get)
+from dictionary.dictionary_apps.users.selectors import (user_get)
+
+#from worterbuch.worterbuch_apps.dtos.words.response_dto import WordDTO
+from dictionary.dictionary_apps.words.services import WordService, ArticleService
+from dictionary.dictionary_apps.words.repository import WordRepository, ArticleRepository
+
+from dictionary.dictionary_apps.users.models import BaseUser
+
+from dictionary.dictionary_apps.dtos.words.response_dto import (NounPaarExerciseGermanDTO, VerbPaarExerciseGermanDTO,
+                                                                RussianPaarExerciseGermanDTO)
 
 
-class VerbExercises(LoginRequiredMixin, APIView):
+
+class ArticleNouns(LoginRequiredMixin, APIView):
     renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'exercises/verb_forms.html'
+    template_name = 'exercises/article_words.html'
 
     def get(self, request):
-        lection_ids = request.GET.getlist('lections')
-        tense = request.GET.get('tense')
-        filters = {'word_type': 2}
+
+        result_list = []
+        lection_ids = request.GET.getlist('lections')  # Получаем ID лекций из запроса
+        filters = {}
         if lection_ids:
             filters['lection_id__in'] = lection_ids
         else:
             # Если ничего не выбрано — можно взять все
             pass  # или
-        all_ids = list(Word.objects.filter(**filters).values_list('id', flat=True))
+
+        all_ids = list(Noun.objects.filter(**filters).values_list('id', flat=True))
+        print('iDS', all_ids)
         if len(all_ids) >= 5:
             random_ids = random.sample(all_ids, 5)
         filters = {'id__in': random_ids}
+        print('filtr', filters)
         selected_words = WordService(WordRepository()).list_objects(filters)
-        exercises = generate_exercise(tense=tense, verbs=selected_words)
+        print(selected_words)
+        for word in selected_words:
+            result_list.append(
+                NounPaarExerciseGermanDTO(
+                    **{'id': word.id, 'article': word.article.name,
+                       'word': word.word, 'word_type': word.word_type}
+                )
+            )
+        print(result_list)
+        articles = ArticleService(ArticleRepository()).list_objects()
         context = {
-            'exercises': exercises,
+            'result_list': result_list,
             'user': request.user,
-            'limit': len(exercises)
+            'limit': len(result_list),
+            'articles': articles
         }
         return Response(context)
 
@@ -110,21 +98,18 @@ class VerbExercises(LoginRequiredMixin, APIView):
             user.save()
 
         return Response(
-                {
+            {
                 'results': results,
                 'points': points,
                 'lives_lost': lives_lost,
                 'user': request.user,
             },
-            template_name='exercises/verb_results.html')
-
-
-
+            template_name='exercises/article_results.html')
 
 
 @csrf_exempt
 @login_required
-def verb_results_repeat(request):
+def article_results_repeat(request):
     if request.method == "POST":
         points = int(request.POST.get("points", 0))
         lives_lost = int(request.POST.get("lives_lost", 0))
@@ -134,13 +119,13 @@ def verb_results_repeat(request):
         user.lifes = max(user.lifes - lives_lost, 0)
         user.save()
 
-        return redirect("api:exercises:select_lections_verbs")
+        return redirect("api:exercises:select_lections_article_words")
     return HttpResponseBadRequest()
 
 
 @csrf_exempt
 @login_required
-def verb_results_stop(request):
+def article_results_stop(request):
     if request.method == "POST":
         points = int(request.POST.get("points", 0))
         lives_lost = int(request.POST.get("lives_lost", 0))

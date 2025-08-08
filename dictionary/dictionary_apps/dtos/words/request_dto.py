@@ -52,3 +52,9 @@ class CreateExerciseDTO:
     correct_answer: str
     person: str
     tense: str
+
+@dataclass
+class CreateDigitsExerciseDTO:
+
+    digit: int
+    correct_answer: str

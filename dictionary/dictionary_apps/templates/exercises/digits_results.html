@@ -1,0 +1,44 @@
+{% extends 'main_page.html' %}
+
+{% block title %}Результаты упражнения{% endblock %}
+
+{% block content %}
+<main class="container mx-auto p-4">
+  <h1 class="text-2xl font-bold mb-6">Результаты</h1>
+
+  <div class="flex justify-center items-center mb-6 gap-4 text-lg font-semibold">
+    <div class="text-blue-700">{{ user.username }}</div>
+    <div class="text-red-600">❤️ {{ user.lifes }}</div>
+    <div class="text-green-600">Баллы: {{ points }}</div>
+  </div>
+
+  <ul class="space-y-4">
+    {% for r in results %}
+      <li class="p-4 rounded shadow text-black {% if r.is_correct %}bg-green-100{% else %}bg-red-100{% endif %}">
+        <p><strong>{{ r.index }}.</strong> Ваш ответ: <strong>{{ r.user_input }}</strong></p>
+        {% if not r.is_correct %}
+          <p>Правильный ответ: <strong>{{ r.correct_answer }}</strong></p>
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ul>
+
+  <div class="text-center mt-6 flex flex-col sm:flex-row gap-4 justify-center">
+  <!-- Повторить -->
+    <form method="post" action="{% url 'api:exercises:digits_results_repeat' %}">
+      {% csrf_token %}
+      <input type="hidden" name="points" value="{{ points }}">
+      <input type="hidden" name="lives_lost" value="{{ lives_lost }}">
+      <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">Пройти ещё</button>
+    </form>
+
+    <!-- Стоп -->
+    <form method="post" action="{% url 'api:exercises:digits_results_stop' %}">
+      {% csrf_token %}
+      <input type="hidden" name="points" value="{{ points }}">
+      <input type="hidden" name="lives_lost" value="{{ lives_lost }}">
+      <button type="submit" class="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700">Стоп</button>
+    </form>
+  </div>
+</main>
+{% endblock %}
