@@ -2,7 +2,7 @@ from typing import List, Optional
 
 from django.db import transaction
 
-from dictionary.dictionary_apps.words.models import Word, Noun
+#ictionary.dictionary_apps.words.models import Word, Noun
 
 #
 # @transaction.atomic
@@ -72,3 +72,13 @@ class VerbService:
 
     def delete_object(self, obj_id):
         return self.repository.delete_object(obj_id)
+
+
+class ArticleService:
+
+    def __init__(self, repository):
+        self.repository = repository
+
+
+    def list_objects(self, filters=None):
+        return self.repository.list_objects(filters)

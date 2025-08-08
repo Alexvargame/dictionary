@@ -1,11 +1,11 @@
-from dictionary.dictionary_apps.words.models import Word, Noun, Verb
+from dictionary.dictionary_apps.words.models import Word, Noun, Verb, Article
 
 
 
 from django.db import transaction
 
-from dictionary.dictionary_apps.words.selectors import word_list, noun_list, verb_list
-from dictionary.dictionary_apps.dtos.words.response_dto import WordDTO, NounDTO,VerbDTO
+from dictionary.dictionary_apps.words.selectors import word_list, noun_list, verb_list, article_list
+from dictionary.dictionary_apps.dtos.words.response_dto import WordDTO, NounDTO,VerbDTO, ArticleDTO
 from dictionary.dictionary_apps.dtos.words.request_dto import CreateWordDTO, CreateNounDTO
 from dictionary.dictionary_apps.common.services import model_update
 
@@ -48,6 +48,7 @@ class NounRepository:
 
     def list_objects(self, filters=None):
         lst_dto = []
+        print('FILR', filters)
         for obj in noun_list(filters=filters):
             tmp_dto = self.dto(
                 id=obj.id,
@@ -104,7 +105,6 @@ class WordRepository:
         lst_dto = []
         filtered_objects = [obj for obj in word_list(filters=filters) if type(obj) is not Word]
         for obj in filtered_objects:
-            print(dto_dictionary[obj.word_type.name]())
             tmp_dto = dto_dictionary[obj.word_type.name]().detail_object(obj)
             lst_dto.append(tmp_dto)
         return lst_dto
@@ -214,6 +214,24 @@ class VerbRepository:
         noun = self.model.objects.get(id=verb_id)
         noun.delete()
         # user, has_updated = model_update(instance=user, fields=non_side_effect_fields, data=data)
+
+
+class ArticleRepository:
+    model = Article
+    dto = ArticleDTO
+
+    def list_objects(self, filters=None):
+        lst_dto = []
+        for obj in article_list(filters=filters):
+            tmp_dto = self.dto(
+                id=obj.id,
+                name=obj.name,
+                description=obj.description,
+            )
+            lst_dto.append(tmp_dto)
+        return lst_dto
+
+
 
 
 

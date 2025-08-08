@@ -12,7 +12,7 @@ from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt  # если нет CSRF токена в fetch, но лучше с ним
 
 
-from dictionary.dictionary_apps.words.models import Word, Noun, Verb
+from dictionary.dictionary_apps.words.models import Word#, Noun, Verb
 
 from dictionary.dictionary_apps.words.selectors import (lection_get, article_get,
                                                         word_get)

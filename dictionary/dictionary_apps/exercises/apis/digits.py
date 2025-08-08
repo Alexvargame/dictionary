@@ -2,83 +2,84 @@ import random
 import json
 
 from django.http import Http404, JsonResponse
+from django.shortcuts import redirect
 from rest_framework import serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import TemplateHTMLRenderer
-from django.shortcuts import redirect
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
-from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.csrf import csrf_exempt  # если нет CSRF токена в fetch, но лучше с ним
 
-from dictionary.dictionary_apps.words.models import Verb, Word
-from dictionary.dictionary_apps.words.repository import WordRepository
-from dictionary.dictionary_apps.words.services import WordService
-
-from dictionary.dictionary_apps.dtos.words.request_dto import CreateExerciseDTO
+from dictionary.dictionary_apps.users.selectors import (user_get)
+from dictionary.dictionary_apps.users.models import BaseUser
+from dictionary.dictionary_apps.dtos.words.request_dto import CreateDigitsExerciseDTO
 
 
-PERSONS = [
-    ("ich", "ich_form", "past_prateritum_ich_form"),
-    ("du", "du_form", "past_prateritum_du_form"),
-    ("er/sie/es", "er_sie_es_form", "past_prateritum_er_sie_es_form"),
-    ("wir", "wir_form", "past_prateritum_wir_form"),
-    ("ihr", "ihr_form", "past_prateritum_ihr_form"),
-    ("Sie/sie", "Sie_sie_form", "past_prateritum_Sie_sie_form"),
-]
-def generate_exercise(tense=None, verbs=None, count=5):
+
+units = {
+    1: "ein", 2: "zwei", 3: "drei", 4: "vier", 5: "fünf",
+    6: "sechs", 7: "sieben", 8: "acht", 9: "neun"
+}
+
+teens = {
+    10: "zehn", 11: "elf", 12: "zwölf", 13: "dreizehn",
+    14: "vierzehn", 15: "fünfzehn", 16: "sechzehn",
+    17: "siebzehn", 18: "achtzehn", 19: "neunzehn"
+}
+
+tens = {
+    20: "zwanzig", 30: "dreißig", 40: "vierzig",
+    50: "fünfzig", 60: "sechzig", 70: "siebzig",
+    80: "achtzig", 90: "neunzig"
+}
+
+def number_to_germnan(n):
+    if n == 0:
+        return "null"
+    elif n <= 12:
+        return {
+            1: "eins", 2: "zwei", 3: "drei", 4: "vier",
+            5: "fünf", 6: "sechs", 7: "sieben", 8: "acht",
+            9: "neun", 10: "zehn", 11: "elf", 12: "zwölf"
+        }[n]
+    elif 13 <= n <= 19:
+        return teens[n]
+    elif n < 100:
+        unit = n % 10
+        ten = n - unit
+        if unit == 0:
+            return tens[ten]
+        return f"{units[unit]}und{tens[ten]}"
+    else:
+        return "nicht unterstützt"  # >100 пока не поддерживаем
+def generate_exercise(digits=[]):
     # Получаем ID лекций из запроса
     exercises = []
-    selected_persons = random.sample(PERSONS, k=count)
-    for verb, (person, present_field, prateritum_field) in zip(verbs, selected_persons):
-        if tense == "present":
-            answer = getattr(verb, present_field)
-            question = f"{verb.word} — {person}?"
-        elif tense == "prateritum":
-            answer = getattr(verb, prateritum_field)
-            question = f"{verb.word} в Präteritum — {person}?"
-        elif tense == "perfect":
-            answer = verb.past_perfect_form
-            question = f"{verb.word} — Partizip II?"
-    # else:
-    #     continue
+    for digit in digits:
+        answer = number_to_germnan(digit)
         exercises.append(
-            CreateExerciseDTO(
-                verb_id=verb.id,
-                verb=verb.word,
-                question=question,
+            CreateDigitsExerciseDTO(
+                digit=digit,
                 correct_answer=answer,
-                person=person,
-                tense=tense
             )
         )
     return exercises
 
 
-class VerbExercises(LoginRequiredMixin, APIView):
+class Digits(LoginRequiredMixin, APIView):
     renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'exercises/verb_forms.html'
+    template_name = 'exercises/digits.html'
 
     def get(self, request):
-        lection_ids = request.GET.getlist('lections')
-        tense = request.GET.get('tense')
-        filters = {'word_type': 2}
-        if lection_ids:
-            filters['lection_id__in'] = lection_ids
-        else:
-            # Если ничего не выбрано — можно взять все
-            pass  # или
-        all_ids = list(Word.objects.filter(**filters).values_list('id', flat=True))
-        if len(all_ids) >= 5:
-            random_ids = random.sample(all_ids, 5)
-        filters = {'id__in': random_ids}
-        selected_words = WordService(WordRepository()).list_objects(filters)
-        exercises = generate_exercise(tense=tense, verbs=selected_words)
+
+        random_numbers = random.sample(range(1, 101), 5)
+        print(random_numbers)
+        exercises = generate_exercise(digits=random_numbers)
         context = {
             'exercises': exercises,
             'user': request.user,
-            'limit': len(exercises)
         }
         return Response(context)
 
@@ -110,21 +111,18 @@ class VerbExercises(LoginRequiredMixin, APIView):
             user.save()
 
         return Response(
-                {
+            {
                 'results': results,
                 'points': points,
                 'lives_lost': lives_lost,
                 'user': request.user,
             },
-            template_name='exercises/verb_results.html')
-
-
-
+            template_name='exercises/digits_results.html')
 
 
 @csrf_exempt
 @login_required
-def verb_results_repeat(request):
+def digits_results_repeat(request):
     if request.method == "POST":
         points = int(request.POST.get("points", 0))
         lives_lost = int(request.POST.get("lives_lost", 0))
@@ -134,13 +132,13 @@ def verb_results_repeat(request):
         user.lifes = max(user.lifes - lives_lost, 0)
         user.save()
 
-        return redirect("api:exercises:select_lections_verbs")
+        return redirect("api:exercises:digits")
     return HttpResponseBadRequest()
 
 
 @csrf_exempt
 @login_required
-def verb_results_stop(request):
+def digits_results_stop(request):
     if request.method == "POST":
         points = int(request.POST.get("points", 0))
         lives_lost = int(request.POST.get("lives_lost", 0))

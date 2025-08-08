@@ -3,7 +3,7 @@ from typing import Optional
 from django.db.models.query import QuerySet
 
 from dictionary.dictionary_apps.common.utils import (get_object)
-from dictionary.dictionary_apps.words.filters import WordFilter, NounFilter, VerbFilter
+from dictionary.dictionary_apps.words.filters import WordFilter, NounFilter, VerbFilter, ArticleFilter
 from dictionary.dictionary_apps.words.models import Word, Lection, Article, Book, Noun, WordType, Verb
 
 
@@ -51,7 +51,10 @@ def article_get(article_id):
 
 
 
-
+def article_list(*, filters=None):
+    filters = filters or {}
+    qs = Article.objects.all()
+    return ArticleFilter(filters, qs).qs
 
 
 
