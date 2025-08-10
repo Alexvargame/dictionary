@@ -28,8 +28,12 @@ class CustomUserCreationForm(forms.ModelForm):
 
 
 class CustomAuthenticationForm(forms.Form):
-    email = forms.EmailField(label='Email')
-    password = forms.CharField(label='Пароль', widget=forms.PasswordInput)
+    email = forms.EmailField(label='Email', widget=forms.EmailInput(attrs={
+        'class': 'border p-2 rounded text-black'
+    }))
+    password = forms.CharField(label='Пароль', widget=forms.PasswordInput(attrs={
+        'class': 'border p-2 rounded text-black'
+    }))
 
     def clean(self):
         cleaned_data = super().clean()  # Очистка данных
