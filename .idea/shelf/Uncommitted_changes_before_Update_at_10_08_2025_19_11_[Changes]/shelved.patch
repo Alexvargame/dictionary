@@ -1,0 +1,179 @@
+Index: .idea/workspace.xml
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/.idea/workspace.xml b/.idea/workspace.xml
+--- a/.idea/workspace.xml	(revision d0713c168e5d2b5c1a21246ce9d6b014af7a1637)
++++ b/.idea/workspace.xml	(date 1754842145778)
+@@ -1,0 +1,169 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<project version="4">
++  <component name="AutoImportSettings">
++    <option name="autoReloadType" value="SELECTIVE" />
++  </component>
++  <component name="ChangeListManager">
++    <list default="true" id="7b2be013-ade3-4009-9d21-2bfb23507e56" name="Changes" comment="Login_form_black">
++      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/dictionary/dictionary_apps/templates/users/user_login.html" beforeDir="false" afterPath="$PROJECT_DIR$/dictionary/dictionary_apps/templates/users/user_login.html" afterDir="false" />
++      <change beforePath="$PROJECT_DIR$/dictionary/dictionary_apps/templates/userst/user_registraion.html" beforeDir="false" />
++      <change beforePath="$PROJECT_DIR$/dictionary/dictionary_apps/users/forms.py" beforeDir="false" afterPath="$PROJECT_DIR$/dictionary/dictionary_apps/users/forms.py" afterDir="false" />
++    </list>
++    <option name="SHOW_DIALOG" value="false" />
++    <option name="HIGHLIGHT_CONFLICTS" value="true" />
++    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
++    <option name="LAST_RESOLUTION" value="IGNORE" />
++  </component>
++  <component name="ChangesViewManager">
++    <option name="groupingKeys">
++      <option value="directory" />
++    </option>
++  </component>
++  <component name="FileTemplateManagerImpl">
++    <option name="RECENT_TEMPLATES">
++      <list>
++        <option value="Python Script" />
++        <option value="HTML File" />
++      </list>
++    </option>
++  </component>
++  <component name="Git.Settings">
++    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
++  </component>
++  <component name="ProjectColorInfo">{
++  &quot;associatedIndex&quot;: 1
++}</component>
++  <component name="ProjectId" id="30KlhSRWLtDcZkGHZIUiGyFMz6D" />
++  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
++  <component name="ProjectViewState">
++    <option name="hideEmptyMiddlePackages" value="true" />
++    <option name="showLibraryContents" value="true" />
++  </component>
++  <component name="PropertiesComponent">{
++  &quot;keyToString&quot;: {
++    &quot;DefaultHtmlFileTemplate&quot;: &quot;HTML File&quot;,
++    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
++    &quot;git-widget-placeholder&quot;: &quot;main&quot;,
++    &quot;last_opened_file_path&quot;: &quot;C:/Python311/django/dictionary/dictionary/dictionary_apps/templates/exercises&quot;,
++    &quot;settings.editor.selected.configurable&quot;: &quot;org.jetbrains.plugins.github.ui.GithubSettingsConfigurable&quot;
++  }
++}</component>
++  <component name="RecentsManager">
++    <key name="CopyFile.RECENT_KEYS">
++      <recent name="C:\Python311\django\dictionary\dictionary\dictionary_apps\templates\exercises" />
++      <recent name="C:\Python311\django\dictionary\dictionary\dictionary_apps\exercises\apis" />
++      <recent name="C:\Python311\django\dictionary\dictionary\dictionary_apps\exercises" />
++      <recent name="C:\Python311\django\dictionary\dictionary\dictionary_apps\templates\users" />
++      <recent name="C:\Python311\django\dictionary\dictionary\dictionary_apps\templates\userst" />
++    </key>
++    <key name="MoveFile.RECENT_KEYS">
++      <recent name="C:\Python311\django\dictionary\dictionary\dictionary_apps\exercises\apis" />
++      <recent name="C:\Python311\django\dictionary\dictionary\dictionary_apps\templates\exercises" />
++      <recent name="C:\Python311\django\dictionary\dictionary\dictionary_apps" />
++      <recent name="C:\Python311\django\dictionary\dictionary\dictionary_apps\words\apis" />
++      <recent name="C:\Python311\django\dictionary" />
++    </key>
++  </component>
++  <component name="SharedIndexes">
++    <attachedChunks>
++      <set>
++        <option value="bundled-python-sdk-babbdf50b680-746f403e7f0c-com.jetbrains.pycharm.community.sharedIndexes.bundled-PC-241.15989.155" />
++      </set>
++    </attachedChunks>
++  </component>
++  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
++  <component name="TaskManager">
++    <task active="true" id="Default" summary="Default task">
++      <changelist id="7b2be013-ade3-4009-9d21-2bfb23507e56" name="Changes" comment="" />
++      <created>1753384264533</created>
++      <option name="number" value="Default" />
++      <option name="presentableId" value="Default" />
++      <updated>1753384264533</updated>
++    </task>
++    <task id="LOCAL-00001" summary="First">
++      <option name="closed" value="true" />
++      <created>1754125988743</created>
++      <option name="number" value="00001" />
++      <option name="presentableId" value="LOCAL-00001" />
++      <option name="project" value="LOCAL" />
++      <updated>1754125988743</updated>
++    </task>
++    <task id="LOCAL-00002" summary="requirements">
++      <option name="closed" value="true" />
++      <created>1754127412400</created>
++      <option name="number" value="00002" />
++      <option name="presentableId" value="LOCAL-00002" />
++      <option name="project" value="LOCAL" />
++      <updated>1754127412400</updated>
++    </task>
++    <task id="LOCAL-00003" summary="Исправления в упражнении пар">
++      <option name="closed" value="true" />
++      <created>1754388298521</created>
++      <option name="number" value="00003" />
++      <option name="presentableId" value="LOCAL-00003" />
++      <option name="project" value="LOCAL" />
++      <updated>1754388298521</updated>
++    </task>
++    <task id="LOCAL-00004" summary="Verb_exercises">
++      <option name="closed" value="true" />
++      <created>1754565499741</created>
++      <option name="number" value="00004" />
++      <option name="presentableId" value="LOCAL-00004" />
++      <option name="project" value="LOCAL" />
++      <updated>1754565499741</updated>
++    </task>
++    <task id="LOCAL-00005" summary="Verb_exercises_1">
++      <option name="closed" value="true" />
++      <created>1754566061410</created>
++      <option name="number" value="00005" />
++      <option name="presentableId" value="LOCAL-00005" />
++      <option name="project" value="LOCAL" />
++      <updated>1754566061410</updated>
++    </task>
++    <task id="LOCAL-00006" summary="Verb_exercises_2">
++      <option name="closed" value="true" />
++      <created>1754566758351</created>
++      <option name="number" value="00006" />
++      <option name="presentableId" value="LOCAL-00006" />
++      <option name="project" value="LOCAL" />
++      <updated>1754566758351</updated>
++    </task>
++    <option name="localTasksCounter" value="7" />
++    <servers />
++  </component>
++  <component name="Vcs.Log.Tabs.Properties">
++    <option name="TAB_STATES">
++      <map>
++        <entry key="MAIN">
++          <value>
++            <State />
++          </value>
++        </entry>
++      </map>
++    </option>
++  </component>
++  <component name="VcsManagerConfiguration">
++    <MESSAGE value="First" />
++    <MESSAGE value="requirements" />
++    <MESSAGE value="Исправления в упражнении пар" />
++    <MESSAGE value="Verb_exercises" />
++    <MESSAGE value="Verb_exercises_1" />
++    <MESSAGE value="Verb_exercises_2" />
++    <MESSAGE value="Lo" />
++    <MESSAGE value="Digits_Articles" />
++    <MESSAGE value="Login_form_black" />
++    <option name="LAST_COMMIT_MESSAGE" value="Login_form_black" />
++  </component>
++  <component name="XDebuggerManager">
++    <breakpoint-manager>
++      <default-breakpoints>
++        <breakpoint type="python-exception">
++          <properties notifyOnTerminate="true" exception="BaseException">
++            <option name="notifyOnTerminate" value="true" />
++          </properties>
++        </breakpoint>
++      </default-breakpoints>
++    </breakpoint-manager>
++  </component>
++</project>
+\ No newline at end of file
