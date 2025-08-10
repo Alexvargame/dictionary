@@ -15,7 +15,7 @@ SECRET_KEY = 'django-insecure-hcxau%c85fa^d2+s!qxcu06*=or^!vcj-ri0(kip0@jlfydc%^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['alex2776.pythonanywhere.com']
 
 LOCAL_APPS = [
     'dictionary.dictionary_apps.api.apps.ApiConfig',
@@ -102,6 +102,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 # Internationalization
 # https://docs.djangoproject.com/en/5.0/topics/i18n/
 
