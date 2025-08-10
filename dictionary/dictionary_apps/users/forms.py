@@ -36,7 +36,6 @@ class CustomAuthenticationForm(forms.Form):
     }))
 
 
-
     def clean(self):
         cleaned_data = super().clean()  # Очистка данных
         email = cleaned_data.get('email')
