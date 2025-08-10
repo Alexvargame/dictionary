@@ -35,6 +35,8 @@ class CustomAuthenticationForm(forms.Form):
         'class': 'border p-2 rounded text-black'
     }))
 
+
+
     def clean(self):
         cleaned_data = super().clean()  # Очистка данных
         email = cleaned_data.get('email')
