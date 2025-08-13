@@ -46,13 +46,10 @@ class ArticleNouns(LoginRequiredMixin, APIView):
             pass  # или
 
         all_ids = list(Noun.objects.filter(**filters).values_list('id', flat=True))
-        print('iDS', all_ids)
         if len(all_ids) >= 5:
             random_ids = random.sample(all_ids, 5)
         filters = {'id__in': random_ids}
-        print('filtr', filters)
         selected_words = WordService(WordRepository()).list_objects(filters)
-        print(selected_words)
         for word in selected_words:
             result_list.append(
                 NounPaarExerciseGermanDTO(
@@ -60,7 +57,6 @@ class ArticleNouns(LoginRequiredMixin, APIView):
                        'word': word.word, 'word_type': word.word_type}
                 )
             )
-        print(result_list)
         articles = ArticleService(ArticleRepository()).list_objects()
         context = {
             'result_list': result_list,
@@ -78,12 +74,14 @@ class ArticleNouns(LoginRequiredMixin, APIView):
             user_input = request.POST.get(f"answer_{i}", "").strip().lower()
             correct_answer = request.POST.get(f"correct_{i}", "").strip().lower()
             is_correct = user_input == correct_answer
+            word = request.POST.get(f"word_{i}", "").strip().lower()
 
             results.append({
                 "index": i,
                 "user_input": user_input,
                 "correct_answer": correct_answer,
-                "is_correct": is_correct
+                "is_correct": is_correct,
+                "word": word,
             })
 
             if is_correct:

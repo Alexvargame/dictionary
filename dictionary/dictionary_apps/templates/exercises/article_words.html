@@ -1,6 +1,7 @@
-{% extends 'main_page.html' %}
+{% extends 'base.html' %}
 
 {% block title %}Артикли{% endblock %}
+{% block logo_and_title %}{% endblock %}
 
 {% block content %}
 <main class="container mx-auto p-4">
@@ -25,6 +26,8 @@
               </select>
 
               <input type="hidden" name="correct_{{ forloop.counter }}" value="{{ r.article }}">
+               <!-- Передаём само слово -->
+              <input type="hidden" name="word_{{ forloop.counter }}" value="{{ r.word }}">
             </li>
           {% endfor %}
         </ul>

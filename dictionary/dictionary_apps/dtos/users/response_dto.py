@@ -15,3 +15,4 @@ class UserDTO:
     phone: str
     user_role: UserRole
     score: float
+    lifes: int

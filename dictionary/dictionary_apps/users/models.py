@@ -1,6 +1,10 @@
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, Group, Permission
 from django.contrib.auth.models import BaseUserManager as BUM
 from django.db import models
+from django.utils import timezone
+
+
+from datetime import timedelta
 
 from dictionary.dictionary_apps.common.models import BaseModel, UserRole
 
@@ -56,6 +60,7 @@ class BaseUserManager(BUM):
         return user
 
 class BaseUser(BaseModel, AbstractBaseUser, PermissionsMixin):
+    MAX_LIFES = 5
     name = models.CharField(max_length=100, blank=True, null=True, default='')
     surname = models.CharField(max_length=100, blank=True, null=True, default='')
     username = models.CharField(max_length=100, blank=True, null=True, default='', unique=True)
@@ -74,6 +79,7 @@ class BaseUser(BaseModel, AbstractBaseUser, PermissionsMixin):
     user_bot_pass = models.CharField(max_length=100, blank=True, null=True, default='')
     score = models.IntegerField(blank=True, null=True, default=0)
     lifes = models.IntegerField(blank=True, null=True, default=5)
+    last_life_update = models.DateTimeField(default=timezone.now)#null=True, blank=True)
 
     groups = models.ManyToManyField(
         Group,
@@ -101,6 +107,35 @@ class BaseUser(BaseModel, AbstractBaseUser, PermissionsMixin):
     @property
     def is_staff(self):
         return self.is_admin#True if self.user_role.id == 4 else False
+
+    def restore_lifes(self):
+        print('RESTORE')
+        if self.email == 'olga47@gamil.com' or self.email == 'alex@gmail.com':
+            self.lifes = 1000
+            self.save(update_fields=['lifes', 'last_life_update'])
+        if self.lifes >= self.MAX_LIFES:
+            return
+
+        now = timezone.now()
+        if self.last_life_update is None:
+            self.last_life_update = now
+            self.save(update_fields=['last_life_update'])
+            return
+        elasped = now - self.last_life_update
+        hours_passred = int(elasped.total_seconds() // 3600)
+
+        if hours_passred > 0:
+            print(self.email)
+
+            self.lifes = min(self.lifes + hours_passred, self.MAX_LIFES)
+            self.last_life_update += timedelta(hours=hours_passred)
+            self.save(update_fields=['lifes', 'last_life_update'])
+
+
+
+
+
+
 
 
 

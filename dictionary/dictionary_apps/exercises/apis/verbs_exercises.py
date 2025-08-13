@@ -88,14 +88,17 @@ class VerbExercises(LoginRequiredMixin, APIView):
         results = []
         for i in range(1, count + 1):
             user_input = request.POST.get(f"answer_{i}", "").strip().lower()
+            question = request.POST.get(f"question_{i}", "").strip().lower()
             correct_answer = request.POST.get(f"correct_{i}", "").strip().lower()
             is_correct = user_input == correct_answer
+
 
             results.append({
                 "index": i,
                 "user_input": user_input,
                 "correct_answer": correct_answer,
-                "is_correct": is_correct
+                "is_correct": is_correct,
+                "question": question
             })
 
             if is_correct:

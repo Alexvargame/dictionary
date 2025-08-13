@@ -57,7 +57,8 @@ class UserDetailApi(LimitOffsetPagination, APIView):
         phone = serializers.CharField()
         #добваить как объект, а не iD
         user_role = serializers.CharField()
-        score = serializers.IntegerField()
+        score = serializers.FloatField()
+        lifes = serializers.IntegerField()
     def get(self, request, user_id):
         user = user_get(user_id)
         if user is None:
@@ -70,7 +71,7 @@ class UserDetailApi(LimitOffsetPagination, APIView):
 class UserListApi(LimitOffsetPagination, APIView):
 
     class Pagination(LimitOffsetPagination):
-        default_limit = 2
+        default_limit = 10
 
     class FilterSerializer(serializers.Serializer):
         id = serializers.IntegerField(required=False)
@@ -78,11 +79,18 @@ class UserListApi(LimitOffsetPagination, APIView):
         email = serializers.EmailField(required=False)
 
     class OutputSerializer(serializers.ModelSerializer):
+        #profile_url = serializers.SerializerMethodField()  # <- явно указываем поле сериализатора
 
         class Meta:
             model = BaseUser
             fields = ('id', 'username', 'name', 'surname', 'email', 'is_admin', 'registration_date',
-                    'phone', 'last_login_date', 'is_active', 'user_role', 'score')
+                    'phone', 'last_login_date', 'is_active', 'user_role', 'score', 'lifes')#, 'profile_url')
+
+            # def get_profile_url(self, obj):
+            #     request = self.context.get('request')
+            #     if request is not None:
+            #         return request.build_absolute_uri(f'/users/{obj.id}/')
+            #     return f'/users/{obj.id}/'
     def get(self, request):
         filters_serializer = self.FilterSerializer(data=request.query_params)
         filters_serializer.is_valid(raise_exception=True)
@@ -94,6 +102,7 @@ class UserListApi(LimitOffsetPagination, APIView):
             queryset=users,
             request=request,
             view=self,
+           # serializer_context={'request': request},
         )
 
 
@@ -108,7 +117,8 @@ class UserUpdateApi(LimitOffsetPagination, APIView):
         surname = serializers.CharField(required=False,  allow_null=True)
         phone = serializers.CharField(required=False,  allow_null=True)
         user_role = serializers.IntegerField(required=False)
-        score = serializers.IntegerField(required=False)
+        score = serializers.FloatField(required=False)
+        lifes = serializers.IntegerField(required=False)
 
     def post(self, request, user_id):
         user = user_get(user_id)

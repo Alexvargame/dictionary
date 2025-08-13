@@ -36,6 +36,7 @@ class UsersRepository:
             user_role = obj.user_role,
             password = obj.password,
             score = obj.score,
+            lifes = obj.lifes,
         )
         return dto
 
@@ -54,6 +55,7 @@ class UsersRepository:
                 user_role=obj.user_role,
                 password=obj.password,
                 score = obj.score,
+                lifes = obj.lifes,
             )
             lst_dto.append(tmp_dto)
         return lst_dto

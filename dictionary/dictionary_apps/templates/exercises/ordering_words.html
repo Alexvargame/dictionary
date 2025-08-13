@@ -1,7 +1,7 @@
-{% extends 'main_page.html' %}
+{% extends 'base.html' %}
 
 {% block title %}Переведи слова | Игры в слова{% endblock %}
-
+{% block logo_and_title %}{% endblock %}
 {% block content %}
 <main class="container mx-auto p-4">
   <!-- Заголовок -->
@@ -24,8 +24,7 @@
     <div class="space-y-4">
 
       {% for word in german_list %}
-<<<<<<< HEAD
-=======
+
         <button data-id="{{ word.id }}"  class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md">
           {% if word.word_type == 'Noun' %}
             {{ word.article }} {{ word.word}} ({{word.id}})
@@ -33,7 +32,6 @@
             {{ word.word}} ({{word.id}})
           {% endif%}
         </button>
->>>>>>> f061eef8e316ef90104b5e3ff7ba11ab7e86b0e6
       {% endfor %}
     </div>
 
@@ -69,14 +67,10 @@
   <button id="stop-btn" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded">Стоп</button>
 </div>
 <script>
-<<<<<<< HEAD
+
 console.log('🔥 Скрипт загружен!');
 const limit = {{ limit }};
-=======
-    const limit = {{ limit }};
 
-
->>>>>>> f061eef8e316ef90104b5e3ff7ba11ab7e86b0e6
 document.addEventListener('DOMContentLoaded', function () {
   const germanButtons = document.querySelectorAll('.md\\:grid-cols-2 > div:nth-child(1) button');
   const russianButtons = document.querySelectorAll('.md\\:grid-cols-2 > div:nth-child(2) button');
@@ -190,11 +184,7 @@ document.addEventListener('DOMContentLoaded', function () {
   });
 
   // Кнопка "Продолжить"
-<<<<<<< HEAD
-=======
 
-  // Кнопка "Продолжить"
->>>>>>> f061eef8e316ef90104b5e3ff7ba11ab7e86b0e6
     continueBtn.addEventListener('click', () => {
       fetch('{% url "api:exercises:save_progress" %}', {
         method: 'POST',

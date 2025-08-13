@@ -18,6 +18,8 @@
           <p class="font-semibold text-black">{{ forloop.counter }}. {{ ex.digit }}</p>
           <input type="text" name="answer_{{ forloop.counter }}" class="mt-2 w-full border px-3 py-2 rounded text-black" placeholder="Ваш ответ">
           <input type="hidden" name="correct_{{ forloop.counter }}" value="{{ ex.correct_answer }}">
+          <!-- Передаём само число -->
+              <input type="hidden" name="digit_{{ forloop.counter }}" value="{{ ex.digit }}">
         </li>
       {% endfor %}
     </ul>

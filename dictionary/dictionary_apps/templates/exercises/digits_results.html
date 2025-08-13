@@ -1,6 +1,7 @@
-{% extends 'main_page.html' %}
+{% extends 'base.html' %}
 
 {% block title %}Результаты упражнения{% endblock %}
+{% block logo_and_title %}{% endblock %}
 
 {% block content %}
 <main class="container mx-auto p-4">
@@ -15,7 +16,7 @@
   <ul class="space-y-4">
     {% for r in results %}
       <li class="p-4 rounded shadow text-black {% if r.is_correct %}bg-green-100{% else %}bg-red-100{% endif %}">
-        <p><strong>{{ r.index }}.</strong> Ваш ответ: <strong>{{ r.user_input }}</strong></p>
+        <p><strong>{{ r.index }}.</strong> Задание: <strong>{{ r.digit }}</strong></p> Ваш ответ: <strong>{{ r.user_input }}</strong></p>
         {% if not r.is_correct %}
           <p>Правильный ответ: <strong>{{ r.correct_answer }}</strong></p>
         {% endif %}

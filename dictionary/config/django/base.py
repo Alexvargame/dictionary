@@ -5,6 +5,8 @@ from dictionary.config.env import BASE_DIR, APPS_DIR
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 #BASE_DIR = Path(__file__).resolve().parent.parent
 
+#8253479584:AAGCGy1iCSXeodUjLOd1qdObS-DF7LkQagQ
+#t.me/dictionary_german_bot
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
@@ -15,13 +17,15 @@ SECRET_KEY = 'django-insecure-hcxau%c85fa^d2+s!qxcu06*=or^!vcj-ri0(kip0@jlfydc%^
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['alex2776.pythonanywhere.com']
+ALLOWED_HOSTS = ['alex2776.pythonanywhere.com', '127.0.0.1']
+
 
 LOCAL_APPS = [
     'dictionary.dictionary_apps.api.apps.ApiConfig',
     'dictionary.dictionary_apps.common.apps.CommonConfig',
     'dictionary.dictionary_apps.users.apps.UsersConfig',
     'dictionary.dictionary_apps.words.apps.WordsConfig',
+    'dictionary.dictionary_apps.callback.apps.CallbackConfig',
 
 
 ]

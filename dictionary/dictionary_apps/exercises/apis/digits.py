@@ -52,8 +52,24 @@ def number_to_germnan(n):
         if unit == 0:
             return tens[ten]
         return f"{units[unit]}und{tens[ten]}"
+    elif 100 <= n < 1000:
+        unit = n % 10
+        ten = n % 100 - unit
+        hundred = n // 100
+        print('afwe', unit, ten, hundred)
+        if 9 < ten < 20:
+            if unit == 0:
+                return f"{units[hundred]} hundert {teens[ten]}"
+            else:
+                return f"{units[hundred]} hundert {teens[ten + unit]}"
+
+        # if unit == 0:
+        #     return f"{units[hundred]} hundert {tens[ten]}"
+        if ten == 0:
+            return f"{units[hundred]} hundert {units[unit]}"
+        return f"{units[hundred]} hundert {units[unit]}und{tens[ten]}"
     else:
-        return "nicht unterstützt"  # >100 пока не поддерживаем
+        return "nicht unterstützt"  # >1000 пока не поддерживаем
 def generate_exercise(digits=[]):
     # Получаем ID лекций из запроса
     exercises = []
@@ -73,9 +89,7 @@ class Digits(LoginRequiredMixin, APIView):
     template_name = 'exercises/digits.html'
 
     def get(self, request):
-
-        random_numbers = random.sample(range(1, 101), 5)
-        print(random_numbers)
+        random_numbers = random.sample(range(1, 1001), 5)
         exercises = generate_exercise(digits=random_numbers)
         context = {
             'exercises': exercises,
@@ -84,6 +98,7 @@ class Digits(LoginRequiredMixin, APIView):
         return Response(context)
 
     def post(self, request):
+        print('POSTDIGTY')
         count = 5
         correct_count = 0
         results = []
@@ -91,12 +106,13 @@ class Digits(LoginRequiredMixin, APIView):
             user_input = request.POST.get(f"answer_{i}", "").strip().lower()
             correct_answer = request.POST.get(f"correct_{i}", "").strip().lower()
             is_correct = user_input == correct_answer
-
+            digit = request.POST.get(f"digit_{i}", "").strip().lower()
             results.append({
                 "index": i,
                 "user_input": user_input,
                 "correct_answer": correct_answer,
-                "is_correct": is_correct
+                "is_correct": is_correct,
+                'digit': digit,
             })
 
             if is_correct:
@@ -109,7 +125,6 @@ class Digits(LoginRequiredMixin, APIView):
             user.score += points
             user.lifes = max(user.lifes - lives_lost, 0)
             user.save()
-
         return Response(
             {
                 'results': results,

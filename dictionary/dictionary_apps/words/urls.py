@@ -5,6 +5,7 @@ from .apis.neun import (NounCreateApi, NounDetailApi, NounListApi,
                   )
 from .apis.verb import (VerbDeleteApi, VerbDetailApi, VerbListApi,
                         VerbUpdateApi, VerbCreateApi)
+app_name = 'words'
 urlpatterns =[
     path('nouns/', NounListApi.as_view(), name='nouns_list'),
     path('nouns/create/', NounCreateApi.as_view(), name='noun_create'),

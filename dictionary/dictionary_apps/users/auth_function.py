@@ -21,13 +21,13 @@ def register(request):
 def login_view(request):
     if request.method == 'POST':
         # Передаем данные формы корректно
-        print(request.POST)
         form = CustomAuthenticationForm(data=request.POST)  # Передаем данные через 'data'
         if form.is_valid(): # Проверка на валидность формы
-            print('EEYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYYY')
             user = form.cleaned_data['user']  # Получаем пользователя из формы
             login(request, user)  # Авторизуем пользователя
+            user.restore_lifes()
             messages.success(request, 'Вы успешно вошли в систему!')
+
             return redirect('api:main_page')  # Перенаправляем на главную страницу
         else:
             print('ERRRORROEROOEEERE', form.errors)
