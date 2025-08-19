@@ -110,7 +110,7 @@ class BaseUser(BaseModel, AbstractBaseUser, PermissionsMixin):
 
     def restore_lifes(self):
         print('RESTORE')
-        if self.email == 'olga47@gamil.com' or self.email == 'alex@gmail.com':
+        if self.email == 'aleshinaolg@gmail.com' or self.email == 'alex@gmail.com':
             self.lifes = 1000
             self.save(update_fields=['lifes', 'last_life_update'])
         if self.lifes >= self.MAX_LIFES:
