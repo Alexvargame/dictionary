@@ -40,39 +40,33 @@ class CallBackTelegram(LoginRequiredMixin, APIView):
 
 @method_decorator(csrf_exempt, name='dispatch')
 class CallBackWebhookTelegram(APIView):
-        def post(self, request):
-            print('WEBHOOK')
-            if request.method != 'POST':
-                return Response({'ok': False}, status=405)
+    def post(self, request):
+        print('WEBHOOK')
+        try:
+            data = json.loads(request.body)
+        except Exception as e:
+            print("JSON Error:", e)
+            return Response({'ok': False, 'error': 'Invalid JSON'}, status=400)
 
-            try:
-                data = json.loads(request.body)
-            except Exception as e:
-                print("JSON Error:", e)
-                return Response({'ok': False, 'error': 'Invalid JSON'}, status=400)
-            message = data.get('message')
-            if not message:
-                return Response({'ok': True})
-            chat = message.get('chat', {})
-            chat_id = chat.get('id')
-            first_name = chat.get("first_name", "")
-            username = chat.get("username", "")
-            try:
-                user = UsersService(UsersRepository()).get_user_by_chat_id(chat_id)
-                # Пользователь найден — можно продолжать переписку
-                print(f"Найден пользователь по chat_id: {user.email}")
-            except Exception as e:
-                print(f"Пользователь не найден или ошибка: {e}")
-
+        message = data.get('message')
+        if not message:
             return Response({'ok': True})
 
+        chat = message.get('chat', {})
+        chat_id = chat.get('id')
+        first_name = chat.get("first_name", "")
+        username = chat.get("username", "")
 
+        try:
+            user = UsersService(UsersRepository()).get_user_by_chat_id(chat_id)
+            if user:
+                print(f"Найден пользователь по chat_id: {user.email}")
+            else:
+                print(f"Пользователь с chat_id={chat_id} не найден, нужно создать или запросить email")
+        except Exception as e:
+            print(f"Ошибка при поиске пользователя: {e}")
 
-
-
-
-
-
+        return Response({'ok': True})
 
 
 
