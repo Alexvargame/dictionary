@@ -63,13 +63,22 @@ class CallBackWebhookTelegram(APIView):
                 print(f"Найден пользователь по chat_id: {user.email}")
             else:
                 print(f"Пользователь с chat_id={chat_id} не найден, нужно создать или запросить email")
+                ask_email(chat_id)
         except Exception as e:
             print(f"Ошибка при поиске пользователя: {e}")
 
         return Response({'ok': True})
 
 
-
+def ask_email(chat_id):
+    token = BOT_TOKEN
+    url = f'https://api.telegram.org/bot{token}/sendMessage'
+    text = "Привет! Чтобы связаться с вами, пожалуйста, пришлите ваш email."
+    payload = {
+        'chat_id': chat_id,
+        'text': text
+    }
+    requests.post(url, json=payload)
 
 
 
