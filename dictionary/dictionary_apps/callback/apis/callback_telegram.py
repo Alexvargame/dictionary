@@ -37,8 +37,13 @@ class CallBackTelegram(LoginRequiredMixin, APIView):
 
 def ask_email(chat_id):
     print('ASK EMAIL')
-    token = BOT_TOKEN
-    url = f'https://api.telegram.org/bot{token}/sendMessage'
+    if not BOT_TOKEN:
+        print("Ошибка: BOT_TOKEN пустой")
+        return
+    if not chat_id:
+        print("Ошибка: chat_id пустой")
+        return
+    url = f'https://api.telegram.org/bot{BOT_TOKEN}/sendMessage'
     text = "Привет! Чтобы связаться с вами, пожалуйста, пришлите ваш email."
     payload = {
         'chat_id': chat_id,
