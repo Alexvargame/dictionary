@@ -56,8 +56,10 @@ class CallBackWebhookTelegram(APIView):
                 user = UsersService(UsersRepository()).get_user_by_chat_id(chat_id)
                 # Пользователь найден — можно продолжать переписку
                 print(f"Найден пользователь по chat_id: {user.email}")
-            except:
-                pass
+            except Exception as e:
+                print(f"Пользователь не найден или ошибка: {e}")
+
+            return Response({'ok': True})
 
 
 
