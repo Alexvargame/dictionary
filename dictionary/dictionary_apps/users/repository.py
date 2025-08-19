@@ -70,6 +70,13 @@ class UsersRepository:
         user.save()
 
 
+    def get_user_by_email(self, email):
+        user = BaseUser.objects.get(email=email)
+        return user
+
+    def get_user_by_chat_id(self, chat_id):
+        user = BaseUser.objects.get(chat_id=chat_id)
+        return user
 
 
 

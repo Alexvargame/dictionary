@@ -30,3 +30,8 @@ class UsersService:
     def update_object(self, dto):
         return self.repository.update_object(dto)
 
+    def get_user_by_email(self, email):
+        return self.repository.get_user_by_email(email)
+
+    def get_user_by_email(self, chat_id):
+        return self.repository.get_user_by_chat_id(chat_id)

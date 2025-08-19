@@ -75,7 +75,7 @@ class BaseUser(BaseModel, AbstractBaseUser, PermissionsMixin):
     is_active = models.BooleanField(default=True)
     is_admin = models.BooleanField(default=False)
     user_role = models.ForeignKey(UserRole, related_name='user_role', on_delete=models.CASCADE, default=2)
-    user_bot_id = models.IntegerField(blank=True, null=True, default=0)
+    chat_id = models.IntegerField(blank=True, null=True, default=0)
     user_bot_pass = models.CharField(max_length=100, blank=True, null=True, default='')
     score = models.IntegerField(blank=True, null=True, default=0)
     lifes = models.IntegerField(blank=True, null=True, default=5)

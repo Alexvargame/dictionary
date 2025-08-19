@@ -25,7 +25,7 @@
       </button>
 
       <h2 class="text-xl font-bold mb-4">Свяжитесь с нами</h2>
-      <form method="post" action="/send-message/">
+      <form method="post" action="{% url 'api:callback:send_telegram_message' %}">
         {% csrf_token %}
         <label class="block mb-2 text-sm font-medium text-gray-700">Ваш Telegram или e-mail</label>
         <input type="text" name="contact" class="w-full border px-3 py-2 rounded mb-4 text-black" required>
@@ -34,6 +34,16 @@
         <textarea name="message" class="w-full border px-3 py-2 rounded mb-4 text-black" rows="4" required></textarea>
 
         <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Отправить</button>
+
+        <div class="flex space-x-2">
+          <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Отправить</button>
+
+          <!-- Кнопка "Скачать бота" -->
+          <a href="" download
+             class="bg-green-600 text-white px-4 py-2 rounded text-center">
+             Скачать бота
+          </a>
+        </div>
       </form>
     </div>
   </div>

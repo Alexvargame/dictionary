@@ -1,12 +1,20 @@
 import os
 from pathlib import Path
 from dictionary.config.env import BASE_DIR, APPS_DIR
+from dotenv import load_dotenv
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 #BASE_DIR = Path(__file__).resolve().parent.parent
 
-#8253479584:AAGCGy1iCSXeodUjLOd1qdObS-DF7LkQagQ
 #t.me/dictionary_german_bot
+
+
+
+load_dotenv()  # загружает .env в os.environ
+
+BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
+CHAT_ID = os.environ.get("TELEGRAM_OWNER_CHAT_ID")
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
