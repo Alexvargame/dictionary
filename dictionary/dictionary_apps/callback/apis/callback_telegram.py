@@ -44,7 +44,12 @@ def ask_email(chat_id):
         'chat_id': chat_id,
         'text': text
     }
-    requests.post(url, json=payload)
+    try:
+        response = requests.post(url, json=payload)
+        print("Telegram API response:", response.status_code, response.text)
+    except Exception as e:
+        print("Ошибка при отправке ask_email:", e)
+    #requests.post(url, json=payload)
 
 
 
