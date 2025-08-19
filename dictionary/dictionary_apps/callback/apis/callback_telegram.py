@@ -44,7 +44,12 @@ class CallBackWebhookTelegram(APIView):
             print('WEBHOOK')
             if request.method != 'POST':
                 return Response({'ok': False}, status=405)
-            data = json.loads(request.body)
+
+            try:
+                data = json.loads(request.body)
+            except Exception as e:
+                print("JSON Error:", e)
+                return Response({'ok': False, 'error': 'Invalid JSON'}, status=400)
             message = data.get('message')
             if not message:
                 return Response({'ok': True})
