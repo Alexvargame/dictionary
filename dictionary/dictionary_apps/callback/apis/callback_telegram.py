@@ -35,6 +35,16 @@ class CallBackTelegram(LoginRequiredMixin, APIView):
         return Response({"status": "error", "msg": "Метод не поддерживается"}, status=405)
 
 
+def ask_email(chat_id):
+    print('ASK EMAIL')
+    token = BOT_TOKEN
+    url = f'https://api.telegram.org/bot{token}/sendMessage'
+    text = "Привет! Чтобы связаться с вами, пожалуйста, пришлите ваш email."
+    payload = {
+        'chat_id': chat_id,
+        'text': text
+    }
+    requests.post(url, json=payload)
 
 
 
@@ -70,15 +80,6 @@ class CallBackWebhookTelegram(APIView):
         return Response({'ok': True})
 
 
-def ask_email(chat_id):
-    token = BOT_TOKEN
-    url = f'https://api.telegram.org/bot{token}/sendMessage'
-    text = "Привет! Чтобы связаться с вами, пожалуйста, пришлите ваш email."
-    payload = {
-        'chat_id': chat_id,
-        'text': text
-    }
-    requests.post(url, json=payload)
 
 
 
