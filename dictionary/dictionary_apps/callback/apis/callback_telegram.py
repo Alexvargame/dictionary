@@ -67,15 +67,22 @@ class CallBackWebhookTelegram(APIView):
         first_name = chat.get("first_name", "")
         username = chat.get("username", "")
 
+        user = None
         try:
             user = UsersService(UsersRepository()).get_user_by_chat_id(chat_id)
             print(f"Найден пользователь по chat_id: {user.email}")
-        except BaseUser.DoesNotExist:
-            print(f"Пользователь с chat_id={chat_id} не найден, нужно создать или запросить email")
-            ask_email(chat_id)
         except Exception as e:
             print(f"Ошибка при поиске пользователя: {e}")
+        if not user:
+            print(f"Пользователь с chat_id={chat_id} не найден, спрашиваем email")
+            try:
+                ask_email(chat_id)
+            except Exception as e:
+                print(f"Ошибка при вызове ask_email: {e}")
 
+            # Если пользователь найден — логируем
+        else:
+            print(f"Найден пользователь по chat_id: {user.email}")
         return Response({'ok': True})
 
 
