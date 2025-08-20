@@ -98,17 +98,36 @@ class CallBackWebhookTelegram(APIView):
         username = chat.get("username", "")
         text = (message.get('text') or '').strip()
         if chat_id == CHAT_ID:
+            print('from admin')
             reply_to = message.get('reply_to_message')
             if reply_to:
+                print('TO_REPLY')
                 original_text = reply_to.get('text', '')
+                print('ORIGINAL', original_text)
                 match = re.search(r"ChatID:\s*(\d+)", original_text)
                 if match:
+                    print('Find CHATID', match.group(1))
                     target_chat_id = int(match.group(1))
-                    if text:
-                        send_message(target_chat_id, text)
+                    reply_text = text
+                    if reply_text:
+                        email_match = re.search(r"Email:\s*(.+)", original_text)
+                        username_match = re.search(r"Username:\s*(.+)", original_text)
+                        email = email_match.group(1) if email_match else '—'
+                        uname = username_match.group(1) if username_match else '—'
+
+                        formatted_reply = (
+                            f"Email: {email}\n"
+                            f"Username: {uname}\n"
+                            f"ChatID: {target_chat_id}\n"
+                            f"Text: {reply_text}"
+                        )
+                        send_message(target_chat_id, formatted_reply)
                         send_message(CHAT_ID, f"✅ Ответ отправлен пользователю {target_chat_id}")
                         return Response({'ok': True})
-
+                else:
+                    print('DIDNT fIND CHAT ID')
+            else:
+                print('NOT REPLY')
         user = None
         try:
             user = UsersService(UsersRepository()).get_user_by_chat_id(chat_id)
