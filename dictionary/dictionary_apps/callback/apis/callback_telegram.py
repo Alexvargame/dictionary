@@ -92,11 +92,22 @@ class CallBackWebhookTelegram(APIView):
         message = data.get('message')
         if not message:
             return Response({'ok': True})
-
         chat = message.get('chat', {})
         chat_id = chat.get('id')
         first_name = chat.get("first_name", "")
         username = chat.get("username", "")
+
+        if chat_id == OWNER_CHAT_ID:
+            reply_to = message.get('reply_to_message')
+            if reply_to:
+                original_text = reply_to.get('text', '')
+                match = re.search(r"ChatID:\s*(\d+)", original_text)
+                if match:
+                    target_chat_id = int(match.group(1))
+                    if text:
+                        send_message(target_chat_id, text)
+                        send_message(OWNER_CHAT_ID, f"✅ Ответ отправлен пользователю {target_chat_id}")
+                        return Response({'ok': True})
 
         user = None
         try:
@@ -128,7 +139,13 @@ class CallBackWebhookTelegram(APIView):
 
             # 2) Любое другое сообщение — перекидываем админу и подтверждаем юзеру
             if text:
-                admin_note = f"✉️ Сообщение от {user.email or username} (chat_id: {chat_id}):\n{text}"
+                admin_note = (
+                    f"📩 Сообщение от пользователя\n"
+                    f"Email: {user.email or '—'}\n"
+                    f"Username: @{username or '—'}\n"
+                    f"ChatID: {chat_id}\n\n"
+                    f"Текст: {text}"
+                )
                 send_message(CHAT_ID, admin_note)
                 send_message(chat_id, "Принял! Передал сообщение оператору. Ответ придёт сюда.")
                 return Response({'ok': True})
