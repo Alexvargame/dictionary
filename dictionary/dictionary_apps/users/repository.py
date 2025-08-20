@@ -80,6 +80,7 @@ class UsersRepository:
 
     def set_chat_id_by_email(self, chat_id, email):
         user = BaseUser.objects.get(email=email)
+        print('eqre2rw err werr,chat_id', email, user)
         user.chat_id = chat_id
         user.save()
 
