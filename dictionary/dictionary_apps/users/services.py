@@ -36,3 +36,6 @@ class UsersService:
     def get_user_by_chat_id(self, chat_id):
         print('CHAT_ID', chat_id)
         return self.repository.get_user_by_chat_id(chat_id)
+
+    def set_chat_id_by_email(self, chat_id, email):
+        self.repository.set_chat_id_by_email(chat_id, email)

@@ -21,6 +21,7 @@ from dictionary.dictionary_apps.users.services import UsersService
 
 
 def send_message(chat_id: int, text: str):
+    print('SEND')
     if not BOT_TOKEN:
         print("Ошибка: BOT_TOKEN пустой")
         return
@@ -107,12 +108,8 @@ class CallBackWebhookTelegram(APIView):
             print(f"Пользователь с chat_id={chat_id} не найден, спрашиваем email")
             text = message.get('text')
             if text and '@' in text and "." in text:
-
                 try:
-                    UsersService(UsersRepository()).get_set_chat_id_by_email(chat_id, email)
-                   #ask_email(chat_id)
-                    text = message.get('text')
-                    print(text)
+                    UsersService(UsersRepository()).set_chat_id_by_email(chat_id, text)
                     send_message(chat_id, "Спасибо! Теперь я смогу писать вам сюда 🙌")
                 except Exception as e:
                     print(f"Ошибка при вызове ask_email: {e}")
