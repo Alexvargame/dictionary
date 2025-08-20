@@ -96,8 +96,8 @@ class CallBackWebhookTelegram(APIView):
         chat_id = chat.get('id')
         first_name = chat.get("first_name", "")
         username = chat.get("username", "")
-
-        if chat_id == OWNER_CHAT_ID:
+        text = (message.get('text') or '').strip()
+        if chat_id == CHAT_ID:
             reply_to = message.get('reply_to_message')
             if reply_to:
                 original_text = reply_to.get('text', '')
@@ -106,7 +106,7 @@ class CallBackWebhookTelegram(APIView):
                     target_chat_id = int(match.group(1))
                     if text:
                         send_message(target_chat_id, text)
-                        send_message(OWNER_CHAT_ID, f"✅ Ответ отправлен пользователю {target_chat_id}")
+                        send_message(CHAT_ID, f"✅ Ответ отправлен пользователю {target_chat_id}")
                         return Response({'ok': True})
 
         user = None
@@ -129,8 +129,6 @@ class CallBackWebhookTelegram(APIView):
                 ask_email(chat_id)
                 # Если пользователь найден — логируем
         else:
-            text = (message.get('text') or '').strip()
-
             # 1) Повторный /start
             if text == '/start':
                 send_message(chat_id,
