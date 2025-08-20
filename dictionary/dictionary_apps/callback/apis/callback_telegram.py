@@ -118,7 +118,24 @@ class CallBackWebhookTelegram(APIView):
                 ask_email(chat_id)
                 # Если пользователь найден — логируем
         else:
-            print(f"Найден пользователь по chat_id: {user.email}")
+            text = (message.get('text') or '').strip()
+
+            # 1) Повторный /start
+            if text == '/start':
+                send_message(chat_id,
+                             f"Привет, {first_name or user.email}! Вы уже связаны с ботом 🙌\nНапишите сюда сообщение — я передам его оператору.")
+                return Response({'ok': True})
+
+            # 2) Любое другое сообщение — перекидываем админу и подтверждаем юзеру
+            if text:
+                admin_note = f"✉️ Сообщение от {user.email or username} (chat_id: {chat_id}):\n{text}"
+                send_message(CHAT_ID, admin_note)
+                send_message(chat_id, "Принял! Передал сообщение оператору. Ответ придёт сюда.")
+                return Response({'ok': True})
+
+            # Если пришёл не текст (стикер/фото и т.п.)
+            send_message(chat_id, "Пока принимаю только текстовые сообщения 🙂")
+            #return Response({'ok': True})
         return Response({'ok': True})
 
 
