@@ -23,8 +23,6 @@ from dictionary.dictionary_apps.callback.repository import MessageRepository
 
 from dictionary.dictionary_apps.users.models import BaseUser
 
-
-
 class MessageCreateApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
     class InputSerializer(serializers.Serializer):
         user = serializers.IntegerField(required=False)
