@@ -97,7 +97,7 @@ class CallBackWebhookTelegram(APIView):
         first_name = chat.get("first_name", "")
         username = chat.get("username", "")
         text = (message.get('text') or '').strip()
-        if chat_id == CHAT_ID:
+        if chat_id == int(CHAT_ID):
             print('from admin')
             reply_to = message.get('reply_to_message')
             if reply_to:
@@ -122,7 +122,7 @@ class CallBackWebhookTelegram(APIView):
                             f"Text: {reply_text}"
                         )
                         send_message(target_chat_id, formatted_reply)
-                        send_message(CHAT_ID, f"✅ Ответ отправлен пользователю {target_chat_id}")
+                        send_message(int(CHAT_ID), f"✅ Ответ отправлен пользователю {target_chat_id}")
                         return Response({'ok': True})
                 else:
                     print('DIDNT fIND CHAT ID')
