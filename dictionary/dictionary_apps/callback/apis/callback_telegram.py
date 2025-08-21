@@ -105,6 +105,7 @@ class CallBackWebhookTelegram(APIView):
                 original_text = reply_to.get('text', '').replace('#012', '\n')
                 print('ORIGINAL', original_text)
                 match = re.search(r"ChatID:\s*(\d+)", original_text)
+                print('MATCH', match)
                 if match:
                     print('Find CHATID', match.group(1))
                     target_chat_id = int(match.group(1))
