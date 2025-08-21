@@ -128,6 +128,8 @@ class CallBackWebhookTelegram(APIView):
                     print('DIDNT fIND CHAT ID')
             else:
                 print('NOT REPLY')
+        else:
+            print('NOT CHAT_IDDDDDDDD')
         user = None
         try:
             user = UsersService(UsersRepository()).get_user_by_chat_id(chat_id)

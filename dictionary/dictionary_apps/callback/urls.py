@@ -1,7 +1,6 @@
 from django.urls import path
 
 from .apis.callback_telegram import CallBackTelegram, CallBackWebhookTelegram
-
 from .apis.crud_message import MessageCreateApi
 
 app_name = 'callback'
