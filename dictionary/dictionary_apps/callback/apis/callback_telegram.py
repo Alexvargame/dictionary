@@ -80,6 +80,7 @@ def ask_email(chat_id):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
+@method_decorator(csrf_exempt, name='dispatch')
 class CallBackWebhookTelegram(APIView):
     def post(self, request):
         print('WEBHOOK')
@@ -102,7 +103,7 @@ class CallBackWebhookTelegram(APIView):
             reply_to = message.get('reply_to_message')
             if reply_to:
                 print('TO_REPLY')
-                original_text = reply_to.get('text', '')#.replace('#012', '\n')
+                original_text = reply_to.get('text', '')
                 print('ORIGINAL', original_text)
                 match = re.search(r"ChatID:\s*(\d+)", original_text)
                 print('MATCH', match)
@@ -110,6 +111,7 @@ class CallBackWebhookTelegram(APIView):
                     print('Find CHATID', match.group(1))
                     target_chat_id = int(match.group(1))
                     reply_text = text
+                    print('REPSY_TEXT', reply_text)
                     if reply_text:
                         email_match = re.search(r"Email:\s*(.+)", original_text)
                         username_match = re.search(r"Username:\s*(.+)", original_text)
@@ -122,13 +124,10 @@ class CallBackWebhookTelegram(APIView):
                             f"ChatID: {target_chat_id}\n"
                             f"Text: {reply_text}"
                         )
-                        try:
-                            print('Sending reply to', target_chat_id)
-                            send_message(target_chat_id, formatted_reply)
-                            print('Formatted reply:\n', formatted_reply)
-                            send_message(int(CHAT_ID), f"✅ Ответ отправлен пользователю {target_chat_id}")
-                        except Exception as e:
-                            print("Ошибка при отправке reply:", e)
+                        print(target_chat_id, 'tARGET ID')
+                        send_message(target_chat_id, formatted_reply)
+                        print('FORNASNREP', formatted_reply)
+                        send_message(int(CHAT_ID), f"✅ Ответ отправлен пользователю {target_chat_id}")
                         return Response({'ok': True})
                 else:
                     print('DIDNT fIND CHAT ID')
