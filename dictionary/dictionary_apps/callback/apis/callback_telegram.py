@@ -102,7 +102,7 @@ class CallBackWebhookTelegram(APIView):
             reply_to = message.get('reply_to_message')
             if reply_to:
                 print('TO_REPLY')
-                original_text = reply_to.get('text', '').replace('#012', '\n')
+                original_text = reply_to.get('text', '')#.replace('#012', '\n')
                 print('ORIGINAL', original_text)
                 match = re.search(r"ChatID:\s*(\d+)", original_text)
                 print('MATCH', match)
