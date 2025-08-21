@@ -97,7 +97,7 @@ class CallBackWebhookTelegram(APIView):
         first_name = chat.get("first_name", "")
         username = chat.get("username", "")
         text = (message.get('text') or '').strip()
-        if chat_id == int(CHAT_ID):
+        if chat_id == CHAT_ID:
             print('from admin')
             reply_to = message.get('reply_to_message')
             if reply_to:
@@ -105,12 +105,12 @@ class CallBackWebhookTelegram(APIView):
                 original_text = reply_to.get('text', '')
                 print('ORIGINAL', original_text)
                 match = re.search(r"ChatID:\s*(\d+)", original_text)
-                print('MATCH', match)
                 if match:
                     print('Find CHATID', match.group(1))
                     target_chat_id = int(match.group(1))
+                    if text:
+                        send_message(target_chat_id, text)
                     reply_text = text
-                    print('REPSY_TEXT', reply_text)
                     if reply_text:
                         email_match = re.search(r"Email:\s*(.+)", original_text)
                         username_match = re.search(r"Username:\s*(.+)", original_text)
@@ -123,17 +123,14 @@ class CallBackWebhookTelegram(APIView):
                             f"ChatID: {target_chat_id}\n"
                             f"Text: {reply_text}"
                         )
-                        print(target_chat_id, 'tARGET ID')
                         send_message(target_chat_id, formatted_reply)
-                        print('FORNASNREP', formatted_reply)
                         send_message(int(CHAT_ID), f"✅ Ответ отправлен пользователю {target_chat_id}")
                         return Response({'ok': True})
+
                 else:
                     print('DIDNT fIND CHAT ID')
             else:
                 print('NOT REPLY')
-        else:
-            print('NOT CHAT_IDDDDDDDD')
         user = None
         try:
             user = UsersService(UsersRepository()).get_user_by_chat_id(chat_id)
@@ -158,26 +155,6 @@ class CallBackWebhookTelegram(APIView):
             if text == '/start':
                 send_message(chat_id,
                              f"Привет, {first_name or user.email}! Вы уже связаны с ботом 🙌\nНапишите сюда сообщение — я передам его оператору.")
-                return Response({'ok': True})
-
-            # 2) Любое другое сообщение — перекидываем админу и подтверждаем юзеру
-            if text:
-                admin_note = (
-                    f"📩 Сообщение от пользователя\n"
-                    f"Email: {user.email or '—'}\n"
-                    f"Username: @{username or '—'}\n"
-                    f"ChatID: {chat_id}\n\n"
-                    f"Текст: {text}"
-                )
-                send_message(CHAT_ID, admin_note)
-                send_message(chat_id, "Принял! Передал сообщение оператору. Ответ придёт сюда.")
-                return Response({'ok': True})
-
-            # Если пришёл не текст (стикер/фото и т.п.)
-            send_message(chat_id, "Пока принимаю только текстовые сообщения 🙂")
-            #return Response({'ok': True})
-        return Response({'ok': True})
-
 
 
 
