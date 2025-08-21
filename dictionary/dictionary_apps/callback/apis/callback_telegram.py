@@ -80,7 +80,6 @@ def ask_email(chat_id):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-@method_decorator(csrf_exempt, name='dispatch')
 class CallBackWebhookTelegram(APIView):
     def post(self, request):
         print('WEBHOOK')
