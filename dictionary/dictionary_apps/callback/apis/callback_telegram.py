@@ -102,7 +102,7 @@ class CallBackWebhookTelegram(APIView):
             reply_to = message.get('reply_to_message')
             if reply_to:
                 print('TO_REPLY')
-                original_text = reply_to.get('text', '')
+                original_text = reply_to.get('text', '').replace('#012', '\n')
                 print('ORIGINAL', original_text)
                 match = re.search(r"ChatID:\s*(\d+)", original_text)
                 if match:
@@ -121,8 +121,13 @@ class CallBackWebhookTelegram(APIView):
                             f"ChatID: {target_chat_id}\n"
                             f"Text: {reply_text}"
                         )
-                        send_message(target_chat_id, formatted_reply)
-                        send_message(int(CHAT_ID), f"✅ Ответ отправлен пользователю {target_chat_id}")
+                        try:
+                            print('Sending reply to', target_chat_id)
+                            send_message(target_chat_id, formatted_reply)
+                            print('Formatted reply:\n', formatted_reply)
+                            send_message(int(CHAT_ID), f"✅ Ответ отправлен пользователю {target_chat_id}")
+                        except Exception as e:
+                            print("Ошибка при отправке reply:", e)
                         return Response({'ok': True})
                 else:
                     print('DIDNT fIND CHAT ID')
