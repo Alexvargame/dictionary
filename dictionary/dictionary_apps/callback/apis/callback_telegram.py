@@ -102,9 +102,12 @@ class CallBackWebhookTelegram(APIView):
             print('from admin')
             reply_to = message.get('reply_to_message')
             if reply_to:
-                print('TO_REPLY')
-                original_text = reply_to.get('text', '')
-                print('ORIGINAL', original_text)
+                print('TO_REPLY', reply_to, type(reply_to))
+                if reply_to and isinstance(reply_to, dict):
+                    original_text = reply_to.get('text', '')
+                    print('ORIGINAL', original_text)
+                else:
+                    print('NOT REPY or is not a dict')
                 match = re.search(r"ChatID:\s*(\d+)", original_text)
                 if match:
                     print('Find CHATID', match.group(1))
