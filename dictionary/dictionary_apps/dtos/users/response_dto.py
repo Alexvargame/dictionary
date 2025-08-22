@@ -16,3 +16,4 @@ class UserDTO:
     user_role: UserRole
     score: float
     lifes: int
+    chat_id: int

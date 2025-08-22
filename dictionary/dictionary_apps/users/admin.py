@@ -8,7 +8,7 @@ from dictionary.dictionary_apps.users.services import user_create
 @admin.register(BaseUser)
 class BaseUserAdmin(admin.ModelAdmin):
     list_display = ('id', 'username', 'name', 'surname', 'email', 'is_admin', 'registration_date',
-                    'phone', 'last_login_date', 'is_active', 'user_role', 'score', 'lifes',)
+                    'phone', 'last_login_date', 'is_active', 'user_role', 'score', 'lifes', 'chat_id')
                     #'last_life_update')
     search_fields = ('email', 'user_role')
     fieldsets = (

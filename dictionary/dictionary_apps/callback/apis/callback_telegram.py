@@ -17,6 +17,11 @@ from dictionary.config.django.base import BOT_TOKEN, CHAT_ID
 from dictionary.dictionary_apps.users.models import BaseUser
 from dictionary.dictionary_apps.users.repository import UsersRepository
 from dictionary.dictionary_apps.users.services import UsersService
+from dictionary.dictionary_apps.callback.models import SiteMessage
+from dictionary.dictionary_apps.dtos.callback.response_dto import MessagerDTO
+from dictionary.dictionary_apps.dtos.callback.request_dto import CreateMessageDTO
+from dictionary.dictionary_apps.callback.repository import MessageRepository
+from dictionary.dictionary_apps.callback.services import MessageService
 
 
 
@@ -41,46 +46,34 @@ class CallBackTelegram(LoginRequiredMixin, APIView):
 
     def post(self, request):
         print('FASFAFAFAFWAAWGFWEF')
-#if request.method == 'POST':
         contact = request.data.get('contact')
-        message = request.data.get('message')
-
-        text = f"📩 Новое сообщение с сайта\n\n👤 Контакт: {contact}\n💬 Сообщение: {message}"
-
+        messagetext = request.data.get('message')
+        user = UsersService(UsersRepository()).get_user_by_email(contact)
+        dto = CreateMessageDTO(
+            user = user,
+            text = messagetext,
+        )
+        message = MessageService(MessageRepository()).create_object(dto)
+        text = f"📩 Новое сообщение с сайта\n\n👤 Контакт: {message.user}\n💬 Сообщение: {message.text}"
         if BOT_TOKEN and CHAT_ID:
             url = f'https://api.telegram.org/bot{BOT_TOKEN}/sendMessage'
-            requests.post(url, data = {'chat_id': CHAT_ID, 'text': text})
+            requests.post(url, data = {'chat_id': user.chat_id, 'text': text})
             return redirect('api:main_page')
         return Response({"status": "error", "msg": "BOT_TOKEN или CHAT_ID не настроены"}, status=500)
-  #      return Response({"status": "error", "msg": "Метод не поддерживается"}, status=405)
-
 
 def ask_email(chat_id):
     print('ASK EMAIL')
-    # if not BOT_TOKEN:
-    #     print("Ошибка: BOT_TOKEN пустой")
-    #     return
     if not chat_id:
         print("Ошибка: chat_id пустой")
         return
-    # url = f'https://api.telegram.org/bot{BOT_TOKEN}/sendMessage'
     text = "Привет! Чтобы связаться с вами, пожалуйста, пришлите ваш email."
     send_message(chat_id, text)
-    # payload = {
-    #     'chat_id': chat_id,
-    #     'text': text
-    # }
-    # try:
-    #     response = requests.post(url, json=payload)
-    #     print("Telegram API response:", response.status_code, response.text)
-    # except Exception as e:
-    #     print("Ошибка при отправке ask_email:", e)
-    #requests.post(url, json=payload)
+
 
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class CallBackWebhookTelegram(APIView):
+class CallBackWebhookTelegram(LoginRequiredMixin, APIView):
     def post(self, request):
         print('WEBHOOK')
         try:
@@ -90,6 +83,7 @@ class CallBackWebhookTelegram(APIView):
             return Response({'ok': False, 'error': 'Invalid JSON'}, status=400)
 
         message = data.get('message')
+        print('MESSAGE', message)
         if not message:
             return Response({'ok': True})
         chat = message.get('chat', {})
@@ -98,7 +92,7 @@ class CallBackWebhookTelegram(APIView):
         username = chat.get("username", "")
         text = (message.get('text') or '').strip()
         print('TEXT', text)
-        if chat_id == int(CHAT_ID):
+        if chat_id == CHAT_ID:
             print('from admin')
             reply_to = message.get('reply_to_message')
             print('TO_REPLY', reply_to, type(reply_to))

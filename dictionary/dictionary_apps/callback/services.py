@@ -19,3 +19,6 @@ class MessageService:
 
     def update_object(self, dto):
         return self.repository.update_object(dto)
+
+    def delete_object(self, obj_id):
+        return self.repository.delete_object(obj_id)

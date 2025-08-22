@@ -61,14 +61,13 @@ class MessageRepository:
 
         message = self.model.objects.get(id=dto.id)
         for key, value in dto.__dict__.items():
-           noun.__dict__[key] = value
+           message.__dict__[key] = value
         # user, has_updated = model_update(instance=user, fields=non_side_effect_fields, data=data)
 
         message.save()
 
     @transaction.atomic
     def delete_object(self, message_id):
-
         message = self.model.objects.get(id=message_id)
         message.delete()
 

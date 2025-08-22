@@ -37,6 +37,7 @@ class UsersRepository:
             password = obj.password,
             score = obj.score,
             lifes = obj.lifes,
+            chat_id =obj.chat_id,
         )
         return dto
 
@@ -56,6 +57,7 @@ class UsersRepository:
                 password=obj.password,
                 score = obj.score,
                 lifes = obj.lifes,
+                chat_id = obj.chat_id,
             )
             lst_dto.append(tmp_dto)
         return lst_dto

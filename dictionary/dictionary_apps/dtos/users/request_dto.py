@@ -16,6 +16,7 @@ class CreateUserDTO:
     surname: str
     phone: str
     user_role: UserRole
+    chat_id: int
 
 
 

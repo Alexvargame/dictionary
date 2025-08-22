@@ -175,7 +175,7 @@ class VerbRepository:
 
     def list_objects(self, filters=None):
         lst_dto = []
-        for obj in noun_list(filters=filters):
+        for obj in verb_list(filters=filters):
             tmp_dto = self.dto(
                 id=obj.id,
                 word_type=obj.word_type,

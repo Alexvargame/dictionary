@@ -67,7 +67,7 @@ class VerbCreateApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
 class VerbDetailApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
     class OutputSerializer(serializers.Serializer):
         id = serializers.IntegerField()
-        word_type = serializers.IntegerField()
+        word_type = serializers.CharField()
         word = serializers.CharField()
         word_translate = serializers.CharField()
         ich_form = serializers.CharField()
@@ -83,7 +83,7 @@ class VerbDetailApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
         past_prateritum_wir_form = serializers.CharField()
         past_prateritum_ihr_form = serializers.CharField()
         past_prateritum_Sie_sie_form = serializers.CharField()
-        lection = serializers.IntegerField()
+        lection = serializers.CharField()
 
 
     def get(self, request, verb_id):
@@ -91,6 +91,7 @@ class VerbDetailApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
         if verb is None:
             raise Http404
         dto = VerbService(VerbRepository()).detail_object(verb)
+        print(dto)
         data = self.OutputSerializer(dto).data
         return Response(data)
 
@@ -109,7 +110,7 @@ class VerbListApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
             fields = ('id', 'word', 'word_translate',
                     'ich_form', 'du_form', 'er_sie_es_form',
                     'wir_form', 'ihr_form', 'Sie_sie_form',
-                    'past_perfect_form', 'past_pratertium_ich_form',
+                    'past_perfect_form', 'past_prateritum_ich_form',
                       'past_prateritum_du_form', 'past_prateritum_er_sie_es_form',
                       'past_prateritum_wir_form', 'past_prateritum_ihr_form',
                       'past_prateritum_Sie_sie_form', 'lection', 'word_type',)
@@ -149,14 +150,14 @@ class VerbUpdateApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
     def post(self, request, verb_id):
         verb = verb_get(verb_id)
 
-        merged_data = {**VerbService(VerbRepository()).detail_object(noun).__dict__, **request.data}
+        merged_data = {**VerbService(VerbRepository()).detail_object(verb).__dict__, **request.data}
         if isinstance(merged_data.get('lection'), Lection):
             merged_data['lection'] = str(merged_data['lection'].id)
         if isinstance(merged_data.get('word_type'), WordType):
             merged_data['word_type'] = str(merged_data['word_type'].id)
         serializer = self.InputSerializer(data=merged_data)
         serializer.is_valid(raise_exception=True)
-        serializer.validated_data['id'] = noun_id
+        serializer.validated_data['id'] = verb_id
         dto = VerbDTO(
            **serializer.validated_data
         )
@@ -171,6 +172,16 @@ class VerbDeleteApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
     class Pagination(LimitOffsetPagination):
         default_limit = 5
 
+    class OutputSerializer(serializers.ModelSerializer):
+        class Meta:
+            model = Verb
+            fields = ('id', 'word', 'word_translate',
+                    'ich_form', 'du_form', 'er_sie_es_form',
+                    'wir_form', 'ihr_form', 'Sie_sie_form',
+                    'past_perfect_form', 'past_prateritum_ich_form',
+                      'past_prateritum_du_form', 'past_prateritum_er_sie_es_form',
+                      'past_prateritum_wir_form', 'past_prateritum_ihr_form',
+                      'past_prateritum_Sie_sie_form', 'lection', 'word_type',)
     def post(self, request, noun_id):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

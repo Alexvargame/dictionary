@@ -28,7 +28,7 @@ class UserCreateApi(LimitOffsetPagination, APIView):
         surname = serializers.CharField(required=False, default=None)
         phone = serializers.CharField(required=False, default=None)
         user_role = serializers.IntegerField(required=False)
-
+        chat_id = serializers.IntegerField(required=False)
 
     def post(self, request):
         serializer = self.InputSerializer(data=request.data)
@@ -59,6 +59,7 @@ class UserDetailApi(LimitOffsetPagination, APIView):
         user_role = serializers.CharField()
         score = serializers.FloatField()
         lifes = serializers.IntegerField()
+        chat_id = serializers.IntegerField()
     def get(self, request, user_id):
         user = user_get(user_id)
         if user is None:
@@ -84,7 +85,7 @@ class UserListApi(LimitOffsetPagination, APIView):
         class Meta:
             model = BaseUser
             fields = ('id', 'username', 'name', 'surname', 'email', 'is_admin', 'registration_date',
-                    'phone', 'last_login_date', 'is_active', 'user_role', 'score', 'lifes')#, 'profile_url')
+                    'phone', 'last_login_date', 'is_active', 'user_role', 'score', 'lifes', 'chat_id')#, 'profile_url')
 
             # def get_profile_url(self, obj):
             #     request = self.context.get('request')
@@ -119,6 +120,7 @@ class UserUpdateApi(LimitOffsetPagination, APIView):
         user_role = serializers.IntegerField(required=False)
         score = serializers.FloatField(required=False)
         lifes = serializers.IntegerField(required=False)
+        chat_id = serializers.IntegerField(required=False)
 
     def post(self, request, user_id):
         user = user_get(user_id)
