@@ -96,11 +96,14 @@ class CallBackWebhookTelegram(APIView):
         username = chat.get("username", "")
         text = (message.get('text') or '').strip()
         print('TEXT', text)
-        if chat_id == int(CHAT_ID):
-            print('from admin')
-            reply_to = message.get('reply_to_message')
-            print('TO_REPLY', reply_to, type(reply_to))
-            if reply_to and isinstance(reply_to, dict):
+        reply_to = message.get('reply_to_message')
+        print('TO_REPLY', reply_to, type(reply_to))
+        if reply_to and isinstance(reply_to, dict):
+            if chat_id == int(CHAT_ID):
+                print('from admin')
+                # reply_to = message.get('reply_to_message')
+                # print('TO_REPLY', reply_to, type(reply_to))
+                # if reply_to and isinstance(reply_to, dict):
                 original_text = reply_to.get('text', '')
                 message_for_reply = MessageService(MessageRepository()).get_message_for_telegram_id(reply_to.get('message_id'))
                 print('MESSAGE_FOR_RAPLY_BEFORE', message_for_reply)
@@ -118,12 +121,8 @@ class CallBackWebhookTelegram(APIView):
                 MessageService(MessageRepository()).update_object(dto)
                 print('MESSAGE_FOR_RAPLY_AFTER', message_for_reply)
                 print('ORIGINAL', original_text)
-            else:
-                print('NOT REPY or is not a dict')
-            if reply_to:
-                print('TO_REPLY', reply_to)
-                original_text = reply_to.get('text', '')
-                print('ORIGINAL', original_text)
+                # else:
+                #     print('NOT REPY or is not a dict')
                 match = re.search(r"ChatID:\s*(\d+)", original_text)
                 if match:
                     print('Find CHATID', match.group(1))
@@ -151,8 +150,8 @@ class CallBackWebhookTelegram(APIView):
 
                 else:
                     print('DIDNT fIND CHAT ID')
-            else:
-                print('NOT REPLY')
+        else:
+            print('NOT REPLY')
         user = None
         try:
             user = UsersService(UsersRepository()).get_user_by_chat_id(chat_id)
