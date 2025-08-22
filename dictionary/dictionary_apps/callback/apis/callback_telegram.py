@@ -174,15 +174,18 @@ class CallBackWebhookTelegram(APIView):
         else:
             # 1) Повторный /start
             if text == '/start':
+                print('sTART')
                 send_message(user.chat_id,
                              f"Привет, {first_name or user.email}! Вы уже связаны с ботом 🙌\nНапишите сюда сообщение — я передам его оператору.")
                 return Response({'ok': True})
 
             # 2) Любое другое сообщение — перекидываем админу и подтверждаем юзеру
             if text:
+                print('REPLYSTART')
                 dto = CreateMessageDTO(
                     user = user,
                     text = text,
+                    telegram_id=message_telegram_id,
                 )
                 message_user = MessageService(MessageRepository()).create_object(dto)
                 admin_note = (
