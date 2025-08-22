@@ -82,6 +82,7 @@ class CallBackWebhookTelegram(LoginRequiredMixin, APIView):
             print("JSON Error:", e)
             return Response({'ok': False, 'error': 'Invalid JSON'}, status=400)
 
+
         message = data.get('message')
         print('MESSAGE', message)
         if not message:
