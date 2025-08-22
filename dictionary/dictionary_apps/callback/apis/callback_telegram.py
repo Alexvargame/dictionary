@@ -93,7 +93,6 @@ class CallBackWebhookTelegram(APIView):
         username = chat.get("username", "")
         text = (message.get('text') or '').strip()
         print('TEXT', text)
-        print('CHATSSSS',chat_id, type(chat_id), CHAT_ID, type(CHAT_ID))
         if chat_id == CHAT_ID:
             print('from admin')
             reply_to = message.get('reply_to_message')
@@ -158,25 +157,34 @@ class CallBackWebhookTelegram(APIView):
         else:
             # 1) Повторный /start
             if text == '/start':
-                send_message(chat_id,
+                send_message(user.chat_id,
                              f"Привет, {first_name or user.email}! Вы уже связаны с ботом 🙌\nНапишите сюда сообщение — я передам его оператору.")
                 return Response({'ok': True})
 
             # 2) Любое другое сообщение — перекидываем админу и подтверждаем юзеру
             if text:
+                dto = CreateMessageDTO(
+                    user = user,
+                    text = text,
+                )
+                message_user = MessageService(MessageRepository()).create_object(dto)
+                print('NEWMESS', message_user)
+                print('iuser', message_user.user)
+                print('emal', message_user.user.email)
+
                 admin_note = (
                     f"📩 Сообщение от пользователя\n"
-                    f"Email: {user.email or '—'}\n"
-                    f"Username: @{username or '—'}\n"
-                    f"ChatID: {chat_id}\n\n"
-                    f"Текст: {text}"
+                    f"Email: {message_user.user.email or '—'}\n"
+                    f"Username: @{message_user.user.username or '—'}\n"
+                    f"ChatID: {message_user.user.chat_id}\n\n"
+                    f"Текст: {message_user.text}"
                 )
-                send_message(CHAT_ID, admin_note)
-                send_message(chat_id, "Принял! Передал сообщение оператору. Ответ придёт сюда.")
+                send_message(int(CHAT_ID), admin_note)
+                send_message(message_user.user.chat_id, "Принял! Передал сообщение оператору. Ответ придёт сюда.")
                 return Response({'ok': True})
 
             # Если пришёл не текст (стикер/фото и т.п.)
-            send_message(chat_id, "Пока принимаю только текстовые сообщения 🙂")
+            send_message(message.user.chat_id, "Пока принимаю только текстовые сообщения 🙂")
             # return Response({'ok': True})
         return Response({'ok': True})
 
