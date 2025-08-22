@@ -86,7 +86,7 @@ class CallBackWebhookTelegram(APIView):
 
 
         message = data.get('message')
-        message_telegram_id = message.get('id')
+        message_telegram_id = message.get('message_id')
         print('MESSAGE', message)
         if not message:
             return Response({'ok': True})
