@@ -73,7 +73,7 @@ def ask_email(chat_id):
 
 
 @method_decorator(csrf_exempt, name='dispatch')
-class CallBackWebhookTelegram(LoginRequiredMixin, APIView):
+class CallBackWebhookTelegram(APIView):
     def post(self, request):
         print('WEBHOOK')
         try:
