@@ -105,7 +105,10 @@ class CallBackWebhookTelegram(APIView):
                 # print('TO_REPLY', reply_to, type(reply_to))
                 # if reply_to and isinstance(reply_to, dict):
                 original_text = reply_to.get('text', '')
-                message_for_reply = MessageService(MessageRepository()).get_message_for_telegram_id(reply_to.get('message_id'))
+                print('ORIGINAL', original_text)
+                message_telegram_id = original_text.split('Telegram_id:')
+                print(message_telegram_id)
+                message_for_reply = MessageService(MessageRepository()).get_message_for_telegram_id(message_telegram_id)
                 print('MESSAGE_FOR_RAPLY_BEFORE', message_for_reply)
 
                 dto = MessagerDTO(
@@ -113,14 +116,14 @@ class CallBackWebhookTelegram(APIView):
                     user=message_for_reply.user,
                     text=message_for_reply.text,
                     is_answered=True,
-                    answer_text=original_text,
+                    answer_text=text,
                     created_at=message_for_reply.created_at,
                     answered_at=datetime.datetime.now(),
                     telegram_id=message_for_reply.telegram_id,
                 )
                 MessageService(MessageRepository()).update_object(dto)
                 print('MESSAGE_FOR_RAPLY_AFTER', message_for_reply)
-                print('ORIGINAL', original_text)
+
                 # else:
                 #     print('NOT REPY or is not a dict')
                 match = re.search(r"ChatID:\s*(\d+)", original_text)
@@ -140,6 +143,7 @@ class CallBackWebhookTelegram(APIView):
                             f"Email: {email}\n"
                             f"Username: {uname}\n"
                             f"ChatID: {target_chat_id}\n"
+                            f"Telegram_id: {message_telegram_id}\n"
                             f"Text: {reply_text}"
                         )
                         print('TARGET', target_chat_id)
