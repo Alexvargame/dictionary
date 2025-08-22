@@ -93,6 +93,7 @@ class CallBackWebhookTelegram(LoginRequiredMixin, APIView):
         username = chat.get("username", "")
         text = (message.get('text') or '').strip()
         print('TEXT', text)
+        print('CHATSSSS',chat_id, type(chat_id), CHAT_ID, type(CHAT_ID))
         if chat_id == CHAT_ID:
             print('from admin')
             reply_to = message.get('reply_to_message')
