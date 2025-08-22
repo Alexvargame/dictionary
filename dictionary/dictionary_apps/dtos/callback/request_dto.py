@@ -9,6 +9,7 @@ from dictionary.dictionary_apps.users.models import BaseUser
 class CreateMessageDTO:
     user:BaseUser
     text: str
+    telegram_id: int
     # is_answered: bool
     # answer_text: str
     # created_at: str

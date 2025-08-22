@@ -8,6 +8,7 @@ class SiteMessage(models.Model):
     answer_text = models.TextField(blank=True, null=True, default='')
     created_at = models.DateTimeField(auto_now_add=True)
     answered_at = models.DateTimeField(blank=True, null=True)
+    telegram_id = models.IntegerField(blank=True, null=True, default=0)
 
     def __str__(self):
         return f"{self.user.email} | {self.created_at}"

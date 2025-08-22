@@ -10,3 +10,4 @@ class MessagerDTO:
     answer_text: str
     created_at: str
     answered_at: str
+    telegram_id: int

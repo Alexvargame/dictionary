@@ -28,6 +28,7 @@ class MessageCreateApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
     class InputSerializer(serializers.Serializer):
         user = serializers.IntegerField(required=False)
         text = serializers.CharField(required=False)
+        telegram_id = serializers.IntegerField(required=False, default=0)
         # is_answered = serializers.CharField(required=False)
         # answer_text = serializers.CharField(required=False)
         # answered_at = serializers.CharField(required=False)
@@ -54,6 +55,7 @@ class MessageDetailApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
         is_answered = serializers.CharField(required=False)
         answer_text = serializers.CharField(required=False)
         answered_at = serializers.CharField(required=False)
+        telegram_id = serializers.IntegerField(required=False)
 
 
     def get(self, request, message_id):
@@ -78,7 +80,7 @@ class MessageListApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
             model = SiteMessage
             fields = ('id', 'user', 'text',
                     'is_answered', 'answer_text', 'created_at',
-                    'answered_at',)
+                    'answered_at', 'telegram_id')
     def get(self, request):
         filters_serializer = self.FilterSerializer(data=request.query_params)
         filters_serializer.is_valid(raise_exception=True)
@@ -111,6 +113,7 @@ class MessageUpdateApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
         serializer.validated_data['user'] = message.user
         serializer.validated_data['created_at'] = message.created_at
         serializer.validated_data['text'] = message.text
+        serializer.validated_data['telegarm_id'] = message.telegram_id
 
         dto = MessagerDTO(
            **serializer.validated_data
@@ -131,7 +134,7 @@ class MessageDeleteApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
             model = SiteMessage
             fields = ('id', 'user', 'text',
                     'is_answered', 'answer_text', 'created_at',
-                    'answered_at',)
+                    'answered_at', 'telegram_id')
     def post(self, request, message_id):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

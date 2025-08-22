@@ -1,7 +1,7 @@
 import json
 import os
 import requests
-
+import datetime
 
 from django.http import Http404
 from rest_framework import serializers
@@ -48,10 +48,12 @@ class CallBackTelegram(LoginRequiredMixin, APIView):
         print('FASFAFAFAFWAAWGFWEF')
         contact = request.data.get('contact')
         messagetext = request.data.get('message')
+        message_telegram_id = messagetext.get('id')
         user = UsersService(UsersRepository()).get_user_by_email(contact)
         dto = CreateMessageDTO(
             user = user,
             text = messagetext,
+            telegram_id = message_telegram_id
         )
         message = MessageService(MessageRepository()).create_object(dto)
         text = f"📩 Новое сообщение с сайта\n\n👤 Контакт: {message.user}\n💬 Сообщение: {message.text}"
@@ -84,6 +86,7 @@ class CallBackWebhookTelegram(APIView):
 
 
         message = data.get('message')
+        message_telegram_id = message.get('id')
         print('MESSAGE', message)
         if not message:
             return Response({'ok': True})
@@ -93,12 +96,27 @@ class CallBackWebhookTelegram(APIView):
         username = chat.get("username", "")
         text = (message.get('text') or '').strip()
         print('TEXT', text)
-        if chat_id == CHAT_ID:
+        if chat_id == int(CHAT_ID):
             print('from admin')
             reply_to = message.get('reply_to_message')
             print('TO_REPLY', reply_to, type(reply_to))
             if reply_to and isinstance(reply_to, dict):
                 original_text = reply_to.get('text', '')
+                message_for_reply = MessageService(MessageRepository()).get_message_for_telegram_id(reply_to.get('message_id'))
+                print('MESSAGE_FOR_RAPLY_BEFORE', message_for_reply)
+
+                dto = MessagerDTO(
+                    id=message_for_reply.id,
+                    user=message_for_reply.user,
+                    text=message_for_reply.text,
+                    is_answered=True,
+                    answer_text=original_text,
+                    created_at=message_for_reply.created_at,
+                    answered_at=datetime.datetime.now(),
+                    telegram_id=message_for_reply.telegram_id,
+                )
+                MessageService(MessageRepository()).update_object(dto)
+                print('MESSAGE_FOR_RAPLY_AFTER', message_for_reply)
                 print('ORIGINAL', original_text)
             else:
                 print('NOT REPY or is not a dict')
@@ -168,14 +186,10 @@ class CallBackWebhookTelegram(APIView):
                     text = text,
                 )
                 message_user = MessageService(MessageRepository()).create_object(dto)
-                print('NEWMESS', message_user)
-                print('iuser', message_user.user)
-                print('emal', message_user.user.email)
-
                 admin_note = (
                     f"📩 Сообщение от пользователя\n"
                     f"Email: {message_user.user.email or '—'}\n"
-                    f"Username: @{message_user.user.username or '—'}\n"
+                    f"Username: @{username or '—'}\n"
                     f"ChatID: {message_user.user.chat_id}\n\n"
                     f"Текст: {message_user.text}"
                 )

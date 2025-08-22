@@ -22,6 +22,7 @@ class MessageRepository:
         message = self.model.objects.create(
             user=dto.user,
             text=dto.text,
+            telegram_id=dto.telegram_id,
             # is_answered=dto.is_answered,
             # answer_text=dto.answer_text,
             # created_at=dto.created_at,
@@ -38,6 +39,7 @@ class MessageRepository:
             answer_text=obj.answer_text,
             created_at=obj.created_at,
             answered_at=obj.answered_at,
+            telegram_id=obj.telegram_id,
         )
         return dto
 
@@ -53,6 +55,7 @@ class MessageRepository:
                 answer_text=obj.answer_text,
                 created_at=obj.created_at,
                 answered_at=obj.answered_at,
+                telegram_id=obj.telegram_id,
             )
             lst_dto.append(tmp_dto)
         return lst_dto
@@ -71,3 +74,6 @@ class MessageRepository:
         message = self.model.objects.get(id=message_id)
         message.delete()
 
+    def get_message_for_telegram_id(self, message_telegram_id):
+        message = self.model.objects.filter(telegram_id=message_telegram_id)
+        return message
