@@ -187,7 +187,9 @@ class CallBackWebhookTelegram(APIView):
                     text = text,
                     telegram_id=message_telegram_id,
                 )
+                print('DTO', dto)
                 message_user = MessageService(MessageRepository()).create_object(dto)
+                print('MESS_USE', message_user)
                 admin_note = (
                     f"📩 Сообщение от пользователя\n"
                     f"Email: {message_user.user.email or '—'}\n"
@@ -195,6 +197,7 @@ class CallBackWebhookTelegram(APIView):
                     f"ChatID: {message_user.user.chat_id}\n\n"
                     f"Текст: {message_user.text}"
                 )
+                print('ADMINNITE', admin_note)
                 send_message(int(CHAT_ID), admin_note)
                 send_message(message_user.user.chat_id, "Принял! Передал сообщение оператору. Ответ придёт сюда.")
                 return Response({'ok': True})
