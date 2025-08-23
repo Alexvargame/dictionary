@@ -109,8 +109,8 @@ class CallBackWebhookTelegram(APIView):
                 original_text = reply_to.get('text', '')
                 print('ORIGINAL', original_text)
                 message_telegram_id = original_text.split('Telegram_id:')
-                print(message_telegram_id)
-                message_for_reply = MessageService(MessageRepository()).get_message_for_telegram_id(272)
+                print('MESS__TEL__ID',message_telegram_id)
+                message_for_reply = MessageService(MessageRepository()).get_message_for_telegram_id(message_telegram_id)
                 print('MESSAGE_FOR_RAPLY_BEFORE', message_for_reply)
 
                 dto = MessagerDTO(
