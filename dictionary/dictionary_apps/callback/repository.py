@@ -40,7 +40,6 @@ class MessageRepository:
             created_at=obj.created_at,
             answered_at=obj.answered_at,
             telegram_id=obj.telegram_id,
-            telegram_username=obj.telegram_username
         )
         return dto
 
@@ -57,7 +56,6 @@ class MessageRepository:
                 created_at=obj.created_at,
                 answered_at=obj.answered_at,
                 telegram_id=obj.telegram_id,
-                telegram_username=obj.telegram_username
             )
             lst_dto.append(tmp_dto)
         return lst_dto
