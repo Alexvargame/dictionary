@@ -125,24 +125,16 @@ class CallBackWebhookTelegram(APIView):
                 )
                 MessageService(MessageRepository()).update_object(dto)
                 print('MESSAGE_FOR_RAPLY_AFTER', message_for_reply)
-
-                # else:
-                #     print('NOT REPY or is not a dict')
-                print(dto.user, dto.user.chat_id, dto.text, dto.user.email)
                 if text:
                     send_message(int(dto.user.chat_id), text)
                 reply_text = text
                 if reply_text:
-                    #email = dto.user.email
-                    #username = re.search(f"Username:\s*(.+)", original_text)
-                    # email = dto.user.email
-                    # username = '-'
                     formatted_reply = (
                         f"Email: {dto.user.email}\n"
-                        f"Username: {'-'}\n"
+                        f"Username: {dto.user.telegram_username}\n"
                         f"ChatID: {dto.user.chat_id}\n"
                         # f"Telegram_id: {message_telegram_id}\n"
-                        f"Text: {dto.text}"
+                        f"Text: {dto.reply_text}"
                     )
                     print('TARGET', dto.user.chat_id)
                     send_message(dto.user.chat_id, formatted_reply)
