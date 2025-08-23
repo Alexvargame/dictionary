@@ -112,44 +112,47 @@ class CallBackWebhookTelegram(APIView):
                 print('MESS__TEL__ID',message_telegram_id)
                 message_for_reply = MessageService(MessageRepository()).get_message_for_telegram_id(message_telegram_id)
                 print('MESSAGE_FOR_RAPLY_BEFORE', message_for_reply)
-
-                dto = MessagerDTO(
-                    id=message_for_reply.id,
-                    user=message_for_reply.user,
-                    text=message_for_reply.text,
-                    is_answered=True,
-                    answer_text=text,
-                    created_at=message_for_reply.created_at,
-                    answered_at=datetime.datetime.now(),
-                    telegram_id=message_for_reply.telegram_id,
-                )
-                MessageService(MessageRepository()).update_object(dto)
-                print('MESSAGE_FOR_RAPLY_AFTER', message_for_reply)
-                if text:
-                    send_message(int(dto.user.chat_id), text)
-                reply_text = text
-                if reply_text:
-                    formatted_reply = (
-                        f"Email: {dto.user.email}\n"
-                        f"Username: {dto.user.telegram_username}\n"
-                        f"ChatID: {dto.user.chat_id}\n"
-                        # f"Telegram_id: {message_telegram_id}\n"
-                        f"Text: {dto.reply_text}"
+                if not message_for_reply.is_answered:
+                    dto = MessagerDTO(
+                        id=message_for_reply.id,
+                        user=message_for_reply.user,
+                        text=message_for_reply.text,
+                        is_answered=True,
+                        answer_text=text,
+                        created_at=message_for_reply.created_at,
+                        answered_at=datetime.datetime.now(),
+                        telegram_id=message_for_reply.telegram_id,
                     )
-                    print('TARGET', dto.user.chat_id)
-                    send_message(dto.user.chat_id, formatted_reply)
-                    print('FORMST', formatted_reply )
-                    send_message(int(CHAT_ID), f"✅ Ответ отправлен пользователю {dto.user.chat_id}")
-                    return Response({'ok': True})
+                    MessageService(MessageRepository()).update_object(dto)
+                    print('MESSAGE_FOR_RAPLY_AFTER', message_for_reply)
+                    if text:
+                        send_message(int(dto.user.chat_id), text)
+                    reply_text = text
+                    if reply_text:
+                        formatted_reply = (
+                            f"Email: {dto.user.email}\n"
+                            f"Username: {dto.user.telegram_username}\n"
+                            f"ChatID: {dto.user.chat_id}\n"
+                            # f"Telegram_id: {message_telegram_id}\n"
+                            f"Text: {dto.reply_text}"
+                        )
+                        print('TARGET', dto.user.chat_id)
+                        send_message(dto.user.chat_id, formatted_reply)
+                        print('FORMST', formatted_reply )
+                        send_message(int(CHAT_ID), f"✅ Ответ отправлен пользователю {dto.user.chat_id}")
+                        return Response({'ok': True})
 
+                    else:
+                        print('DIDNT fIND CHAT ID')
                 else:
-                    print('DIDNT fIND CHAT ID')
+                    print('УЖЕ ОТВЕЧЕНО!!!!')
+                    Response({'ok': True})
         else:
             print('NOT REPLY')
         user = None
         try:
             user = UsersService(UsersRepository()).get_user_by_chat_id(chat_id)
-            if user.telegram_username == '-':
+            if user.telegram_username == None:
                 UsersService(UsersRepository()).set_telegram_username(chat_id, chat_id.get('username'))
             print(f"Найден пользователь по chat_id: {user.email}")
         except Exception as e:
