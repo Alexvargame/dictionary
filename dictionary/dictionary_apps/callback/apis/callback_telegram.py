@@ -145,7 +145,7 @@ class CallBackWebhookTelegram(APIView):
                         f"Text: {dto.text}"
                     )
                     print('TARGET', dto.user.chat_id)
-                    send_message(target_chat_id, formatted_reply)
+                    send_message(dto.user.chat_id, formatted_reply)
                     print('FORMST', formatted_reply )
                     send_message(int(CHAT_ID), f"✅ Ответ отправлен пользователю {dto.user.chat_id}")
                     return Response({'ok': True})
