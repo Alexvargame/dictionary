@@ -24,4 +24,8 @@ class MessageService:
         return self.repository.delete_object(obj_id)
 
     def get_message_for_telegram_id(self, message_telegram_id):
-        return self.repository.get_message_for_telegram_id(message_telegram_id)
+        message = self.repository.get_message_for_telegram_id(message_telegram_id)
+        if not message:
+            print(f"[!] Сообщение с telegram_id={message_telegram_id} не найдено")
+            return None
+        return message
