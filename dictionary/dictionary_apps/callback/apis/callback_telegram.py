@@ -1,5 +1,7 @@
 import json
 import os
+import re
+
 import requests
 import datetime
 
@@ -127,34 +129,29 @@ class CallBackWebhookTelegram(APIView):
                 # else:
                 #     print('NOT REPY or is not a dict')
                 print(dto.user, dto.user.chat_id, dto.text, dto.user.email)
-                # match = re.search(r"ChatID:\s*(\d+)", original_text)
-                # if match:
-                #     print('Find CHATID', match.group(1))
-                #     target_chat_id = int(match.group(1))
-                #     if text:
-                #         send_message(target_chat_id, text)
-                #     reply_text = text
-                #     if reply_text:
-                #         email_match = re.search(r"Email:\s*(.+)", original_text)
-                #         username_match = re.search(r"Username:\s*(.+)", original_text)
-                #         email = email_match.group(1) if email_match else '—'
-                #         uname = username_match.group(1) if username_match else '—'
-                #
-                #         formatted_reply = (
-                #             f"Email: {email}\n"
-                #             f"Username: {uname}\n"
-                #             f"ChatID: {target_chat_id}\n"
-                #             f"Telegram_id: {message_telegram_id}\n"
-                #             f"Text: {reply_text}"
-                #         )
-                #         print('TARGET', target_chat_id)
-                #         send_message(target_chat_id, formatted_reply)
-                #         print('FORMST', formatted_reply )
-                #         send_message(int(CHAT_ID), f"✅ Ответ отправлен пользователю {target_chat_id}")
-                #         return Response({'ok': True})
-                #
-                # else:
-                #     print('DIDNT fIND CHAT ID')
+                if text:
+                    send_message(int(dto.user.chat_id), text)
+                reply_text = text
+                if reply_text:
+                    #email = dto.user.email
+                    #username = re.search(f"Username:\s*(.+)", original_text)
+                    # email = dto.user.email
+                    # username = '-'
+                    formatted_reply = (
+                        f"Email: {dto.user.email}\n"
+                        f"Username: {'-'}\n"
+                        f"ChatID: {dto.user.chat_id}\n"
+                        f"Telegram_id: {message_telegram_id}\n"
+                        f"Text: {dto.text}"
+                    )
+                    print('TARGET', target_chat_id)
+                    send_message(target_chat_id, formatted_reply)
+                    print('FORMST', formatted_reply )
+                    send_message(int(CHAT_ID), f"✅ Ответ отправлен пользователю {target_chat_id}")
+                    return Response({'ok': True})
+
+                else:
+                    print('DIDNT fIND CHAT ID')
         else:
             print('NOT REPLY')
         user = None
