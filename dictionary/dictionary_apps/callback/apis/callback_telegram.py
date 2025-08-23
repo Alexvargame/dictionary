@@ -141,7 +141,7 @@ class CallBackWebhookTelegram(APIView):
                         f"Email: {dto.user.email}\n"
                         f"Username: {'-'}\n"
                         f"ChatID: {dto.user.chat_id}\n"
-                        f"Telegram_id: {message_telegram_id}\n"
+                        # f"Telegram_id: {message_telegram_id}\n"
                         f"Text: {dto.text}"
                     )
                     print('TARGET', dto.user.chat_id)
@@ -157,6 +157,8 @@ class CallBackWebhookTelegram(APIView):
         user = None
         try:
             user = UsersService(UsersRepository()).get_user_by_chat_id(chat_id)
+            if user.telegram_username == '-':
+                UsersService(UsersRepository()).set_telegram_username(chat_id, chat_id.get('username'))
             print(f"Найден пользователь по chat_id: {user.email}")
         except Exception as e:
             print(f"Ошибка при поиске пользователя: {e}")
@@ -199,7 +201,7 @@ class CallBackWebhookTelegram(APIView):
                     f"📩 Сообщение от пользователя\n"
                     f"Email: {message_user.user.email or '—'}\n"
                     f"Username: @{username or '—'}\n"
-                    f"ChatID: {message_user.user.chat_id}\n\n"
+                    f"ChatID: {message_user.user.chat_id}\n"
                     f"Telegram_id: {message_user.telegram_id}\n"
                     f"Текст: {message_user.text}"
                 )

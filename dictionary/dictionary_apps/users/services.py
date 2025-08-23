@@ -39,3 +39,6 @@ class UsersService:
 
     def set_chat_id_by_email(self, chat_id, email):
         self.repository.set_chat_id_by_email(chat_id, email)
+
+    def set_telegram_username(self, chat_id, username):
+        self.repository.set_telegram_username(chat_id, username)

@@ -17,6 +17,7 @@ class CreateUserDTO:
     phone: str
     user_role: UserRole
     chat_id: int
+    telegram_username: str
 
 
 

@@ -80,7 +80,7 @@ class MessageListApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
             model = SiteMessage
             fields = ('id', 'user', 'text',
                     'is_answered', 'answer_text', 'created_at',
-                    'answered_at', 'telegram_id')
+                    'answered_at', 'telegram_id',)
     def get(self, request):
         filters_serializer = self.FilterSerializer(data=request.query_params)
         filters_serializer.is_valid(raise_exception=True)
@@ -134,7 +134,7 @@ class MessageDeleteApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
             model = SiteMessage
             fields = ('id', 'user', 'text',
                     'is_answered', 'answer_text', 'created_at',
-                    'answered_at', 'telegram_id')
+                    'answered_at', 'telegram_id',)
     def post(self, request, message_id):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

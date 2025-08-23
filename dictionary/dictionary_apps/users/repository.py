@@ -19,7 +19,8 @@ class UsersRepository:
             phone=dto.phone,
             is_active=dto.is_active,
             user_role=dto.user_role,
-            password=dto.password
+            password=dto.password,
+            telegram_username = dto.telegram_usernam
         )
         return user
 
@@ -38,6 +39,7 @@ class UsersRepository:
             score = obj.score,
             lifes = obj.lifes,
             chat_id =obj.chat_id,
+            telegram_username=obj.telegram_username,
         )
         return dto
 
@@ -58,6 +60,7 @@ class UsersRepository:
                 score = obj.score,
                 lifes = obj.lifes,
                 chat_id = obj.chat_id,
+                telegram_username=obj.telegram_username,
             )
             lst_dto.append(tmp_dto)
         return lst_dto
@@ -82,7 +85,10 @@ class UsersRepository:
 
     def set_chat_id_by_email(self, chat_id, email):
         user = BaseUser.objects.get(email=email)
-        print('eqre2rw err werr,chat_id', email, user)
         user.chat_id = chat_id
         user.save()
 
+    def set_telegram_username(self, chat_id, username):
+        user = BaseUser.objects.get(chat_id=chat_id)
+        user.telegram_username = username
+        user.save()

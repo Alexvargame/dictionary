@@ -17,3 +17,4 @@ class UserDTO:
     score: float
     lifes: int
     chat_id: int
+    telegram_username: str
