@@ -150,7 +150,8 @@ class CallBackWebhookTelegram(APIView):
                 user_to = reply_to.get('from', {})
                 print(user_to)
                 if user_to.get('is_bot'):
-                    abonent_user = UsersService(UsersRepository()).get_user_by_chat_id(8253479584)
+                    abonent_user = UsersService(UsersRepository()).get_user_by_chat_id(1280790245)
+                    #abonent_user = UsersService(UsersRepository()).get_user_by_chat_id(8253479584)
                 else:
                     user_to_id = user_to.get('id')
                     print('REPLY_USR_ID', user_to_id, type(user_to_id))
