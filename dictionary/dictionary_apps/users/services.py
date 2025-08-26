@@ -45,3 +45,6 @@ class UsersService:
 
     def get_user_by_telegraam_username(self, telegram_username):
         self.repository.get_user_by_telegraam_username(telegram_username)
+
+    def get_user_by_id(self, user_id):
+        self.repository.get_user_by_id(user_id)

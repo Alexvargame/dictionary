@@ -83,6 +83,10 @@ class UsersRepository:
         user = BaseUser.objects.get(chat_id=chat_id)
         return user
 
+    def get_user_by_id(self, user_id):
+        user = BaseUser.objects.get(id=user_id)
+        return user
+
     def get_user_by_telegraam_username(self, telegram_username):
         user = BaseUser.objects.get(telegram_username=telegram_username)
         return user

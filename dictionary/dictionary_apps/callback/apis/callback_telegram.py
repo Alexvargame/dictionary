@@ -137,7 +137,6 @@ class CallBackWebhookTelegram(APIView):
         text = (message.get('text') or '').strip()
         print('TEXT', text)
         reply_to = message.get('reply_to_message')
-
         print('TO_REPLY', reply_to, type(reply_to))
         if reply_to and isinstance(reply_to, dict):
             if chat_id == int(CHAT_ID):
@@ -253,7 +252,7 @@ class CallBackWebhookTelegram(APIView):
                     user = user,
                     text = text,
                     telegram_id=message_telegram_id,
-                    recipient=UsersService(UsersRepository()).get_user_by_chat_id(1)
+                    recipient=UsersService(UsersRepository()).get_user_by_chat_id(int(CHAT_ID))
                 )
                 print('DTO', dto)
                 message_user = MessageService(MessageRepository()).create_object(dto)
