@@ -187,7 +187,7 @@ class CallBackWebhookTelegram(APIView):
         try:
             user = UsersService(UsersRepository()).get_user_by_chat_id(chat_id)
             if user.telegram_username == None:
-                UsersService(UsersRepository()).set_telegram_username(chat_id, chat_id.get('username'))
+                UsersService(UsersRepository()).set_telegram_username(chat_id, chat.get('username', ''))
             print(f"Найден пользователь по chat_id: {user.email}")
         except Exception as e:
             print(f"Ошибка при поиске пользователя: {e}")
@@ -214,7 +214,7 @@ class CallBackWebhookTelegram(APIView):
             if text.startswith("/message_user"):
                 abonent_user, message_text = handle_command_user_message(int(CHAT_ID), text)
                 print(abonent_user, message_text)
-                if abonent_user_user and message_text:
+                if abonent_user and message_text:
                     dto = CreateMessageDTO(
                         user=user,
                         text=message_text,
