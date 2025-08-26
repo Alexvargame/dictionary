@@ -248,10 +248,12 @@ class CallBackWebhookTelegram(APIView):
             # 2) Любое другое сообщение — перекидываем админу и подтверждаем юзеру
             if text:
                 print('REPLYSTART')
+
                 dto = CreateMessageDTO(
                     user = user,
                     text = text,
                     telegram_id=message_telegram_id,
+                    recipient=UsersService(UsersRepository()).get_user_by_chat_id(1)
                 )
                 print('DTO', dto)
                 message_user = MessageService(MessageRepository()).create_object(dto)

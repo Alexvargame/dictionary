@@ -11,3 +11,4 @@ class MessagerDTO:
     created_at: str
     answered_at: str
     telegram_id: int
+    recipient: BaseUser

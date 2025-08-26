@@ -10,6 +10,7 @@ class CreateMessageDTO:
     user:BaseUser
     text: str
     telegram_id: int
+    recipient:BaseUser
     # is_answered: bool
     # answer_text: str
     # created_at: str
