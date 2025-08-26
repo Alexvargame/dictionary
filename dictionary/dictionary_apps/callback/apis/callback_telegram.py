@@ -25,7 +25,45 @@ from dictionary.dictionary_apps.dtos.callback.request_dto import CreateMessageDT
 from dictionary.dictionary_apps.callback.repository import MessageRepository
 from dictionary.dictionary_apps.callback.services import MessageService
 
+def handle_command_user_message(chat_id, text):
+    # Пример: "/message_user @alex Привет, тест!"
+    # if text.startswith("/message_user"):
+    parts = text.split(" ", 2)  # ['/message_user', '@alex', 'Привет, тест!']
+    if len(parts) < 3:
+        send_message(chat_id, "❌ Использование: /message_user <username|chat_id> <текст>")
+        return
 
+    target, msg_text = parts[1], parts[2]
+
+    # Если указали username
+    if target.startswith("@"):
+        username = target[1:]
+        try:
+            user = UsersService(UsersRepository()).get_user_by_telegraam_username(username)
+            if user.chat_id:
+                abonent_user = user
+                return abonent_user, msg_text
+                # send_message(user.telegram_chat_id, msg_text)
+                # send_message(chat_id, f"✅ Сообщение отправлено {target}")
+            else:
+                send_message(chat_id, f"⚠️ У пользователя {target} нет chat_id")
+        except User.DoesNotExist:
+            send_message(chat_id, f"❌ Пользователь {target} не найден")
+
+    # Если указали просто chat_id
+    elif target.isdigit():
+        try:
+            user = UsersService(UsersRepository()).get_user_by_chat_id(chat_id)
+            abonent_user = user
+            return abonent_user, msg_text
+        except:
+            send_message(chat_id, f"Неверный chat_id абонента")
+
+        # send_message(int(target), msg_text)
+        # send_message(chat_id, f"✅ Сообщение отправлено chat_id {target}")
+    else:
+        send_message(chat_id, "❌ Неверный формат команды")
+        return None, None
 
 def send_message(chat_id: int, text: str):
     print('SEND')
@@ -102,10 +140,6 @@ class CallBackWebhookTelegram(APIView):
         print('TO_REPLY', reply_to, type(reply_to))
         if reply_to and isinstance(reply_to, dict):
             if chat_id == int(CHAT_ID):
-                print('from admin')
-                # reply_to = message.get('reply_to_message')
-                # print('TO_REPLY', reply_to, type(reply_to))
-                # if reply_to and isinstance(reply_to, dict):
                 original_text = reply_to.get('text', '')
                 print('ORIGINAL', original_text)
                 message_telegram_id = int(original_text.split('Telegram_id: ')[1].split('\n')[0])
@@ -177,6 +211,32 @@ class CallBackWebhookTelegram(APIView):
                 send_message(user.chat_id,
                              f"Привет, {first_name or user.email}! Вы уже связаны с ботом 🙌\nНапишите сюда сообщение — я передам его оператору.")
                 return Response({'ok': True})
+            if text.startswith("/message_user"):
+                abonent_user, message_text = handle_command_user_message(int(CHAT_ID), text)
+                print(abonent_user, message_text)
+                if abonent_user_user and message_text:
+                    dto = CreateMessageDTO(
+                        user=user,
+                        text=message_text,
+                        telegram_id=message_telegram_id,
+                    )
+                    print('DTO', dto)
+                    message_user = MessageService(MessageRepository()).create_object(dto)
+                    print('MESS_USE', message_user)
+                    message_note = (
+                        f"📩 Сообщение от пользователя\n"
+                        f"Email: {message_user.user.email or '—'}\n"
+                        f"Username: @{username or '—'}\n"
+                        f"ChatID: {message_user.user.chat_id}\n"
+                        f"Telegram_id: {message_user.telegram_id}\n"
+                        f"Текст: {message_user.text}"
+                        f"Пользователю {abonent_user}\n"
+                        f"ChatID: {abonent_user.chat_id}"
+                    )
+                    send_message(abonent_user.chat_id, message_note)
+                    return Response({'ok': True})
+                else:
+                    return
 
             # 2) Любое другое сообщение — перекидываем админу и подтверждаем юзеру
             if text:
