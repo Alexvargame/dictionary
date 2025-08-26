@@ -151,6 +151,8 @@ class CallBackWebhookTelegram(APIView):
                 print(user_to)
                 user_to_id = user_to.get('id')
                 print('REPLY_USR_ID', user_to_id)
+                abonent_user = UsersService(UsersRepository()).get_user_by_chat_id(user_to_id)
+                print('ABINETN', abonent_user)
                 if not message_for_reply.is_answered:
                     dto = MessagerDTO(
                         id=message_for_reply.id,
@@ -161,7 +163,7 @@ class CallBackWebhookTelegram(APIView):
                         created_at=message_for_reply.created_at,
                         answered_at=datetime.datetime.now(),
                         telegram_id=message_for_reply.telegram_id,
-                        recipient=UsersService(UsersRepository()).get_user_by_chat_id(user_to_id),
+                        recipient=abonent_user,
                     )
                     MessageService(MessageRepository()).update_object(dto)
                     print('MESSAGE_FOR_RAPLY_AFTER', message_for_reply)

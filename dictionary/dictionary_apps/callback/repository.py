@@ -64,7 +64,7 @@ class MessageRepository:
         return lst_dto
     @transaction.atomic
     def update_object(self, dto):
-
+        print('UPDATE_MESS_DTO', dto, dto.id)
         message = self.model.objects.get(id=dto.id)
         for key, value in dto.__dict__.items():
            message.__dict__[key] = value
