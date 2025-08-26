@@ -149,9 +149,12 @@ class CallBackWebhookTelegram(APIView):
                 print('MESSAGE_FOR_RAPLY_BEFORE', message_for_reply)
                 user_to = reply_to.get('from', {})
                 print(user_to)
-                user_to_id = user_to.get('id')
-                print('REPLY_USR_ID', user_to_id)
-                abonent_user = UsersService(UsersRepository()).get_user_by_chat_id(user_to_id)
+                if user_to.get('is_bot'):
+                    abonent_user = UsersService(UsersRepository()).get_user_by_chat_id(8253479584)
+                else:
+                    user_to_id = user_to.get('id')
+                    print('REPLY_USR_ID', user_to_id, type(user_to_id))
+                    abonent_user = UsersService(UsersRepository()).get_user_by_chat_id(user_to_id)
                 print('ABINETN', abonent_user)
                 if not message_for_reply.is_answered:
                     dto = MessagerDTO(
