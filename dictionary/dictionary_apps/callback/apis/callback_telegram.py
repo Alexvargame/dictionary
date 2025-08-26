@@ -54,7 +54,7 @@ def handle_command_user_message(chat_id, text):
     # Если указали просто chat_id
     elif target.isdigit():
         try:
-            abonent_user = UsersService(UsersRepository()).get_user_by_chat_id(chat_id)
+            abonent_user = UsersService(UsersRepository()).get_user_by_chat_id(int(target))
             return abonent_user, msg_text
         except:
             send_message(chat_id, f"Неверный chat_id абонента")
