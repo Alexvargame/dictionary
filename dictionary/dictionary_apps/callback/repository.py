@@ -23,6 +23,7 @@ class MessageRepository:
             user=dto.user,
             text=dto.text,
             telegram_id=dto.telegram_id,
+            recipient=dto.recipient,
             # is_answered=dto.is_answered,
             # answer_text=dto.answer_text,
             # created_at=dto.created_at,
@@ -40,6 +41,7 @@ class MessageRepository:
             created_at=obj.created_at,
             answered_at=obj.answered_at,
             telegram_id=obj.telegram_id,
+            recipient=obj.recipient,
         )
         return dto
 
@@ -56,6 +58,7 @@ class MessageRepository:
                 created_at=obj.created_at,
                 answered_at=obj.answered_at,
                 telegram_id=obj.telegram_id,
+                recipient=obj.recipient,
             )
             lst_dto.append(tmp_dto)
         return lst_dto
