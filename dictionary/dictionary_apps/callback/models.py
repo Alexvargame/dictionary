@@ -2,7 +2,10 @@ from django.db import models
 from dictionary.dictionary_apps.users.models import BaseUser
 
 class SiteMessage(models.Model):
-    user = models.ForeignKey(BaseUser, on_delete=models.CASCADE)  # только зарегистрированные пользователи
+    user = models.ForeignKey(BaseUser, on_delete=models.CASCADE, related_name='sent_message',
+                             help_text='Кто отправил сообщение')
+    recipient = models.ForeignKey(BaseUser, on_delete=models.CASCADE, related_name='received_message',
+                             help_text='Кому адресовано сообщение', null=True, blank=True,)
     text = models.TextField()
     is_answered = models.BooleanField(default=False)
     answer_text = models.TextField(blank=True, null=True, default='')

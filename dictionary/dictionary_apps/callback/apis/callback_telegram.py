@@ -137,15 +137,20 @@ class CallBackWebhookTelegram(APIView):
         text = (message.get('text') or '').strip()
         print('TEXT', text)
         reply_to = message.get('reply_to_message')
+
         print('TO_REPLY', reply_to, type(reply_to))
         if reply_to and isinstance(reply_to, dict):
             if chat_id == int(CHAT_ID):
                 original_text = reply_to.get('text', '')
                 print('ORIGINAL', original_text)
+
                 message_for_reply_telegram_id = int(original_text.split('Telegram_id: ')[1].split('\n')[0])
                 print('MESS__TEL__ID',message_for_reply_telegram_id)
                 message_for_reply = MessageService(MessageRepository()).get_message_for_telegram_id(message_for_reply_telegram_id)
                 print('MESSAGE_FOR_RAPLY_BEFORE', message_for_reply)
+                user_to = reply_to.get('from', {})
+                user_to_id = user_from.get('id')
+                print('REPLY_USR_ID', user_to_id)
                 if not message_for_reply.is_answered:
                     dto = MessagerDTO(
                         id=message_for_reply.id,
@@ -156,6 +161,7 @@ class CallBackWebhookTelegram(APIView):
                         created_at=message_for_reply.created_at,
                         answered_at=datetime.datetime.now(),
                         telegram_id=message_for_reply.telegram_id,
+                        recipient=UsersService(UsersRepository()).get_user_by_chat_id(user_to_id),
                     )
                     MessageService(MessageRepository()).update_object(dto)
                     print('MESSAGE_FOR_RAPLY_AFTER', message_for_reply)
@@ -219,6 +225,7 @@ class CallBackWebhookTelegram(APIView):
                         user=user,
                         text=message_text,
                         telegram_id=message_telegram_id,
+                        recipient = abonent_user,
                     )
                     print('DTO', dto)
                     message_user = MessageService(MessageRepository()).create_object(dto)
@@ -230,10 +237,10 @@ class CallBackWebhookTelegram(APIView):
                         f"ChatID: {message_user.user.chat_id}\n"
                         f"Telegram_id: {message_user.telegram_id}\n"
                         f"Текст: {message_user.text}"
-                        f"Пользователю {abonent_user}\n"
-                        f"ChatID: {abonent_user.chat_id}"
+                        f"Пользователю {message_user.recipient}\n"
+                        f"ChatID: {message_user.recipient.chat_id}"
                     )
-                    send_message(abonent_user.chat_id, message_note)
+                    send_message(message_user.recipient.chat_id, message_note)
                     return Response({'ok': True})
                 else:
                     return
