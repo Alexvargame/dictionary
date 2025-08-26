@@ -42,3 +42,6 @@ class UsersService:
 
     def set_telegram_username(self, chat_id, username):
         self.repository.set_telegram_username(chat_id, username)
+
+    def get_user_by_telegraam_username(self, telegram_username):
+        self.repository.get_user_by_telegraam_username(telegram_username)
