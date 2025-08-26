@@ -78,5 +78,6 @@ class MessageRepository:
         message.delete()
 
     def get_message_for_telegram_id(self, message_telegram_id):
+        print('GET_MESS_FOR_TEL_ID', message_telegram_id)
         message = self.model.objects.filter(telegram_id=message_telegram_id).first()
         return message
