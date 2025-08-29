@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% load crispy_forms_tags %} {# если у тебя подключен crispy #}
+
+{% block content %}
+<div class="max-w-6xl mx-auto p-6">
+  <h1 class="text-2xl font-bold mb-4">Сообщения</h1>
+
+  <!-- форма фильтра -->
+  <form method="get" class="flex flex-wrap gap-4 mb-6">
+    {{ filter.form|crispy }}
+    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded">Применить</button>
+  </form>
+
+  {% if messages %}
+    <ul class="space-y-4">
+      {% for msg in messages %}
+        <li class="p-4 border rounded-lg shadow">
+          <p><b>От:</b> {{ msg.user.email }}</p>
+          <p><b>Кому:</b> {{ msg.recipient.email|default:"(не указан)" }}</p>
+          <p><b>Текст:</b> {{ msg.text }}</p>
+          <p><b>Время:</b> {{ msg.created_at|date:"d.m.Y H:i" }}</p>
+          <p><b>Статус:</b>
+            {% if msg.is_answered %}
+              <span class="text-green-600">Отвечено</span>
+            {% else %}
+              <span class="text-red-600">Неотвечено</span>
+            {% endif %}
+          </p>
+           <!-- Логика ответа -->
+          {% if msg.is_answered %}
+            <p><b>Ответ:</b> {{ msg.reply }}</p>
+          {% else %}
+            <form method="post" action="{% url 'api:callback:reply_message' msg.id %}">
+              {% csrf_token %}
+              <input type="text" name="reply" placeholder="Введите ответ" class="border rounded p-2 w-full bg-black text-white placeholder-gray-400">
+              <button type="submit" class="mt-2 px-4 py-2 bg-blue-600 text-white rounded">Ответить</button>
+            </form>
+          {% endif %}
+        </li>
+      {% endfor %}
+    </ul>
+
+    {% if is_paginated %}
+      <div class="mt-4 flex justify-between">
+        {% if page_obj.has_previous %}
+          <a href="?page={{ page_obj.previous_page_number }}" class="px-4 py-2 border rounded">Назад</a>
+        {% endif %}
+        <span>Страница {{ page_obj.number }} из {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}
+          <a href="?page={{ page_obj.next_page_number }}" class="px-4 py-2 border rounded">Вперед</a>
+        {% endif %}
+      </div>
+    {% endif %}
+  {% else %}
+    <p>Сообщений нет.</p>
+  {% endif %}
+</div>
+{% endblock %}

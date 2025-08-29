@@ -81,3 +81,8 @@ class MessageRepository:
         print('GET_MESS_FOR_TEL_ID', message_telegram_id)
         message = self.model.objects.filter(telegram_id=message_telegram_id).first()
         return message
+
+    def get_message_for_id(self, message_id):
+        print('GET_MESS_FOR_TEL_ID', message_id)
+        message = self.model.objects.get(id=message_id)
+        return message

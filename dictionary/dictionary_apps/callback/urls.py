@@ -3,6 +3,7 @@ from django.urls import path
 from .apis.callback_telegram import CallBackTelegram, CallBackWebhookTelegram
 from .apis.crud_message import (MessageCreateApi, MessageDetailApi,MessageListApi,
                                 MessageUpdateApi, MessageDeleteApi)
+from .apis.servise_answer_message import unanswered_messages, MessageListApiFront, ReplyMessageApi
 
 app_name = 'callback'
 
@@ -15,4 +16,7 @@ urlpatterns =[
     path('message/<int:message_id>/', MessageDetailApi.as_view(), name='message_detail'),
     path('message/<int:message_id>/update/', MessageUpdateApi.as_view(), name='message_update'),
     path('message/<int:message_id>/delete/', MessageDeleteApi.as_view(), name='message_delete'),
+    path('message/unanswered/', unanswered_messages, name='unaswered_messages'),
+    path('message/messages/', MessageListApiFront.as_view(), name='messages_list_sort'),
+    path('message/<int:message_id>/reply', ReplyMessageApi.as_view(), name='reply_message'),
 ]

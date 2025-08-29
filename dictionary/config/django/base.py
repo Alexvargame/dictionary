@@ -40,6 +40,8 @@ LOCAL_APPS = [
 
 APPS = [
     'rest_framework',
+    "crispy_forms",
+    "crispy_tailwind",
 ]
 
 INSTALLED_APPS = [
@@ -124,3 +126,6 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 AUTH_USER_MODEL = 'users.BaseUser'
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "tailwind"
+CRISPY_TEMPLATE_PACK = "tailwind"

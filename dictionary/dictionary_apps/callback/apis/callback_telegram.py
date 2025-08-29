@@ -80,20 +80,25 @@ def send_message(chat_id: int, text: str):
     try:
         response = requests.post(url, json=payload)
         print("Ответ Telegram API:", response.status_code, response.text)
+        return response.json()
     except Exception as e:
         print("Ошибка при отправке сообщения:", e)
+        return None
 class CallBackTelegram(LoginRequiredMixin, APIView):
 
     def post(self, request):
         print('FASFAFAFAFWAAWGFWEF')
+        print('REQuest DATA',request.data)
         contact = request.data.get('contact')
         messagetext = request.data.get('message')
-        message_telegram_id = messagetext.get('id')
+        # message_telegram_id = messagetext.get('id')
         user = UsersService(UsersRepository()).get_user_by_email(contact)
         dto = CreateMessageDTO(
             user = user,
             text = messagetext,
-            telegram_id = message_telegram_id
+            telegram_id = None,
+            recipient=UsersService(UsersRepository()).get_user_by_chat_id(int(CHAT_ID))
+
         )
         message = MessageService(MessageRepository()).create_object(dto)
         text = f"📩 Новое сообщение с сайта\n\n👤 Контакт: {message.user}\n💬 Сообщение: {message.text}"
@@ -179,8 +184,7 @@ class CallBackWebhookTelegram(APIView):
                             f"Email: {dto.user.email}\n"
                             f"Username: {dto.user.telegram_username}\n"
                             f"ChatID: {dto.user.chat_id}\n"
-                            # f"Telegram_id: {message_telegram_id}\n"
-                            f"Text: {dto.reply_text}"
+                            f"Text: {dto.answer_text}"
                         )
                         print('TARGET', dto.user.chat_id)
                         send_message(dto.user.chat_id, formatted_reply)
@@ -236,6 +240,7 @@ class CallBackWebhookTelegram(APIView):
                     print('DTO', dto)
                     message_user = MessageService(MessageRepository()).create_object(dto)
                     print('MESS_USE', message_user)
+
                     message_note = (
                         f"📩 Сообщение от пользователя\n"
                         f"Email: {message_user.user.email or '—'}\n"
@@ -246,7 +251,21 @@ class CallBackWebhookTelegram(APIView):
                         f"Пользователю {message_user.recipient}\n"
                         f"ChatID: {message_user.recipient.chat_id}"
                     )
-                    send_message(message_user.recipient.chat_id, message_note)
+                    telegram_answer = send_message(message_user.recipient.chat_id, message_note)
+                    if telegram_answer["result"]["from"]["is_bot"]:
+                        dto = MessagerDTO(
+                            id=message_user.id,
+                            user=message_user.user,
+                            text=message_user.text,
+                            is_answered=True,
+                            answer_text='',
+                            created_at=message_user.created_at,
+                            answered_at=datetime.datetime.now(),
+                            telegram_id=message_user.telegram_id,
+                            recipient=message_user.recipient,
+                        )
+                        MessageService(MessageRepository()).update_object(dto)
+
                     return Response({'ok': True})
                 else:
                     return

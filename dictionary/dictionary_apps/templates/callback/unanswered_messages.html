@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto p-6">
+  <h1 class="text-2xl font-bold mb-4">Неотвеченные сообщения</h1>
+
+  {% if messages %}
+    <ul class="space-y-4">
+      {% for msg in messages %}
+        <li class="p-4 border rounded-lg shadow">
+          <p><b>От:</b> {{ msg.user.email }}</p>
+          <p><b>Кому:</b> {{ msg.recipient.email }}</p>
+          <p><b>Текст:</b> {{ msg.text }}</p>
+          <p><b>Время:</b>
+      {% endfor %}
+  {% endif %}
+{% endblock %}
+
+
+
+
+
