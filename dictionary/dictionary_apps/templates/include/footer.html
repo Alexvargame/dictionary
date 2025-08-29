@@ -28,7 +28,14 @@
       <form method="post" action="{% url 'api:callback:send_telegram_message' %}">
         {% csrf_token %}
         <label class="block mb-2 text-sm font-medium text-gray-700">Ваш e-mail</label>
-        <input type="text" name="contact" class="w-full border px-3 py-2 rounded mb-4 text-black" required>
+        <input
+            type="text"
+            name="contact"
+            value ="{{request.user.email}}"
+            readonly
+            class="w-full border px-3 py-2 rounded mb-4 text-black"
+            required
+        >
 
         <label class="block mb-2 text-sm font-medium text-gray-700">Сообщение</label>
         <textarea name="message" class="w-full border px-3 py-2 rounded mb-4 text-black" rows="4" required></textarea>
