@@ -12,6 +12,7 @@
   <div class="flex justify-center items-center mb-4 gap-4 text-lg font-semibold">
     <div id="user-name" class="text-blue-700">{{ user.username }}</div>
     <div id="lifes" class="text-red-600">❤️ {{ user.lifes }}</div>
+    <div id="lifes" class="text-red-600"> Всего баллов: {{ user.score }}</div>
     <div id="score" class="text-green-600">Баллы: 0</div>
   </div>
 
@@ -27,9 +28,9 @@
 
         <button data-id="{{ word.id }}"  class="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md">
           {% if word.word_type == 'Noun' %}
-            {{ word.article }} {{ word.word}} ({{word.id}})
+            {{ word.article }} {{ word.word}}
           {% elif word.word_type == 'Verb' %}
-            {{ word.word}} ({{word.id}})
+            {{ word.word}}
           {% endif%}
         </button>
       {% endfor %}

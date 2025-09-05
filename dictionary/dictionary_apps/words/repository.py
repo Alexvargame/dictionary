@@ -1,11 +1,11 @@
-from dictionary.dictionary_apps.words.models import Word, Noun, Verb, Article
+from dictionary.dictionary_apps.words.models import Word, Noun, Verb, Article, Lection
 
 
 
 from django.db import transaction
 
-from dictionary.dictionary_apps.words.selectors import word_list, noun_list, verb_list, article_list
-from dictionary.dictionary_apps.dtos.words.response_dto import WordDTO, NounDTO,VerbDTO, ArticleDTO
+from dictionary.dictionary_apps.words.selectors import word_list, noun_list, verb_list, article_list, lection_list
+from dictionary.dictionary_apps.dtos.words.response_dto import WordDTO, NounDTO,VerbDTO, ArticleDTO, LectionDTO
 from dictionary.dictionary_apps.dtos.words.request_dto import CreateWordDTO, CreateNounDTO
 from dictionary.dictionary_apps.common.services import model_update
 
@@ -110,10 +110,11 @@ class WordRepository:
         return lst_dto
     @transaction.atomic
     def update_object(self, dto):
-
         word = self.model.objects.get(id=dto.id)
         for key, value in dto.__dict__.items():
-            word.__dict__[key] = value
+            if field in [f.name for f in obj._meta.fields]:
+                setattr(obj, field, value)
+           # word.__dict__[key] = value
         # user, has_updated = model_update(instance=user, fields=non_side_effect_fields, data=data)
         word.save()
 
@@ -202,10 +203,11 @@ class VerbRepository:
     def update_object(self, dto):
 
         noun = self.model.objects.get(id=dto.id)
-        for key, value in dto.__dict__.items():
-           noun.__dict__[key] = value
+        for field, value in dto.__dict__.items():
+            if field in [f.name for f in obj._meta.fields]:
+                setattr(obj, field, value)
+          # noun.__dict__[key] = value
         # user, has_updated = model_update(instance=user, fields=non_side_effect_fields, data=data)
-
         noun.save()
 
     @transaction.atomic
@@ -233,6 +235,21 @@ class ArticleRepository:
 
 
 
+class LectionRepository:
+    model = Lection
+    dto = LectionDTO
+
+    def list_objects(self, filters=None):
+        lst_dto = []
+        for obj in lection_list(filters=filters):
+            tmp_dto = self.dto(
+                id=obj.id,
+                name=obj.name,
+                book=obj.book,
+                description=obj.description,
+            )
+            lst_dto.append(tmp_dto)
+        return lst_dto
 
 
 dto_dictionary = {

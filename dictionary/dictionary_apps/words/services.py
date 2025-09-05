@@ -82,3 +82,12 @@ class ArticleService:
 
     def list_objects(self, filters=None):
         return self.repository.list_objects(filters)
+
+class LectionService:
+
+    def __init__(self, repository):
+        self.repository = repository
+
+
+    def list_objects(self, filters=None):
+        return self.repository.list_objects(filters)

@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-
+#from pydantic.dataclasses import dataclass
 from dictionary.dictionary_apps.words.models import Word, Article, Book, Lection, WordType
 
 @dataclass
@@ -64,4 +64,11 @@ class RussianPaarExerciseGermanDTO:
 class ArticleDTO:
     id: int
     name: str
+    description: str
+
+@dataclass
+class LectionDTO:
+    id: int
+    name: str
+    book: int
     description: str

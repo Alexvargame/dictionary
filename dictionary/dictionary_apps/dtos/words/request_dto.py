@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from typing import Optional
+#from pydantic.dataclasses import dataclass
 
 from dictionary.dictionary_apps.words.models import Word, Lection, Article, WordType
 
