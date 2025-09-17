@@ -14,83 +14,50 @@ from django.views.decorators.csrf import csrf_exempt  # если нет CSRF т�
 
 from dictionary.dictionary_apps.users.selectors import (user_get)
 from dictionary.dictionary_apps.users.models import BaseUser
-from dictionary.dictionary_apps.dtos.words.request_dto import CreateDigitsExerciseDTO
+from dictionary.dictionary_apps.words.models import Word
+from dictionary.dictionary_apps.words.repository import WordRepository
+from dictionary.dictionary_apps.words.services import WordService
+from dictionary.dictionary_apps.dtos.words.request_dto import CreateNumeralsExerciseDTO
 
 
 
-units = {
-    1: "ein", 2: "zwei", 3: "drei", 4: "vier", 5: "fünf",
-    6: "sechs", 7: "sieben", 8: "acht", 9: "neun"
+fields_dict = {
+    'ordinal': 'Порядковое',
+    'date_numeral': 'Дата',
 }
-
-teens = {
-    10: "zehn", 11: "elf", 12: "zwölf", 13: "dreizehn",
-    14: "vierzehn", 15: "fünfzehn", 16: "sechzehn",
-    17: "siebzehn", 18: "achtzehn", 19: "neunzehn"
-}
-
-tens = {
-    20: "zwanzig", 30: "dreißig", 40: "vierzig",
-    50: "fünfzig", 60: "sechzig", 70: "siebzig",
-    80: "achtzig", 90: "neunzig"
-}
-
-def number_to_german(n):
-    if n == 0:
-        return "null"
-    elif n <= 12:
-        return {
-            1: "eins", 2: "zwei", 3: "drei", 4: "vier",
-            5: "fünf", 6: "sechs", 7: "sieben", 8: "acht",
-            9: "neun", 10: "zehn", 11: "elf", 12: "zwölf"
-        }[n]
-    elif 13 <= n <= 19:
-        return teens[n]
-    elif n < 100:
-        unit = n % 10
-        ten = n - unit
-        if unit == 0:
-            return tens[ten]
-        return f"{units[unit]}und{tens[ten]}"
-    elif 100 <= n < 1000:
-        unit = n % 10
-        ten = n % 100 - unit
-        hundred = n // 100
-        print('afwe', unit, ten, hundred)
-        if 9 < ten < 20:
-            if unit == 0:
-                return f"{units[hundred]} hundert {teens[ten]}"
-            else:
-                return f"{units[hundred]} hundert {teens[ten + unit]}"
-
-        if unit == 0:
-            return f"{units[hundred]} hundert {tens[ten]}"
-        if ten == 0:
-            return f"{units[hundred]} hundert {units[unit]}"
-        return f"{units[hundred]} hundert {units[unit]}und{tens[ten]}"
-    else:
-        return "nicht unterstützt"  # >1000 пока не поддерживаем
-def generate_exercise(digits=[]):
+def generate_exercise(numerals=[]):
     # Получаем ID лекций из запроса
     exercises = []
-    for digit in digits:
-        answer = number_to_german(digit)
+
+    for num in numerals:
+        field = random.choice([f for f in fields_dict.keys()])
+        field_translate = fields_dict[field]
+        answer = getattr(num, field)
+        #question = getattr(num, field_translate)
+
         exercises.append(
-            CreateDigitsExerciseDTO(
-                digit=digit,
+            CreateNumeralsExerciseDTO(
+                numeral=num,
+                field=field,
+                field_translate=field_translate,
                 correct_answer=answer,
             )
         )
     return exercises
 
 
-class Digits(LoginRequiredMixin, APIView):
+class Numerals(LoginRequiredMixin, APIView):
     renderer_classes = [TemplateHTMLRenderer]
-    template_name = 'exercises/digits.html'
+    template_name = 'exercises/numerals.html'
 
     def get(self, request):
-        random_numbers = random.sample(range(1, 1001), 5)
-        exercises = generate_exercise(digits=random_numbers)
+        filters = {'word_type': 4}
+        all_ids = list(Word.objects.filter(**filters).values_list('id', flat=True))
+        if len(all_ids) >= 5:
+            random_ids = random.sample(all_ids, 5)
+        filters = {'id__in': random_ids}
+        selected_words = WordService(WordRepository()).list_objects(filters)
+        exercises = generate_exercise(numerals=selected_words)
         context = {
             'exercises': exercises,
             'user': request.user,
@@ -98,7 +65,6 @@ class Digits(LoginRequiredMixin, APIView):
         return Response(context)
 
     def post(self, request):
-        print('POSTDIGTY')
         count = 5
         correct_count = 0
         results = []
@@ -106,15 +72,17 @@ class Digits(LoginRequiredMixin, APIView):
             user_input = request.POST.get(f"answer_{i}", "").strip().lower()
             correct_answer = request.POST.get(f"correct_{i}", "").strip().lower()
             is_correct = user_input == correct_answer
-            digit = request.POST.get(f"digit_{i}", "").strip().lower()
+            pronoun = request.POST.get(f"pronoun_{i}", "").strip().lower()
+            case = request.POST.get(f"case_{i}", "").strip().lower()
             results.append({
                 "index": i,
                 "user_input": user_input,
                 "correct_answer": correct_answer,
                 "is_correct": is_correct,
-                'digit': digit,
+                'pronoun': pronoun,
+                'case': case,
             })
-
+            print(results)
             if is_correct:
                 correct_count += 1
         points = correct_count
@@ -132,12 +100,12 @@ class Digits(LoginRequiredMixin, APIView):
                 'lives_lost': lives_lost,
                 'user': request.user,
             },
-            template_name='exercises/digits_results.html')
+            template_name='exercises/numerals_results.html')
 
 
 @csrf_exempt
 @login_required
-def digits_results_repeat(request):
+def numerals_results_repeat(request):
     if request.method == "POST":
         points = int(request.POST.get("points", 0))
         lives_lost = int(request.POST.get("lives_lost", 0))
@@ -147,13 +115,13 @@ def digits_results_repeat(request):
         user.lifes = max(user.lifes - lives_lost, 0)
         user.save()
 
-        return redirect("api:exercises:digits")
+        return redirect("api:exercises:numerals")
     return HttpResponseBadRequest()
 
 
 @csrf_exempt
 @login_required
-def digits_results_stop(request):
+def numerals_results_stop(request):
     if request.method == "POST":
         points = int(request.POST.get("points", 0))
         lives_lost = int(request.POST.get("lives_lost", 0))

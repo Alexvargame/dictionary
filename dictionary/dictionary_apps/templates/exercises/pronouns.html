@@ -1,10 +1,10 @@
 {% extends 'main_page.html' %}
 
-{% block title %}Перевод чистлительных{% endblock %}
+{% block title %}Местоимения{% endblock %}
 
 {% block content %}
 <main class="container mx-auto p-4">
-  <h1 class="text-2xl font-bold mb-6">Упражнение: Перевод числительных</h1>
+  <h1 class="text-2xl font-bold mb-6">Упражнение: Местоимения и падежи</h1>
   <div class="flex justify-center items-center mb-4 gap-4 text-lg font-semibold">
     <div id="user-name" class="text-blue-700">{{ user.username }}</div>
     <div id="lifes" class="text-red-600">❤️ {{ user.lifes }}</div>
@@ -16,11 +16,13 @@
     <ul class="space-y-4">
       {% for ex in exercises %}
         <li class="bg-white p-4 rounded shadow">
-          <p class="font-semibold text-black">{{ forloop.counter }}. {{ ex.digit }}</p>
+          <p class="font-semibold text-black">{{ forloop.counter }}. {{ ex.pronoun.word }}</p>
+          <p class="font-semibold text-black">{{ ex.case_name }}</p>
           <input type="text" name="answer_{{ forloop.counter }}" class="mt-2 w-full border px-3 py-2 rounded text-black" placeholder="Ваш ответ">
           <input type="hidden" name="correct_{{ forloop.counter }}" value="{{ ex.correct_answer }}">
-          <!-- Передаём само число -->
-              <input type="hidden" name="digit_{{ forloop.counter }}" value="{{ ex.digit }}">
+          <!-- Передаём само местоимение и падеж -->
+              <input type="hidden" name="pronoun_{{ forloop.counter }}" value="{{ ex.pronoun.word }}">
+              <input type="hidden" name="case_{{ forloop.counter }}" value="{{ ex.case }}">
         </li>
       {% endfor %}
     </ul>

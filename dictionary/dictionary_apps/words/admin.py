@@ -1,5 +1,7 @@
 from django.contrib import admin
-from .models import Book, Lection, Article, WordType, Word, Noun, Verb
+from .models import (Book, Lection, Article, WordType, Word,
+                     Noun, Verb, Adjective, Numeral, Pronoun,
+                     )
 
 
 @admin.register(WordType)
@@ -19,7 +21,7 @@ class LectionAdmin(admin.ModelAdmin):
 
 @admin.register(Article)
 class ArticleAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name', 'description')
+    list_display = ('id', 'name', 'description', 'forms')
 
 #
 @admin.register(Word)
@@ -43,3 +45,23 @@ class VerbAdmin(admin.ModelAdmin):
                       'past_prateritum_Sie_sie_form', 'lection', 'word_type',
                     'regal'
                     )
+
+
+@admin.register(Adjective)
+class AdjectiveAdmin(admin.ModelAdmin):
+    list_display = ('id', 'word', 'word_translate', 'lection',
+                    'komparativ', 'superlativ', 'declensions'
+                    )
+
+@admin.register(Numeral)
+class NumeralAdmin(admin.ModelAdmin):
+    list_display = ('id', 'word', 'word_translate', 'lection',
+                    'ordinal', 'date_numeral',
+                    )
+@admin.register(Pronoun)
+class PronounAdmin(admin.ModelAdmin):
+    list_display = ('id', 'word', 'word_translate', 'lection',
+                    'akkusativ', 'akkusativ_translate', 'dativ',
+                    'dativ_translate', 'prossessive',
+                    'prossessive_translate','reflexive',)
+

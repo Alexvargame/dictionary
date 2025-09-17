@@ -30,6 +30,7 @@ class Lection(models.Model):
 class Article(models.Model):
     name = models.CharField(max_length=10)
     description = models.TextField()
+    forms = models.JSONField(default=dict, verbose_name="Формы", blank=True, null=True)
 
     class Meta:
         verbose_name = 'Артикль'
@@ -66,7 +67,7 @@ class Word(models.Model):
         return f"{self.word_type}"
 #
 class Noun(Word):
-    word = models.CharField(max_length=30)
+    word = models.CharField(max_length=30, verbose_name="Существительное")
     word_translate = models.CharField(max_length=30, verbose_name='Перевод')
     word_plural = models.CharField(max_length=30, blank=True, null=True)
     plural_sign = models.CharField(max_length=5, blank=True, null=True)
@@ -82,7 +83,7 @@ class Noun(Word):
         return f"{self.word_type}: {self.id}"
 #
 class Verb(Word):
-    word = models.CharField(max_length=30)
+    word = models.CharField(max_length=30, verbose_name="Глагол")
     word_translate = models.CharField(max_length=30, verbose_name='Перевод')
     ich_form = models.CharField(max_length=30)
     du_form = models.CharField(max_length=30)
@@ -105,3 +106,52 @@ class Verb(Word):
 
     def __str__(self):
         return f'{self.word_type}: {self.id}'
+
+
+class Adjective(Word):
+    word = models.CharField(max_length=30, verbose_name="Прилагательное")
+    word_translate = models.CharField(max_length=50, verbose_name="Перевод")
+
+    # степени сравнения
+    komparativ = models.CharField(max_length=30, blank=True, null=True, verbose_name="Сравнительная степень")
+    superlativ = models.CharField(max_length=30, blank=True, null=True, verbose_name="Превосходная степень")
+
+    # на будущее: склонение (сильное, слабое, смешанное)
+    declensions = models.JSONField(default=dict, blank=True, null=True, verbose_name="Склонение")
+
+    class Meta:
+        verbose_name = "Прилагательное"
+        verbose_name_plural = "Прилагательные"
+
+    def __str__(self):
+        return f'{self.word}: {self.id}'
+class Numeral(Word):
+    word = models.CharField(max_length=30, verbose_name="Числительное")
+    word_translate = models.CharField(max_length=50, verbose_name="Перевод")
+    ordinal = models.CharField(max_length=30, blank=True, null=True, verbose_name="Прорядковый")
+    date_numeral = models.CharField(max_length=30, blank=True, null=True, verbose_name="Для даты")
+    class Meta:
+        verbose_name = "Числительное"
+        verbose_name_plural = "Числительные"
+
+    def __str__(self):
+        return f'{self.word}: {self.id}'
+
+class Pronoun(Word):
+    word = models.CharField(max_length=30, verbose_name="Местоимение")
+    word_translate = models.CharField(max_length=50, verbose_name="Перевод")
+    akkusativ = models.CharField(max_length=30, blank=True, null=True, verbose_name="Винительный падеж")
+    akkusativ_translate = models.CharField(max_length=30, blank=True, null=True, verbose_name="Перевод винительный падеж")
+    dativ = models.CharField(max_length=30, blank=True, null=True, verbose_name="Дательный падеж")
+    dativ_translate = models.CharField(max_length=30, blank=True, null=True, verbose_name="Перевод дательный падеж")
+    prossessive = models.CharField(max_length=30, blank=True, null=True, verbose_name="Притяжательное")
+    prossessive_translate = models.CharField(max_length=30, blank=True, null=True, verbose_name="Перевод притяжательное")
+    reflexive = models.CharField(max_length=30, blank=True, null=True, verbose_name="Возвратное")
+    reflexive_translate = models.CharField(max_length=30, blank=True, null=True, verbose_name="Перевод возвратное")
+    class Meta:
+        verbose_name = "Местоимение"
+        verbose_name_plural = "Местоимения"
+
+    def __str__(self):
+        return f'{self.word}: {self.id}'
+

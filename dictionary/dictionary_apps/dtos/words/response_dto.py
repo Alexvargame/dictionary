@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from typing import Optional
 #from pydantic.dataclasses import dataclass
 from dictionary.dictionary_apps.words.models import Word, Article, Book, Lection, WordType
 
@@ -72,3 +73,39 @@ class LectionDTO:
     name: str
     book: int
     description: str
+
+@dataclass
+class PronounDTO:
+    id: Optional[int] = None
+    word: Optional[str] = None
+    word_translate: Optional[str] = None
+    akkusativ: Optional[str] = None
+    akkusativ_translate: Optional[str] = None
+    dativ: Optional[str] = None
+    dativ_translate: Optional[str] = None
+    prossessive: Optional[str] = None
+    prossessive_translate: Optional[str] = None
+    reflexive: Optional[str] = None
+    reflexive_translate: Optional[str] = None
+    lection: Optional[int] = None
+    word_type: Optional[int] = None
+
+@dataclass
+class NumeralDTO:
+    id: Optional[int] = None
+    word: Optional[str] = None
+    word_translate: Optional[str] = None
+    ordinal: Optional[str] = None
+    date_numeral: Optional[str] = None
+    lection: Optional[int] = None
+    word_type: Optional[int] = None
+@dataclass
+class AdjectiveDTO:
+    id: Optional[int] = None
+    word: Optional[str] = None
+    word_translate: Optional[str] = None
+    komparativ: Optional[str] = None
+    superlativ: Optional[str] = None
+    declensions: Optional[str] = None
+    lection: Optional[int] = None
+    word_type: Optional[int] = None

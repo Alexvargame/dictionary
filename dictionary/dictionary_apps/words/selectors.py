@@ -3,8 +3,13 @@ from typing import Optional
 from django.db.models.query import QuerySet
 
 from dictionary.dictionary_apps.common.utils import (get_object)
-from dictionary.dictionary_apps.words.filters import WordFilter, NounFilter, VerbFilter, ArticleFilter, LectionFilter
-from dictionary.dictionary_apps.words.models import Word, Lection, Article, Book, Noun, WordType, Verb
+from dictionary.dictionary_apps.words.filters import (WordFilter, NounFilter, VerbFilter,
+                                                      ArticleFilter, LectionFilter,
+                                                      AdjectiveFilter, NumeralFilter,
+                                                      PronounFilter)
+from dictionary.dictionary_apps.words.models import (Word, Lection, Article, Book,
+                                                     Noun, WordType, Verb, Adjective,
+                                                     Numeral, Pronoun)
 
 
 def word_list(*, filters=None):
@@ -30,6 +35,32 @@ def verb_list(*, filters=None):
     qs = Verb.objects.all()
     return VerbFilter(filters, qs).qs
 
+def numeral_get(numeral_id):
+    numeral = get_object(Numeral, id=numeral_id)
+    return  numeral
+
+def numeral_list(*, filters=None):
+    filters = filters or {}
+    qs = Numeral.objects.all()
+    return NumeralFilter(filters, qs).qs
+
+def adjective_get(adjective_id):
+    adjective = get_object(Adjective, id=adjective_id)
+    return  adjective
+
+def adjective_list(*, filters=None):
+    filters = filters or {}
+    qs = Adjective.objects.all()
+    return AdjectiveFilter(filters, qs).qs
+
+def pronoun_get(pronoun_id):
+    pronoun = get_object(Pronoun, id=pronoun_id)
+    return  pronoun
+
+def pronoun_list(*, filters=None):
+    filters = filters or {}
+    qs = Pronoun.objects.all()
+    return PronounFilter(filters, qs).qs
 def noun_get(noun_id):
     noun = get_object(Noun, id=noun_id)
     return noun

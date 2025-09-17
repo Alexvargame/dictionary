@@ -50,13 +50,11 @@ class VerbCreateApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
     def post(self, request):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
-        lection = lection_get(serializer.validated_data['lection'])
-        serializer.validated_data['lection'] = lection
-        word_type = word_type_get(serializer.validated_data['word_type'])
-        serializer.validated_data['word_type'] = word_type
-        print(word_type, request.data, serializer.validated_data['word_type'])
-        print('SREVALDATA', serializer.validated_data)
+        #
+        # lection = lection_get(serializer.validated_data['lection'])
+        # serializer.validated_data['lection'] = lection
+        # word_type = word_type_get(serializer.validated_data['word_type'])
+        # serializer.validated_data['word_type'] = word_type
         data = CreateVerbDTO(
             **serializer.validated_data,
         )

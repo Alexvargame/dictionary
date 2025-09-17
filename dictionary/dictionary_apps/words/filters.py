@@ -1,6 +1,7 @@
 import django_filters
 
-from dictionary.dictionary_apps.words.models import Word, Noun, Verb, Article, Lection
+from dictionary.dictionary_apps.words.models import (Word, Noun, Verb, Article,
+                                                     Lection, Numeral, Adjective, Pronoun)
 
 
 class WordFilter(django_filters.FilterSet):
@@ -21,6 +22,23 @@ class VerbFilter(django_filters.FilterSet):
         model = Verb
         fields = ("id", )
 
+class NumeralFilter(django_filters.FilterSet):
+    id = django_filters.BaseInFilter(field_name='id', lookup_expr='in')
+    class Meta:
+        model = Numeral
+        fields = ("id", )
+
+class AdjectiveFilter(django_filters.FilterSet):
+    id = django_filters.BaseInFilter(field_name='id', lookup_expr='in')
+    class Meta:
+        model = Adjective
+        fields = ("id", )
+
+class PronounFilter(django_filters.FilterSet):
+    id = django_filters.BaseInFilter(field_name='id', lookup_expr='in')
+    class Meta:
+        model = Pronoun
+        fields = ("id", )
 class ArticleFilter(django_filters.FilterSet):
     id = django_filters.BaseInFilter(field_name='id', lookup_expr='in')
     class Meta:

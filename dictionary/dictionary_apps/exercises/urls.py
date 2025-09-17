@@ -10,6 +10,8 @@ from .apis.digits import Digits, digits_results_stop, digits_results_repeat
 from .apis.exercises import (exercises_page, select_lections_ordering_words, select_lections_verbs,
                             select_lections_article_words,
                              )
+from .apis.pronouns import (Pronouns, pronouns_results_stop, pronouns_results_repeat)
+from .apis.numerals import (Numerals, numerals_results_stop, numerals_results_repeat)
 
 app_name = 'exercises'
 urlpatterns =[
@@ -30,5 +32,11 @@ urlpatterns =[
     path("exercises/article_words/results/stop/", article_results_stop, name="article_results_stop"),
     path("exercises/digits/results/repeat/", digits_results_repeat, name="digits_results_repeat"),
     path("exercises/digits/results/stop/", digits_results_stop, name="digits_results_stop"),
+    path('pronouns/', Pronouns.as_view(), name='pronouns'),
+    path("exercises/pronouns/results/repeat/", pronouns_results_repeat, name="pronouns_results_repeat"),
+    path("exercises/pronouns/results/stop/", pronouns_results_stop, name="pronouns_results_stop"),
+    path('numerals/', Numerals.as_view(), name='numerals'),
+    path("exercises/numerals/results/repeat/", numerals_results_repeat, name="numerals_results_repeat"),
+    path("exercises/numerals/results/stop/", numerals_results_stop, name="numerals_results_stop")
 
 ]

@@ -168,12 +168,12 @@ class NounCreateApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
 
-        article = article_get(serializer.validated_data['article'])
-        serializer.validated_data['article'] = article
-        lection = lection_get(serializer.validated_data['lection'])
-        serializer.validated_data['lection'] = lection
-        word_type = word_type_get(serializer.validated_data['word_type'])
-        serializer.validated_data['word_type'] = word_type
+        # article = article_get(serializer.validated_data['article'])
+        # serializer.validated_data['article'] = article
+        # lection = lection_get(serializer.validated_data['lection'])
+        # serializer.validated_data['lection'] = lection
+        # word_type = word_type_get(serializer.validated_data['word_type'])
+        # serializer.validated_data['word_type'] = word_type
 
         data = CreateNounDTO(
             **serializer.validated_data,
