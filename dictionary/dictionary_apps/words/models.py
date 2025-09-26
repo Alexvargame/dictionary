@@ -15,7 +15,7 @@ class Book(models.Model):
 
 class Lection(models.Model):
     name = models.CharField(max_length=30)
-    book = models.ForeignKey(Book, related_name='lections', verbose_name='кнга',on_delete=models.CASCADE, default=1)
+    book = models.ForeignKey(Book, related_name='lections', verbose_name='книга',on_delete=models.CASCADE, default=1)
     description = models.TextField()
 
     class Meta:
@@ -155,3 +155,22 @@ class Pronoun(Word):
     def __str__(self):
         return f'{self.word}: {self.id}'
 
+
+class NounDeclensionsForm(models.Model):
+
+    noun = models.ForeignKey(Noun, related_name='declension_forms', on_delete=models.CASCADE)
+    nominativ = models.CharField(max_length=30, blank=True, null=True, default='')
+    genitiv = models.CharField(max_length=30, blank=True, null=True, default='')
+    dativ = models.CharField(max_length=30, blank=True, null=True, default='')
+    akkusativ = models.CharField(max_length=30, blank=True, null=True, default='')
+    plural_nominativ = models.CharField(max_length=30, blank=True, null=True, default='')
+    plural_genitiv = models.CharField(max_length=30, blank=True, null=True, default='')
+    plural_dativ = models.CharField(max_length=30, blank=True, null=True, default='')
+    plural_akkusativ = models.CharField(max_length=30, blank=True, null=True, default='')
+
+    class Meta:
+        verbose_name = "Склонение существительного"
+        verbose_name_plural = "Склонения существительного"
+
+    def __str__(self):
+        return f'{self.noun}: {self.id}'

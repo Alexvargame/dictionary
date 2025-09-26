@@ -69,7 +69,6 @@ class OrderingWords(LoginRequiredMixin, APIView):
             pass  # или
 
         all_ids = list(Word.objects.filter(**filters).values_list('id', flat=True))
-        print('iDS', all_ids)
         if len(all_ids) >= 5:
             random_ids = random.sample(all_ids, 5)
         filters = {'id__in': random_ids}

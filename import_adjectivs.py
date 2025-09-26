@@ -1,9 +1,6 @@
-import json
 import pandas as pd
 import django
 import os
-
-
 
 # Указываем настройки Django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", 'dictionary.config.django.base')
@@ -19,10 +16,11 @@ for _, row in df.iterrows():
     word_translate = row["word_translate"]
     komparativ = row['komparativ']
     superlativ = row['superlativ']
+
     # на будущее: склонение (сильное, слабое, смешанное)
     declensions = row['declensions']
     try:
-        declensions = json.loads(declensions)
+        declensions = json.loads(declensions_str)
     except Exception as e:
         print(f"Ошибка разбора declensions для слова {word}: {e}")
         declensions = {}  # если не получилось, оставляем пустой словарь

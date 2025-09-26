@@ -1,7 +1,8 @@
 import django_filters
 
 from dictionary.dictionary_apps.words.models import (Word, Noun, Verb, Article,
-                                                     Lection, Numeral, Adjective, Pronoun)
+                                                     Lection, Numeral, Adjective, Pronoun,
+                                                     NounDeclensionsForm)
 
 
 class WordFilter(django_filters.FilterSet):
@@ -50,3 +51,9 @@ class LectionFilter(django_filters.FilterSet):
     class Meta:
         model = Lection
         fields = ('id', 'book')
+
+class NounDeclensionsFormFilter(django_filters.FilterSet):
+    id = django_filters.BaseInFilter(field_name='id', lookup_expr='in')
+    class Meta:
+        model = NounDeclensionsForm
+        fields = ("id",)

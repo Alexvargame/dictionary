@@ -30,7 +30,7 @@ PERSONS = [
 def generate_exercise(tense=None, verbs=None, count=5):
     # Получаем ID лекций из запроса
     exercises = []
-    selected_persons = random.sample(PERSONS, k=count)
+    selected_persons = random.choices(PERSONS, k=count)
     for verb, (person, present_field, prateritum_field) in zip(verbs, selected_persons):
         if tense == "present":
             answer = getattr(verb, present_field)

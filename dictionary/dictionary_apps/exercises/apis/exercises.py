@@ -31,3 +31,9 @@ def select_lections_verbs(request):
     return render(request, 'exercises/select_lection_verbs.html', context=context)
 
 
+def select_lections_adjectivs(request):
+    lections = LectionService(LectionRepository()).list_objects()
+    context = {
+        'lections': lections
+    }
+    return render(request, 'exercises/select_lection_adjectivs.html', context=context)

@@ -6,10 +6,10 @@ from dictionary.dictionary_apps.common.utils import (get_object)
 from dictionary.dictionary_apps.words.filters import (WordFilter, NounFilter, VerbFilter,
                                                       ArticleFilter, LectionFilter,
                                                       AdjectiveFilter, NumeralFilter,
-                                                      PronounFilter)
+                                                      PronounFilter, NounDeclensionsFormFilter)
 from dictionary.dictionary_apps.words.models import (Word, Lection, Article, Book,
                                                      Noun, WordType, Verb, Adjective,
-                                                     Numeral, Pronoun)
+                                                     Numeral, Pronoun, NounDeclensionsForm)
 
 
 def word_list(*, filters=None):
@@ -48,6 +48,9 @@ def adjective_get(adjective_id):
     adjective = get_object(Adjective, id=adjective_id)
     return  adjective
 
+def adjective_get_by_word(adjective_word):
+    adjective = get_object(Adjective, word=adjective_word)
+    return adjective
 def adjective_list(*, filters=None):
     filters = filters or {}
     qs = Adjective.objects.all()
@@ -95,9 +98,14 @@ def lection_list(*, filters=None):
     return LectionFilter(filters, qs).qs
 
 
+def noundecl_get(noundecl_id):
+    noundecl = get_object(NounDeclensionsForm, id=noundecl_id)
+    return  noundecl
 
-
-
+def noundecl_list(*, filters=None):
+    filters = filters or {}
+    qs = NounDeclensionsForm.objects.all()
+    return NounDeclensionsFormFilter(filters, qs).qs
 
 
 

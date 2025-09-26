@@ -322,6 +322,7 @@ class WordRepository:
         lst_dto = []
         filtered_objects = [obj for obj in word_list(filters=filters) if type(obj) is not Word]
         for obj in filtered_objects:
+            # print(obj.word_type.name)
             tmp_dto = dto_dictionary[obj.word_type.name]().detail_object(obj)
             lst_dto.append(tmp_dto)
         return lst_dto
@@ -473,7 +474,7 @@ dto_dictionary = {
     'Noun' : NounRepository,
     'Verb' : VerbRepository,
     'Numeral': NumeralRepository,
-    'Adjectiv': AdjectiveRepository,
+    'Adjective': AdjectiveRepository,
     'Pronoun': PronounRepository,
 }
 

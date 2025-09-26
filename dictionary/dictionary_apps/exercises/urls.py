@@ -8,10 +8,13 @@ from .apis.verbs_exercises import VerbExercises, verb_results_stop, verb_results
 from .apis.article_words import ArticleNouns, article_results_stop, article_results_repeat
 from .apis.digits import Digits, digits_results_stop, digits_results_repeat
 from .apis.exercises import (exercises_page, select_lections_ordering_words, select_lections_verbs,
-                            select_lections_article_words,
+                            select_lections_article_words, select_lections_adjectivs,
                              )
 from .apis.pronouns import (Pronouns, pronouns_results_stop, pronouns_results_repeat)
 from .apis.numerals import (Numerals, numerals_results_stop, numerals_results_repeat)
+from .apis.adjectivs_exercises import (AdjectiveExercises, adjectivs_results_stop,
+                                       adjectivs_results_repeat, AdjectiveExercisesRepeat,
+                                       AdjectiveCasusExercises)
 
 app_name = 'exercises'
 urlpatterns =[
@@ -37,6 +40,11 @@ urlpatterns =[
     path("exercises/pronouns/results/stop/", pronouns_results_stop, name="pronouns_results_stop"),
     path('numerals/', Numerals.as_view(), name='numerals'),
     path("exercises/numerals/results/repeat/", numerals_results_repeat, name="numerals_results_repeat"),
-    path("exercises/numerals/results/stop/", numerals_results_stop, name="numerals_results_stop")
+    path("exercises/numerals/results/stop/", numerals_results_stop, name="numerals_results_stop"),
+    path('lections_adjectivs/', select_lections_adjectivs, name='select_lections_adjectivs'),
+    path('exercises_adjectivs/', AdjectiveExercises.as_view(), name='exercises_adjectivs'),
+    path('exercises_adjectivs/casus/', AdjectiveCasusExercises.as_view(), name='exercises_adjectivs_casus'),
+    path("exercises/adjectivs/results/repeat/", adjectivs_results_repeat, name="adjectivs_results_repeat"),
+    path("exercises/adjectivs/results/stop/", adjectivs_results_stop, name="adjectivs_results_stop"),
 
 ]

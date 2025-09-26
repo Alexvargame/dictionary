@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, List
 #from pydantic.dataclasses import dataclass
 
 from dictionary.dictionary_apps.words.models import Word, Lection, Article, WordType
@@ -108,3 +108,24 @@ class CreateNumeralsExerciseDTO:
     field: str
     field_translate: str
     correct_answer: str
+
+
+@dataclass
+class CreateExerciseAdjectivDTO:
+    adjective_id: int
+    adjective: str
+    question: str
+    correct_answer: str
+    # degree: str
+    property_adjective: str
+
+@dataclass
+class CreateexerciseCasusAdjectiveDTO:
+    article: str
+    article_forms: List
+    adj: int
+    adj_forms: List
+    noun: str
+    noun_forms: List
+    answer: dict
+    question: str

@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+
+{% block title %}Упражнения с прилагательными — выбор лекций{% endblock %}
+{% block logo_and_title %}{% endblock %}
+
+{% block content %}
+<main class="container mx-auto p-4">
+  <form id="exercise-form" method="get" action="{% url 'api:exercises:exercises_adjectivs' %}">
+    <!-- Выбор лекций -->
+    <h2 class="text-xl font-semibold mb-2">Выберите лекции</h2>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      {% for lection in lections %}
+        <label class="flex items-center space-x-2">
+          <input type="checkbox" name="lections" value="{{ lection.id }}" class="form-checkbox">
+          <span>{{ lection.name }}</span>
+        </label>
+      {% endfor %}
+    </div>
+
+    <!-- Выбор типа упражнения -->
+    <h2 class="text-xl font-semibold mb-2">Выберите тип упражнения</h2>
+    <div class="mb-4">
+      <select id="property_adjective"  name="property_adjective" required class="w-full border px-3 py-2 rounded text-black">
+        <option value="komparativ_und_superlativ">Komparativ und Superlativ</option>
+        <option value="declensions">Declensions</option>
+        <option value="casus">Casus</option>
+      </select>
+    </div>
+
+    <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Начать упражнение</button>
+  </form>
+</main>
+
+<script>
+  document.getElementById("exercise-form").addEventListener("submit", function(event) {
+    const selected = document.getElementById("property_adjective").value;
+
+    if (selected === "casus") {
+      this.action = "{% url 'api:exercises:exercises_adjectivs_casus' %}";
+    } else {
+      this.action = "{% url 'api:exercises:exercises_adjectivs' %}";
+    }
+  });
+</script>
+{% endblock %}
+
