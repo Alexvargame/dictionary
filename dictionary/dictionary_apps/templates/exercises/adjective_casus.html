@@ -64,15 +64,13 @@
             </tbody>
         </table>
     </div>
-
-    <script>
+<script>
 document.addEventListener("DOMContentLoaded", () => {
 
-    // Получаем данные ответа
+    // Получаем ответ DTO
     const answer = JSON.parse(document.getElementById("answer-data").textContent);
-    console.log("Ответ DTO:", answer);
 
-    // Функция мигания красным (если нужна)
+    // Функция мигания красным
     function blinkRed(button){
         button.classList.add("blink-red");
         button.addEventListener("animationend", () => {
@@ -80,90 +78,73 @@ document.addEventListener("DOMContentLoaded", () => {
         }, { once: true });
     }
 
+    // Проверяем, была ли уже выбрана правильная кнопка в колонке
+    function isColumnCorrect(columnSelector, correctValue){
+        const buttons = document.querySelectorAll(columnSelector + " button");
+        return Array.from(buttons).some(btn => btn.classList.contains("bg-green-500"));
+    }
+
     // Проверка кнопки
     function checkAnswer(button, correctValue){
         const btnText = button.textContent.trim();
         if(btnText.toLowerCase() === correctValue.toLowerCase()){
             // Зеленая подсветка
-            button.classList.remove("bg-blue-600", "bg-blue-500");
+            button.classList.remove("bg-blue-600","bg-blue-500");
             button.classList.add("bg-green-500");
             button.disabled = true;
         } else {
             blinkRed(button);
         }
 
-        // Проверяем, все ли колонки уже угаданы
-        const allColumns = [
-            document.querySelectorAll(".column-article button"),
-            document.querySelectorAll(".column-adj button"),
-            document.querySelectorAll(".column-noun button")
-        ];
+        // Проверяем, выбраны ли правильные кнопки во всех колонках
+        const allCorrect =
+            isColumnCorrect(".column-article", answer.article) &&
+            isColumnCorrect(".column-adj", answer.adj) &&
+            isColumnCorrect(".column-noun", answer.noun);
 
-        let allCorrect = true;
-        allColumns.forEach(btnGroup => {
-            let groupCorrect = false;
-            btnGroup.forEach(b => {
-                if(b.classList.contains("bg-green-500")) groupCorrect = true;
-            });
-            if(!groupCorrect) allCorrect = false;
-        });
-
-        // Если всё угадано, показываем блок действий
+        // Если все правильные выбраны, показываем блок действий
         if(allCorrect){
-            const actionDiv = document.createElement("div");
-            actionDiv.classList.add("mt-6", "flex", "flex-col", "sm:flex-row", "gap-4", "justify-center");
-            actionDiv.innerHTML = `
-                <form method="post" action="{% url 'api:exercises:adjectivs_results_repeat' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="points" value="{{ user.score }}">
-                    <input type="hidden" name="lives_lost" value="0">
-                    <input type="hidden" name="property_adjective" value="{{ exercises.property_adjective }}">
-                    <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">Пройти ещё</button>
-                </form>
-
-                <form method="post" action="{% url 'api:exercises:adjectivs_results_stop' %}">
-                    {% csrf_token %}
-                    <input type="hidden" name="points" value="{{ user.score }}">
-                    <input type="hidden" name="lives_lost" value="0">
-                    <button type="submit" class="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700">Стоп</button>
-                </form>
-            `;
-            document.querySelector("main.container").appendChild(actionDiv);
+            const actionDiv = document.getElementById("exercise-actions");
+            if(actionDiv) actionDiv.style.display = "flex"; // показываем блок
         }
     }
 
     // Навешиваем обработчики на кнопки
-    const articleBtns = document.querySelectorAll(".column-article button");
-    const adjBtns = document.querySelectorAll(".column-adj button");
-    const nounBtns = document.querySelectorAll(".column-noun button");
-
-    articleBtns.forEach(btn => btn.addEventListener("click", () => checkAnswer(btn, answer.article)));
-    adjBtns.forEach(btn => btn.addEventListener("click", () => checkAnswer(btn, answer.adj)));
-    nounBtns.forEach(btn => btn.addEventListener("click", () => checkAnswer(btn, answer.noun)));
+    document.querySelectorAll(".column-article button").forEach(btn =>
+        btn.addEventListener("click", () => checkAnswer(btn, answer.article))
+    );
+    document.querySelectorAll(".column-adj button").forEach(btn =>
+        btn.addEventListener("click", () => checkAnswer(btn, answer.adj))
+    );
+    document.querySelectorAll(".column-noun button").forEach(btn =>
+        btn.addEventListener("click", () => checkAnswer(btn, answer.noun))
+    );
 
 });
 </script>
 
 
+
+
+
 <!-- Кнопки "Пройти ещё" и "Стоп", по умолчанию скрыты -->
-<div id="next-actions" class="text-center mt-6 flex flex-col sm:flex-row gap-4 justify-center hidden">
-  <!-- Повторить -->
+<div id="exercise-actions" class="mt-6 flex flex-col sm:flex-row gap-4 justify-center" style="display: none;">
   <form method="post" action="{% url 'api:exercises:adjectivs_results_repeat' %}">
     {% csrf_token %}
-    <input type="hidden" name="points" value="{{ user.score }}">
-    <input type="hidden" name="lives_lost" value="0">
     <input type="hidden" name="property_adjective" value="{{ exercises.property_adjective }}">
-    <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">Пройти ещё</button>
+    <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">
+      Пройти ещё
+    </button>
   </form>
 
-  <!-- Стоп -->
   <form method="post" action="{% url 'api:exercises:adjectivs_results_stop' %}">
     {% csrf_token %}
-    <input type="hidden" name="points" value="{{ user.score }}">
-    <input type="hidden" name="lives_lost" value="0">
-    <button type="submit" class="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700">Стоп</button>
+    <button type="submit" class="bg-red-600 text-white px-6 py-2 rounded hover:bg-red-700">
+      Стоп
+    </button>
   </form>
 </div>
+
 
 </main>
 
