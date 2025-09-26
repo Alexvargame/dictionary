@@ -109,3 +109,16 @@ class AdjectiveDTO:
     declensions: Optional[str] = None
     lection: Optional[int] = None
     word_type: Optional[int] = None
+
+@dataclass
+class NounDeclensionsFormDTO:
+    id: int
+    noun: int
+    nominativ: str
+    akkusativ: str
+    dativ: str
+    genitiv: str
+    plural_nominativ: str
+    plural_akkusativ: str
+    plural_dativ: str
+    plural_genitiv: str

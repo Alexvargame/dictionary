@@ -119,6 +119,18 @@ class CreateExerciseAdjectivDTO:
     # degree: str
     property_adjective: str
 
+
+@dataclass
+class CreateNounDeclensionsFormDTO:
+    noun: int
+    nominativ: str
+    akkusativ: str
+    dativ: str
+    genitiv: str
+    plural_nominativ: str
+    plural_akkusativ: str
+    plural_dativ: str
+    plural_genitiv: str
 @dataclass
 class CreateexerciseCasusAdjectiveDTO:
     article: str

@@ -1,27 +1,21 @@
-from dictionary.dictionary_apps.words.models import (Word, Noun, Verb, Article,
-                                                     Lection, Pronoun, Adjective,
-                                                     Numeral, WordType)
-
-
-
 from django.db import transaction
 
+from dictionary.dictionary_apps.words.models import (Word, Noun, Verb, Article,
+                                                     Lection, Pronoun, Adjective,
+                                                     Numeral, WordType, NounDeclensionsForm)
 from dictionary.dictionary_apps.words.selectors import (word_list, noun_list, verb_list,
                                                         article_list, lection_list,
                                                         pronoun_list, adjective_get,
                                                         numeral_list, lection_get, word_type_get,
-                                                        adjective_list)
+                                                        adjective_list, noundecl_get,
+                                                        noundecl_list, noun_get)
 from dictionary.dictionary_apps.dtos.words.response_dto import (WordDTO, NounDTO,VerbDTO, ArticleDTO,
                                                                 LectionDTO, PronounDTO, AdjectiveDTO,
-                                                                NumeralDTO)
+                                                                NumeralDTO, NounDeclensionsFormDTO)
 from dictionary.dictionary_apps.dtos.words.request_dto import (CreateWordDTO, CreateNounDTO,
                                                                CreatePronounDTO, CreateAdjectiveDTO,
-                                                               CreateNumeralDTO)
+                                                               CreateNumeralDTO, CreateNounDeclensionsFormDTO)
 from dictionary.dictionary_apps.common.services import model_update
-
-
-
-
 
 
 class NounRepository:
@@ -469,6 +463,72 @@ class LectionRepository:
             lst_dto.append(tmp_dto)
         return lst_dto
 
+class NounDeclensionsFormRepository:
+    model = NounDeclensionsForm
+    dto = NounDeclensionsFormDTO
+
+    @transaction.atomic
+    def create_object(self, dto):
+        noun = Noun.objects.get(id=dto.noun)
+        noun_declensions = self.model.objects.create(
+            noun=noun,
+            nominativ=dto.nominativ,
+            akkusativ=dto.akkusativ,
+            dativ=dto.dativ,
+            genitiv=dto.genitiv,
+            plural_nominativ=dto.plural_nominativ,
+            plural_akkusativ=dto.plural_akkusativ,
+            plural_dativ=dto.plural_dativ,
+            plural_genitiv=dto.plural_genitiv,
+        )
+        return noun_declensions
+
+    def detail_object(self, obj):
+        dto = self.dto (
+            id=obj.id,
+            noun=obj.noun,
+            nominativ=obj.nominativ,
+            akkusativ=obj.akkusativ,
+            dativ=obj.dativ,
+            genitiv=obj.genitiv,
+            plural_nominativ=obj.plural_nominativ,
+            plural_akkusativ=obj.plural_akkusativ,
+            plural_dativ=obj.plural_dativ,
+            plural_genitiv=obj.plural_genitiv,
+        )
+        return dto
+
+    def list_objects(self, filters=None):
+        lst_dto = []
+        print('FILR', filters)
+        for obj in noundecl_list(filters=filters):
+            tmp_dto = self.dto(
+                id=obj.id,
+                noun=obj.noun,
+                nominativ=obj.nominativ,
+                akkusativ=obj.akkusativ,
+                dativ=obj.dativ,
+                genitiv=obj.genitiv,
+                plural_nominativ=obj.plural_nominativ,
+                plural_akkusativ=obj.plural_akkusativ,
+                plural_dativ=obj.plural_dativ,
+                plural_genitiv=obj.plural_genitiv,
+            )
+            lst_dto.append(tmp_dto)
+        return lst_dto
+    @transaction.atomic
+    def update_object(self, dto):
+
+        noun_declensions = self.model.objects.get(id=dto.id)
+        dto.noun = noun_get(dto.noun)
+        for field, value in dto.__dict__.items():
+            if field in [f.name for f in noun_declensions._meta.fields]:
+                setattr(noun_declensions, field, value)
+        noun_declensions.save()
+    @transaction.atomic
+    def delete_object(self, noun_id):
+        noun_declensions = self.model.objects.get(id=noun_id)
+        noun_declensions.delete()
 
 dto_dictionary = {
     'Noun' : NounRepository,
@@ -476,6 +536,7 @@ dto_dictionary = {
     'Numeral': NumeralRepository,
     'Adjective': AdjectiveRepository,
     'Pronoun': PronounRepository,
+    'NounDeclensionsform': NounDeclensionsFormRepository,
 }
 
 

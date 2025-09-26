@@ -85,7 +85,7 @@ def generate_exercise(property_adjective=None, adjectivs=None, count=5):
         if len(all_ids) >= 0:
             random_id = random.sample(all_ids, 1)[0]
         noun = noundecl_get(random_id)
-        print('NOUN', noun.noun.word, noun.noun.article.name, noun.noun.plural_sign)
+        print('noun', noun.noun.word, noun.noun.article.name, noun.noun.plural_sign)
         if noun.noun.plural_sign == 'nan':
             gender = 'Plural'
             noun_article = 'die'
@@ -142,6 +142,7 @@ def generate_exercise(property_adjective=None, adjectivs=None, count=5):
             ]
             if getattr(noun, field)
         ]
+        print('NOUNFORMSSSS', noun_forms)
         exercises.append(
             CreateexerciseCasusAdjectiveDTO(
             article=article,
