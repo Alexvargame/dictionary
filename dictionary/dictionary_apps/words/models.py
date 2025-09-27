@@ -155,6 +155,15 @@ class Pronoun(Word):
     def __str__(self):
         return f'{self.word}: {self.id}'
 
+class OtherWords(Word):
+    word = models.CharField(max_length=30, verbose_name="Существительное")
+    word_translate = models.CharField(max_length=30, verbose_name='Перевод')
+
+    class Meta:
+        verbose_name = 'Остальное слово'
+        verbose_name_plural = 'Остальные слова'
+    def __str__(self):
+        return f"{self.word_type}: {self.id}"
 
 class NounDeclensionsForm(models.Model):
 

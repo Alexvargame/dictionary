@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (Book, Lection, Article, WordType, Word,
                      Noun, Verb, Adjective, Numeral, Pronoun,
-                     NounDeclensionsForm)
+                     NounDeclensionsForm, OtherWords)
 
 
 @admin.register(WordType)
@@ -71,3 +71,7 @@ class NounDeclensionsFormAdmin(admin.ModelAdmin):
     'genitiv', 'dativ', 'akkusativ',
     'plural_nominativ', 'plural_genitiv',
     'plural_dativ', 'plural_akkusativ')
+
+@admin.register(OtherWords)
+class OtherWordsAdmin(admin.ModelAdmin):
+    list_display = ('id', 'word', 'word_translate')
