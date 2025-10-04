@@ -27,6 +27,15 @@ from dictionary.dictionary_apps.words.repository import WordRepository, Adjectiv
 from dictionary.dictionary_apps.users.models import BaseUser
 
 
+class OutputSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    word_type = serializers.CharField()
+    word = serializers.CharField()
+    word_translate = serializers.CharField()
+    lection = serializers.CharField()
+    komparativ = serializers.CharField()
+    superlativ = serializers.CharField()
+    declensions = serializers.JSONField()
 
 class AdjectiveCreateApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
     class InputSerializer(serializers.Serializer):
@@ -48,22 +57,13 @@ class AdjectiveCreateApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
         return Response(f'{word}')
 
 class AdjectiveDetailApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
-    class OutputSerializer(serializers.Serializer):
-        id = serializers.IntegerField()
-        word_type = serializers.CharField()
-        word = serializers.CharField()
-        word_translate = serializers.CharField()
-        lection = serializers.CharField()
-        komparativ = serializers.CharField()
-        superlativ = serializers.CharField()
-        declensions = serializers.JSONField()
 
     def get(self, request, adjective_id):
         adjective = adjective_get(adjective_id)
         if adjective is None:
             raise Http404
         dto = AdjectiveService(AdjectiveRepository()).detail_object(adjective)
-        data = self.OutputSerializer(dto).data
+        data = OutputSerializer(dto).data
         return Response(data)
 
 class AdjectiveListApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
@@ -75,18 +75,13 @@ class AdjectiveListApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
         id = serializers.IntegerField(required=False)
         lection = serializers.CharField(required=False, allow_null=True)
 
-    class OutputSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = Adjective
-            fields = ('id', 'word', 'word_translate', 'lection',
-                    'komparativ', 'superlativ', 'declensions' )
     def get(self, request):
         filters_serializer = self.FilterSerializer(data=request.query_params)
         filters_serializer.is_valid(raise_exception=True)
         adjectives = AdjectiveService(AdjectiveRepository()).list_objects()
         return get_pagination_response(
             pagination_class=self.Pagination,
-            serializer_class=self.OutputSerializer,
+            serializer_class=OutputSerializer,
             queryset=adjectives,
             request=request,
             view=self,
@@ -94,7 +89,7 @@ class AdjectiveListApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
 
 class AdjectiveUpdateApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
     class InputSerializer(serializers.Serializer):
-        word_type = serializers.IntegerField(required=False, allow_null=True, default=1)
+        #word_type = serializers.IntegerField(required=False, allow_null=True, default=1)
         word = serializers.CharField(required=False)
         komparativ = serializers.CharField(required=False, allow_null=True, allow_blank=True)
         superlativ = serializers.CharField(allow_blank=True, allow_null=True, required=False)
@@ -117,7 +112,7 @@ class AdjectiveUpdateApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
         )
         AdjectiveService(AdjectiveRepository()).update_object(dto)
         adjective = adjective_get(adjective_id)
-        data = AdjectiveDetailApi.OutputSerializer(adjective).data
+        data = OutputSerializer(adjective).data
         return Response(data)
 
 class AdjectiveDeleteApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
@@ -125,12 +120,6 @@ class AdjectiveDeleteApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
         id = serializers.IntegerField()
     class Pagination(LimitOffsetPagination):
         default_limit = 5
-    class OutputSerializer(serializers.ModelSerializer):
-
-        class Meta:
-            model = Adjective
-            fields = ('id', 'word', 'word_translate', 'lection',
-                    'komparativ', 'superlativ', 'declensions' )
     def post(self, request, adjective_id):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -138,7 +127,7 @@ class AdjectiveDeleteApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
         adjectives = AdjectiveService(AdjectiveRepository()).list_objects()
         return get_pagination_response(
             pagination_class=self.Pagination,
-            serializer_class=self.OutputSerializer,
+            serializer_class=OutputSerializer,
             queryset=adjectives,
             request=request,
             view=self,

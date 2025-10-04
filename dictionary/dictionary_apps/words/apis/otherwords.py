@@ -10,20 +10,18 @@ from dictionary.dictionary_apps.api.pagination import (
     get_pagination_response,
 )
 
-from dictionary.dictionary_apps.words.models import Word, Lection, WordType, Numeral
+from dictionary.dictionary_apps.words.models import Word, WordType, OtherWords
 
-from dictionary.dictionary_apps.words.selectors import (lection_get, numeral_get,
-                                                        word_type_get)
+from dictionary.dictionary_apps.words.selectors import (lection_get, word_type_get,
+                                                        otherword_get
+                                                       )
 from dictionary.dictionary_apps.users.selectors import user_get
 
-from dictionary.dictionary_apps.dtos.words.response_dto import WordDTO, NumeralDTO
-from dictionary.dictionary_apps.dtos.words.request_dto import CreateWordDTO, CreateNumeralDTO
+from dictionary.dictionary_apps.dtos.words.response_dto import WordDTO, OtherWordsDTO
+from dictionary.dictionary_apps.dtos.words.request_dto import CreateWordDTO, CreateOtherWordsDTO
 
-from dictionary.dictionary_apps.words.services import WordService, NumeralService
-from dictionary.dictionary_apps.words.repository import WordRepository, NumeralRepository
-
-
-
+from dictionary.dictionary_apps.words.services import WordService, OtherWordsService
+from dictionary.dictionary_apps.words.repository import WordRepository, OtherWordsRepository
 
 from dictionary.dictionary_apps.users.models import BaseUser
 
@@ -33,40 +31,34 @@ class OutputSerializer(serializers.Serializer):
     word_type = serializers.CharField()
     word = serializers.CharField()
     word_translate = serializers.CharField()
-    ordinal = serializers.CharField()
-    date_numeral = serializers.CharField()
     lection = serializers.CharField()
-
-
-class NumeralCreateApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
+class OtherWordsCreateApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
     class InputSerializer(serializers.Serializer):
         word_type = serializers.IntegerField()
         word = serializers.CharField()
         word_translate = serializers.CharField()
-        ordinal = serializers.CharField()
-        date_numeral = serializers.CharField()
-        lection = serializers.IntegerField()
+        lection = serializers.IntegerField(required=False)
 
     def post(self, request):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        data = CreateNumeralDTO(
+        data = CreateVerbDTO(
             **serializer.validated_data,
         )
-        word = NumeralService(NumeralRepository()).create_object(data)
+        word = VerbService(VerbRepository()).create_object(data)
         return Response(f'{word}')
 
-class NumearalDetailApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
+class OtherWordsDetailApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
 
-    def get(self, request, numeral_id):
-        numeral = numeral_get(numeral_id)
-        if numeral is None:
+    def get(self, request, ow_id):
+        ow = otherword_get(ow_id)
+        if ow is None:
             raise Http404
-        dto = NumeralService(NumeralRepository()).detail_object(numeral)
+        dto = OtherWordsService(OtherWordsRepository()).detail_object(ow)
         data = OutputSerializer(dto).data
         return Response(data)
 
-class NumeralListApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
+class OtherWordsListApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
 
     class Pagination(LimitOffsetPagination):
         default_limit = 5
@@ -74,63 +66,61 @@ class NumeralListApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
     class FilterSerializer(serializers.Serializer):
         id = serializers.IntegerField(required=False)
         lection = serializers.CharField(required=False, allow_null=True)
-        article = serializers.CharField(required=False)
 
     def get(self, request):
         filters_serializer = self.FilterSerializer(data=request.query_params)
         filters_serializer.is_valid(raise_exception=True)
-        numerals = NumeralService(NumeralRepository()).list_objects()
+        ows = OtherWordsService(OtherWordsRepository()).list_objects()
         return get_pagination_response(
             pagination_class=self.Pagination,
             serializer_class=OutputSerializer,
-            queryset=numerals,
+            queryset=ows,
             request=request,
             view=self,
         )
 
-class NumeralUpdateApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
+class OtherWordsUpdateApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
     class InputSerializer(serializers.Serializer):
-        #word_type = serializers.IntegerField(required=False, allow_null=True, default=1)
-        word = serializers.CharField(required=False)
-        ordinal = serializers.CharField(required=False)
-        date_numeral = serializers.CharField(allow_blank=True, allow_null=True, required=False)
-        word_translate = serializers.CharField(required=False)
-        lection = serializers.IntegerField(allow_null=True, required=False)
+        #word_type = serializers.IntegerField()
+        word = serializers.CharField()
+        word_translate = serializers.CharField()
+        lection = serializers.IntegerField()
 
-    def post(self, request, numeral_id):
-        numeral = numeral_get(numeral_id)
 
-        merged_data = {**NumeralService(NumeralRepository()).detail_object(numeral).__dict__, **request.data}
+    def post(self, request, ow_id):
+        ow = otherword_get(ow_id)
+
+        merged_data = {**OtherWordsService(OtherWordsRepository()).detail_object(ow).__dict__, **request.data}
         if isinstance(merged_data.get('lection'), Lection):
             merged_data['lection'] = str(merged_data['lection'].id)
         if isinstance(merged_data.get('word_type'), WordType):
             merged_data['word_type'] = str(merged_data['word_type'].id)
         serializer = self.InputSerializer(data=merged_data)
         serializer.is_valid(raise_exception=True)
-        serializer.validated_data['id'] = numeral_id
-        dto = NumeralDTO(
+        serializer.validated_data['id'] = ow_id
+        dto = VerbDTO(
            **serializer.validated_data
         )
-        NumeralService(NumeralRepository()).update_object(dto)
-        numeral = numeral_get(numeral_id)
-        data = OutputSerializer(numeral).data
+
+        OtherWordsService(OtherWordsRepository()).update_object(dto)
+        data = OutputSerializer(ow).data
         return Response(data)
 
-class NumeralDeleteApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
+class OtherWordsDeleteApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
     class InputSerializer(serializers.Serializer):
         id = serializers.IntegerField()
     class Pagination(LimitOffsetPagination):
         default_limit = 5
 
-    def post(self, request, numeral_id):
+    def post(self, request, noun_id):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        NumeralService(NumeralRepository()).delete_object(serializer.validated_data['id'])
-        numerals = NumeralService(NumeralRepository()).list_objects()
+        OtherWordsService(OtherWordsRepository()).delete_object(serializer.validated_data['id'])
+        ows = OtherWordsService(OtherWordsRepository()).list_objects()
         return get_pagination_response(
             pagination_class=self.Pagination,
             serializer_class=OutputSerializer,
-            queryset=numerals,
+            queryset=ows,
             request=request,
             view=self,
         )

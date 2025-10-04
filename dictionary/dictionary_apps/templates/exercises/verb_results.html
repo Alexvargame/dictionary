@@ -31,6 +31,10 @@
       {% csrf_token %}
       <input type="hidden" name="points" value="{{ points }}">
       <input type="hidden" name="lives_lost" value="{{ lives_lost }}">
+      <input type="hidden" name="tense" value="{{ tense }}">
+      {% for l_id in lections %}
+              <input type="hidden" name="lections" value="{{ l_id }}">
+      {% endfor %}
       <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">Пройти ещё</button>
     </form>
 

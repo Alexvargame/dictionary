@@ -24,14 +24,16 @@
       </li>
     {% endfor %}
   </ul>
-
   <div class="text-center mt-6 flex flex-col sm:flex-row gap-4 justify-center">
   <!-- Повторить -->
     <form method="post" action="{% url 'api:exercises:adjectivs_results_repeat' %}">
       {% csrf_token %}
       <input type="hidden" name="points" value="{{ points }}">
       <input type="hidden" name="lives_lost" value="{{ lives_lost }}">
-      <input type="hidden" name="property_adjective" value="{{ results.0.property_adjective }}">
+      <input type="hidden" name="property_adjective" value="{{ property_adjective }}">
+      {% for l_id in lections %}
+              <input type="hidden" name="lections" value="{{ l_id }}">
+      {% endfor %}
       <button type="submit" class="bg-green-600 text-white px-6 py-2 rounded hover:bg-green-700">Пройти ещё</button>
     </form>
 

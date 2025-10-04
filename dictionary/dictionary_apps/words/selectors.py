@@ -6,10 +6,12 @@ from dictionary.dictionary_apps.common.utils import (get_object)
 from dictionary.dictionary_apps.words.filters import (WordFilter, NounFilter, VerbFilter,
                                                       ArticleFilter, LectionFilter,
                                                       AdjectiveFilter, NumeralFilter,
-                                                      PronounFilter, NounDeclensionsFormFilter)
+                                                      PronounFilter, NounDeclensionsFormFilter,
+                                                      OtherWordsFilter)
 from dictionary.dictionary_apps.words.models import (Word, Lection, Article, Book,
                                                      Noun, WordType, Verb, Adjective,
-                                                     Numeral, Pronoun, NounDeclensionsForm)
+                                                     Numeral, Pronoun, NounDeclensionsForm,
+                                                     OtherWords)
 
 
 def word_list(*, filters=None):
@@ -107,6 +109,13 @@ def noundecl_list(*, filters=None):
     qs = NounDeclensionsForm.objects.all()
     return NounDeclensionsFormFilter(filters, qs).qs
 
+def otherword_get(otherword_id):
+    otherword = get_object(OtherWords, id=otherword_id)
+    return  otherword
+def otherword_list(*, filters=None):
+    filters = filters or {}
+    qs = OtherWords.objects.all()
+    return OtherWordsFilter(filters, qs).qs
 
 
 

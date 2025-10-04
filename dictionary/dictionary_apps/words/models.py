@@ -156,7 +156,7 @@ class Pronoun(Word):
         return f'{self.word}: {self.id}'
 
 class OtherWords(Word):
-    word = models.CharField(max_length=30, verbose_name="Существительное")
+    word = models.CharField(max_length=30, verbose_name="Слово")
     word_translate = models.CharField(max_length=30, verbose_name='Перевод')
 
     class Meta:

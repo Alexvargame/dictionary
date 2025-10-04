@@ -60,6 +60,7 @@ class CreatePronounDTO:
     reflexive_translate: Optional[str] = None
     lection: Optional[int] = None
 
+
 @dataclass
 class CreateNumeralDTO:
     word: str
@@ -141,3 +142,11 @@ class CreateexerciseCasusAdjectiveDTO:
     noun_forms: List
     answer: dict
     question: str
+
+
+@dataclass
+class CreateOtherWordsDTO:
+    word: str
+    word_type: int
+    word_translate: str
+    lection: int

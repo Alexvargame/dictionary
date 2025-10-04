@@ -18,6 +18,8 @@ from .apis.pronoun import (PronounListApi, PronounCreateApi,
 from .apis.neun_declensions import (NounDeclensionsFormDetailApi, NounDeclensionsFormCreateApi,
                                     NounDeclensionsFormDeleteApi, NounDeclensionsFormListApi,
                                     NounDeclensionsFormUpdateApi)
+from .apis.otherwords import (OtherWordsDetailApi, OtherWordsListApi, OtherWordsCreateApi,
+                              OtherWordsDeleteApi, OtherWordsUpdateApi)
 app_name = 'words'
 urlpatterns =[
     path('nouns/', NounListApi.as_view(), name='nouns_list'),
@@ -50,6 +52,11 @@ urlpatterns =[
     path('pronouns/<int:pronoun_id>/update/', PronounUpdateApi.as_view(), name='pronoun_update'),
     path('pronouns/<int:pronoun_id>/delete/', PronounDeleteApi.as_view(), name='pronoun_delete'),
 
+    path('otherwords/', OtherWordsListApi.as_view(), name='otherwords_list'),
+    path('otherwords/create/', OtherWordsCreateApi.as_view(), name='otherword_create'),
+    path('otherwords/<int:ow_id>/', OtherWordsDetailApi.as_view(), name='otherword_detail'),
+    path('otherwords/<int:ow_id>/update/', OtherWordsUpdateApi.as_view(), name='otherword_update'),
+    path('otherwords/<int:ow_id>/delete/', OtherWordsDeleteApi.as_view(), name='otherword_delete'),
 
     path('noun_declensions/', NounDeclensionsFormListApi.as_view(), name='noun_declensions_list'),
     path('noun_declensions/create/', NounDeclensionsFormCreateApi.as_view(), name='noun_declension_create'),

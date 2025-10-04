@@ -152,7 +152,16 @@ from dictionary.dictionary_apps.users.models import BaseUser
 #             request=request,
 #             view=self,
 #         )
-
+class OutputSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    word = serializers.CharField()
+    word_type = serializers.CharField()
+    word_plural = serializers.CharField()
+    plural_sign = serializers.CharField(allow_blank=True, allow_null=True, required=False)
+    word_translate = serializers.CharField()
+    word_translate_plural = serializers.CharField()
+    lection = serializers.CharField()
+    article = serializers.CharField()
 class NounCreateApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
     class InputSerializer(serializers.Serializer):
         word_type = serializers.IntegerField()
@@ -167,39 +176,20 @@ class NounCreateApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
     def post(self, request):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-
-        # article = article_get(serializer.validated_data['article'])
-        # serializer.validated_data['article'] = article
-        # lection = lection_get(serializer.validated_data['lection'])
-        # serializer.validated_data['lection'] = lection
-        # word_type = word_type_get(serializer.validated_data['word_type'])
-        # serializer.validated_data['word_type'] = word_type
-
         data = CreateNounDTO(
             **serializer.validated_data,
         )
         word = NounService(NounRepository()).create_object(data)
-        #data = WordDetailApi.OutputSerializer(word).data
         return Response(f'{word}')
 
 class NounDetailApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
-    class OutputSerializer(serializers.Serializer):
-        id = serializers.IntegerField()
-        word = serializers.CharField()
-        word_type = serializers.CharField()
-        word_plural = serializers.CharField()
-        plural_sign = serializers.CharField(allow_blank=True, allow_null=True, required=False)
-        word_translate = serializers.CharField()
-        word_translate_plural = serializers.CharField()
-        lection = serializers.CharField()
-        article = serializers.CharField()
 
     def get(self, request, noun_id):
         noun = noun_get(noun_id)
         if noun is None:
             raise Http404
         dto = NounService(NounRepository()).detail_object(noun)
-        data = self.OutputSerializer(dto).data
+        data = OutputSerializer(dto).data
         return Response(data)
 
 class NounListApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
@@ -212,18 +202,13 @@ class NounListApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
         lection = serializers.CharField(required=False, allow_null=True)
         article = serializers.CharField(required=False)
 
-    class OutputSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = Noun
-            fields = ('id',  'word_type', 'word', 'word_plural', 'word_translate',
-                    'word_translate_plural','lection', 'article', 'plural_sign')
     def get(self, request):
         filters_serializer = self.FilterSerializer(data=request.query_params)
         filters_serializer.is_valid(raise_exception=True)
         nouns = NounService(NounRepository()).list_objects()
         return get_pagination_response(
             pagination_class=self.Pagination,
-            serializer_class=self.OutputSerializer,
+            serializer_class=OutputSerializer,
             queryset=nouns,
             request=request,
             view=self,
@@ -231,7 +216,7 @@ class NounListApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
 
 class NounUpdateApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
     class InputSerializer(serializers.Serializer):
-        word_type = serializers.IntegerField(required=False, allow_null=True, default=1)
+        #word_type = serializers.IntegerField(required=False, allow_null=True, default=1)
         word = serializers.CharField(required=False)
         word_plural = serializers.CharField(required=False)
         plural_sign = serializers.CharField(allow_blank=True, allow_null=True, required=False)
@@ -266,7 +251,7 @@ class NounUpdateApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
         )
 
         NounService(NounRepository()).update_object(dto)
-        data = NounDetailApi.OutputSerializer(noun).data
+        data = OutputSerializer(noun).data
         return Response(data)
 
 class NounDeleteApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
@@ -274,12 +259,7 @@ class NounDeleteApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
         id = serializers.IntegerField()
     class Pagination(LimitOffsetPagination):
         default_limit = 5
-    class OutputSerializer(serializers.ModelSerializer):
 
-        class Meta:
-            model = Noun
-            fields = ('id',  'word_type', 'word', 'word_plural', 'word_translate',
-                    'word_translate_plural','lection', 'article', 'plural_sign')
     def post(self, request, noun_id):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -288,10 +268,9 @@ class NounDeleteApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
         )
         NounService(NounRepository()).delete_object(serializer.validated_data['id'])
         nouns = NounService(NounRepository()).list_objects()
-        # data = self.OutputSerializer(query, many=True).data
         return get_pagination_response(
             pagination_class=self.Pagination,
-            serializer_class=self.OutputSerializer,
+            serializer_class=OutputSerializer,
             queryset=nouns,
             request=request,
             view=self,

@@ -9,11 +9,37 @@ declensions = [('stark'),]
 
 cases_choice = [('Nominativ'),('Akkusativ'), ('Dativ'), ('Genitiv')]
 
-gender = {'M': {'Maskulinum': 'der'},
-          'F': {'Femininum': 'die'},
-          'N': {'Neutrum': 'das'},
-          'PL': {'Plural': 'die'},
-          }
+genders = {'Nominativ':
+               {
+                   'Maskulinum': 'der',
+                  'Femininum': 'die',
+                  'Neutrum': 'das',
+                  'Plural': 'die',
+                },
+           'Akkusativ':
+                {
+                    'Maskulinum': 'den',
+                  'Femininum': 'die',
+                  'Neutrum': 'das',
+                  'Plural': 'die',
+                 },
+            'Dativ':
+                {
+                  'Maskulinum': 'dem',
+                  'Femininum': 'der',
+                  'Neutrum': 'dem',
+                  'Plural': 'den',
+                 },
+            'Genitiv':
+                {
+                   'Maskulinum': 'des',
+                  'Femininum': 'der',
+                  'Neutrum': 'des',
+                  'Plural': 'der',
+                 },
+
+           }
+
 articles = {
     'der': 'Maskulinum',
     'das': 'Neutrum',

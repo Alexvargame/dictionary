@@ -17,9 +17,9 @@ class NounDTO:
     plural_sign: str
     word_translate: str
     word_translate_plural: str
-    article: Article
-    lection: Lection
-    word_type: WordType
+    article: int
+    lection: int
+    word_type: int
 
 @dataclass
 class VerbDTO:
@@ -39,8 +39,8 @@ class VerbDTO:
     past_prateritum_wir_form: str
     past_prateritum_ihr_form: str
     past_prateritum_Sie_sie_form: str
-    lection: Lection
-    word_type: WordType
+    lection: int
+    word_type: int
 
 @dataclass
 class NounPaarExerciseGermanDTO:
@@ -101,14 +101,15 @@ class NumeralDTO:
     word_type: Optional[int] = None
 @dataclass
 class AdjectiveDTO:
-    id: Optional[int] = None
-    word: Optional[str] = None
-    word_translate: Optional[str] = None
+    id: int
+    word: str
+    word_translate: str
+    lection: int
+    word_type: int
     komparativ: Optional[str] = None
     superlativ: Optional[str] = None
     declensions: Optional[str] = None
-    lection: Optional[int] = None
-    word_type: Optional[int] = None
+
 
 @dataclass
 class NounDeclensionsFormDTO:
@@ -122,3 +123,12 @@ class NounDeclensionsFormDTO:
     plural_akkusativ: str
     plural_dativ: str
     plural_genitiv: str
+
+
+@dataclass
+class OtherWordsDTO:
+    id: int
+    lection: int
+    word_type: int
+    word: Optional[str] = None
+    word_translate: Optional[str] = None

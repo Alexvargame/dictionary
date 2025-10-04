@@ -7,6 +7,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.renderers import TemplateHTMLRenderer
 from django.shortcuts import redirect
+from django.urls import reverse
+from urllib.parse import urlencode
 
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.decorators import login_required
@@ -31,10 +33,13 @@ def generate_exercise(tense=None, verbs=None, count=5):
     # Получаем ID лекций из запроса
     exercises = []
     selected_persons = random.choices(PERSONS, k=count)
+    print(tense)
     for verb, (person, present_field, prateritum_field) in zip(verbs, selected_persons):
         if tense == "present":
+            print('TENS', tense, verb.word, person)
             answer = getattr(verb, present_field)
             question = f"{verb.word} — {person}?"
+            print(question, answer)
         elif tense == "prateritum":
             answer = getattr(verb, prateritum_field)
             question = f"{verb.word} в Präteritum — {person}?"
@@ -50,7 +55,7 @@ def generate_exercise(tense=None, verbs=None, count=5):
                 question=question,
                 correct_answer=answer,
                 person=person,
-                tense=tense
+                tense=tense,
             )
         )
     return exercises
@@ -75,14 +80,20 @@ class VerbExercises(LoginRequiredMixin, APIView):
         filters = {'id__in': random_ids}
         selected_words = WordService(WordRepository()).list_objects(filters)
         exercises = generate_exercise(tense=tense, verbs=selected_words)
+        print('/TENSEGE', tense)
         context = {
             'exercises': exercises,
             'user': request.user,
-            'limit': len(exercises)
+            'limit': len(exercises),
+            'lections': lection_ids,
+            'tense': tense,
         }
         return Response(context)
 
     def post(self, request):
+        #property_verb = request.GET.get('property_verb')
+        lection_ids = request.POST.getlist('lections')
+        tense = request.POST.get('tense')
         count = 5
         correct_count = 0
         results = []
@@ -111,13 +122,15 @@ class VerbExercises(LoginRequiredMixin, APIView):
             user.score += points
             user.lifes = max(user.lifes - lives_lost, 0)
             user.save()
-
+        print('TENSEe', tense)
         return Response(
                 {
                 'results': results,
                 'points': points,
                 'lives_lost': lives_lost,
                 'user': request.user,
+                'tense': tense,
+                'lections': lection_ids,
             },
             template_name='exercises/verb_results.html')
 
@@ -128,16 +141,23 @@ class VerbExercises(LoginRequiredMixin, APIView):
 @csrf_exempt
 @login_required
 def verb_results_repeat(request):
+    print('REQPOST', request.POST)
     if request.method == "POST":
         points = int(request.POST.get("points", 0))
         lives_lost = int(request.POST.get("lives_lost", 0))
+        tense = str(request.POST.get('tense'))
+        lection_ids = request.POST.getlist('lections')
 
         user = request.user
-        user.score += points
-        user.lifes = max(user.lifes - lives_lost, 0)
-        user.save()
-
-        return redirect("api:exercises:select_lections_verbs")
+        # user.score += points
+        # user.lifes = max(user.lifes - lives_lost, 0)
+        # user.save()
+        params = {'tense': tense}
+        for l_id in lection_ids:
+            params.setdefault('lections', []).append(l_id)
+        url = reverse("api:exercises:exercises_verbs") + "?" + urlencode(params, doseq=True)
+        return redirect(url)
+        #return redirect("api:exercises:select_lections_verbs")
     return HttpResponseBadRequest()
 
 
@@ -149,9 +169,9 @@ def verb_results_stop(request):
         lives_lost = int(request.POST.get("lives_lost", 0))
 
         user = request.user
-        user.score += points
-        user.lifes = max(user.lifes - lives_lost, 0)
-        user.save()
+        # user.score += points
+        # user.lifes = max(user.lifes - lives_lost, 0)
+        # user.save()
 
         return redirect("api:exercises:exercises_page")  # или на другую страницу
     return HttpResponseBadRequest()

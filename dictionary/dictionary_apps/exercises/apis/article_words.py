@@ -111,13 +111,7 @@ def article_results_repeat(request):
     if request.method == "POST":
         points = int(request.POST.get("points", 0))
         lives_lost = int(request.POST.get("lives_lost", 0))
-
-        user = request.user
-        user.score += points
-        user.lifes = max(user.lifes - lives_lost, 0)
-        user.save()
-
-        return redirect("api:exercises:select_lections_article_words")
+        return redirect("api:exercises:article_words")
     return HttpResponseBadRequest()
 
 
@@ -127,11 +121,6 @@ def article_results_stop(request):
     if request.method == "POST":
         points = int(request.POST.get("points", 0))
         lives_lost = int(request.POST.get("lives_lost", 0))
-
         user = request.user
-        user.score += points
-        user.lifes = max(user.lifes - lives_lost, 0)
-        user.save()
-
         return redirect("api:exercises:exercises_page")  # или на другую страницу
     return HttpResponseBadRequest()

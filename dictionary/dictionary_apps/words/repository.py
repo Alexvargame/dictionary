@@ -1,20 +1,22 @@
 from django.db import transaction
 
 from dictionary.dictionary_apps.words.models import (Word, Noun, Verb, Article,
-                                                     Lection, Pronoun, Adjective,
+                                                     Lection, Pronoun, Adjective, OtherWords,
                                                      Numeral, WordType, NounDeclensionsForm)
 from dictionary.dictionary_apps.words.selectors import (word_list, noun_list, verb_list,
                                                         article_list, lection_list,
-                                                        pronoun_list, adjective_get,
-                                                        numeral_list, lection_get, word_type_get,
-                                                        adjective_list, noundecl_get,
-                                                        noundecl_list, noun_get)
+                                                        pronoun_list, numeral_list,
+                                                        lection_get, word_type_get,
+                                                        adjective_list, noundecl_list,
+                                                        noun_get, otherword_list)
 from dictionary.dictionary_apps.dtos.words.response_dto import (WordDTO, NounDTO,VerbDTO, ArticleDTO,
                                                                 LectionDTO, PronounDTO, AdjectiveDTO,
-                                                                NumeralDTO, NounDeclensionsFormDTO)
-from dictionary.dictionary_apps.dtos.words.request_dto import (CreateWordDTO, CreateNounDTO,
-                                                               CreatePronounDTO, CreateAdjectiveDTO,
-                                                               CreateNumeralDTO, CreateNounDeclensionsFormDTO)
+                                                                NumeralDTO, NounDeclensionsFormDTO,
+                                                                OtherWordsDTO)
+# from dictionary.dictionary_apps.dtos.words.request_dto import (CreateWordDTO, CreateNounDTO,
+#                                                                CreatePronounDTO, CreateAdjectiveDTO,
+#                                                                CreateNumeralDTO, CreateNounDeclensionsFormDTO,
+#                                                                CreateOtherWordsDTO)
 from dictionary.dictionary_apps.common.services import model_update
 
 
@@ -55,7 +57,6 @@ class NounRepository:
 
     def list_objects(self, filters=None):
         lst_dto = []
-        print('FILR', filters)
         for obj in noun_list(filters=filters):
             tmp_dto = self.dto(
                 id=obj.id,
@@ -530,6 +531,61 @@ class NounDeclensionsFormRepository:
         noun_declensions = self.model.objects.get(id=noun_id)
         noun_declensions.delete()
 
+class OtherWordsRepository:
+    model = OtherWords
+    dto = OtherWordsDTO
+
+    @transaction.atomic
+    def create_object(self, dto):
+        lection = Lection.objects.get(id=dto.lection)
+        word_type = WordType.objects.get(id=dto.word_type)
+        word = self.model.objects.create(
+            word=dto.word,
+            word_type=word_type,
+            lection=lection,
+            word_translate=dto.word_translate,
+        )
+        return word
+
+    def detail_object(self, obj):
+        dto = self.dto (
+            id=obj.id,
+            word_type=obj.word_type,
+            word=obj.word,
+            word_translate=obj.word_translate,
+            lection=obj.lection,
+        )
+        return dto
+
+    def list_objects(self, filters=None):
+        lst_dto = []
+        print('FILR', filters)
+        for obj in otherword_list(filters=filters):
+            tmp_dto = self.dto(
+                id=obj.id,
+                word_type=obj.word_type,
+                word=obj.word,
+                word_translate=obj.word_translate,
+                lection=obj.lection,
+            )
+            lst_dto.append(tmp_dto)
+        return lst_dto
+
+    @transaction.atomic
+    def update_object(self, dto):
+
+        otherword = self.model.objects.get(id=dto.id)
+        for field, value in dto.__dict__.items():
+            if field in [f.name for f in otherword._meta.fields]:
+                setattr(otherword, field, value)
+        otherword.save()
+
+    @transaction.atomic
+    def delete_object(self, otherword_id):
+
+        otherword = self.model.objects.get(id=otherword_id)
+        otherword.delete()
+
 dto_dictionary = {
     'Noun' : NounRepository,
     'Verb' : VerbRepository,
@@ -537,6 +593,7 @@ dto_dictionary = {
     'Adjective': AdjectiveRepository,
     'Pronoun': PronounRepository,
     'NounDeclensionsform': NounDeclensionsFormRepository,
+    'OtherWords': OtherWordsRepository,
 }
 
 

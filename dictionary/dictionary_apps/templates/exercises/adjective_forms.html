@@ -10,7 +10,6 @@
     <div id="user-name" class="text-blue-700">{{ user.username }}</div>
     <div id="lifes" class="text-red-600">❤️ {{ user.lifes }}</div>
     <div id="score_all" class="text-red-600"> Всего баллов: {{ user.score }}</div>
-    <div id="score" class="text-green-600">Баллы: {{ user.score }}</div>
   </div>
   <form method="post">
     {% csrf_token %}
@@ -21,6 +20,9 @@
           <input type="text" name="answer_{{ forloop.counter }}" class="mt-2 w-full border px-3 py-2 rounded text-black" placeholder="Ваш ответ">
           <input type="hidden" name="correct_{{ forloop.counter }}" value="{{ ex.correct_answer }}">
           <input type="hidden" name="question_{{ forloop.counter }}" value="{{ ex.question }}">
+          {% for l_id in lections %}
+              <input type="hidden" name="lections" value="{{ l_id }}">
+          {% endfor %}
         </li>
       {% endfor %}
     </ul>

@@ -13,7 +13,7 @@ from .apis.exercises import (exercises_page, select_lections_ordering_words, sel
 from .apis.pronouns import (Pronouns, pronouns_results_stop, pronouns_results_repeat)
 from .apis.numerals import (Numerals, numerals_results_stop, numerals_results_repeat)
 from .apis.adjectivs_exercises import (AdjectiveExercises, adjectivs_results_stop,
-                                       adjectivs_results_repeat, AdjectiveExercisesRepeat,
+                                       adjectivs_results_repeat,
                                        AdjectiveCasusExercises)
 
 app_name = 'exercises'

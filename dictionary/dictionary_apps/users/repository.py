@@ -20,7 +20,8 @@ class UsersRepository:
             is_active=dto.is_active,
             user_role=dto.user_role,
             password=dto.password,
-            telegram_username = dto.telegram_username
+            telegram_username=dto.telegram_username,
+            chat_id=dto.chat_id,
 
         )
         return user

@@ -28,6 +28,20 @@ from dictionary.dictionary_apps.words.repository import WordRepository, PronounR
 from dictionary.dictionary_apps.users.models import BaseUser
 
 
+class OutputSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    word_type = serializers.CharField()
+    word = serializers.CharField()
+    word_translate = serializers.CharField()
+    lection = serializers.CharField()
+    akkusativ = serializers.CharField()
+    akkusativ_translate = serializers.CharField()
+    dativ = serializers.CharField()
+    dativ_translate = serializers.CharField()
+    prossessive = serializers.CharField()
+    prossessive_translate = serializers.CharField()
+    reflexive = serializers.CharField()
+    reflexive_translate = serializers.CharField()
 
 class PronounCreateApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
     class InputSerializer(serializers.Serializer):
@@ -54,27 +68,14 @@ class PronounCreateApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
             return Response(f'{word}')
 
 class PronounDetailApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
-    class OutputSerializer(serializers.Serializer):
-        id = serializers.IntegerField()
-        word_type = serializers.CharField()
-        word = serializers.CharField()
-        word_translate = serializers.CharField()
-        lection = serializers.CharField()
-        akkusativ = serializers.CharField()
-        akkusativ_translate = serializers.CharField()
-        dativ = serializers.CharField()
-        dativ_translate = serializers.CharField()
-        prossessive = serializers.CharField()
-        prossessive_translate = serializers.CharField()
-        reflexive = serializers.CharField()
-        reflexive_translate = serializers.CharField()
+
 
     def get(self, request, pronoun_id):
         pronoun = pronoun_get(pronoun_id)
         if pronoun is None:
             raise Http404
         dto = PronounService(PronounRepository()).detail_object(pronoun)
-        data = self.OutputSerializer(dto).data
+        data = OutputSerializer(dto).data
         return Response(data)
 
 class PronounListApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
@@ -86,21 +87,13 @@ class PronounListApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
         id = serializers.IntegerField(required=False)
         lection = serializers.CharField(required=False, allow_null=True)
 
-    class OutputSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = Pronoun
-            fields = ('id', 'word', 'word_translate', 'lection',
-                    'akkusativ', 'akkusativ_translate', 'dativ',
-                    'dativ_translate', 'prossessive',
-                    'prossessive_translate','reflexive',)
-
     def get(self, request):
         filters_serializer = self.FilterSerializer(data=request.query_params)
         filters_serializer.is_valid(raise_exception=True)
         pronouns = PronounService(PronounRepository()).list_objects()
         return get_pagination_response(
             pagination_class=self.Pagination,
-            serializer_class=self.OutputSerializer,
+            serializer_class=OutputSerializer,
             queryset=pronouns,
             request=request,
             view=self,
@@ -108,7 +101,7 @@ class PronounListApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
 
 class PronounUpdateApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
     class InputSerializer(serializers.Serializer):
-        word_type = serializers.IntegerField(required=False, allow_null=True, default=1)
+        #word_type = serializers.IntegerField(required=False, allow_null=True, default=1)
         word = serializers.CharField(required=False)
         akkusativ = serializers.CharField(required=False, allow_null=True, allow_blank=True)
         dativ = serializers.CharField(allow_blank=True, allow_null=True, required=False)
@@ -139,7 +132,7 @@ class PronounUpdateApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
         )
         PronounService(PronounRepository()).update_object(dto)
         pronoun= pronoun_get(pronoun_id)
-        data = PronounDetailApi.OutputSerializer(pronoun).data
+        data = OutputSerializer(pronoun).data
         return Response(data)
 
 class PronounDeleteApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
@@ -147,14 +140,7 @@ class PronounDeleteApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
         id = serializers.IntegerField()
     class Pagination(LimitOffsetPagination):
         default_limit = 5
-    class OutputSerializer(serializers.ModelSerializer):
 
-        class Meta:
-            model = Pronoun
-            fields = ('id', 'word', 'word_translate', 'lection',
-                    'akkusativ', 'akkusativ_translate', 'dativ',
-                    'dativ_translate', 'prossessive',
-                    'prossessive_translate','reflexive',)
 
     def post(self, request, pronoun_id):
 
@@ -164,7 +150,7 @@ class PronounDeleteApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
         pronouns = PronounService(PronounRepository()).list_objects()
         return get_pagination_response(
             pagination_class=self.Pagination,
-            serializer_class=self.OutputSerializer,
+            serializer_class=OutputSerializer,
             queryset=pronouns,
             request=request,
             view=self,

@@ -27,6 +27,17 @@ from dictionary.dictionary_apps.words.repository import NounDeclensionsFormRepos
 from dictionary.dictionary_apps.users.models import BaseUser
 
 
+class OutputSerializer(serializers.Serializer):
+    id = serializers.IntegerField()
+    noun = serializers.CharField()
+    nominativ = serializers.CharField()
+    akkusativ = serializers.CharField()
+    dativ = serializers.CharField()
+    genitiv = serializers.CharField()
+    plural_nominativ = serializers.CharField()
+    plural_akkusativ = serializers.CharField()
+    plural_dativ = serializers.CharField()
+    plural_genitiv = serializers.CharField()
 
 class NounDeclensionsFormCreateApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
     class InputSerializer(serializers.Serializer):
@@ -47,28 +58,17 @@ class NounDeclensionsFormCreateApi(LoginRequiredMixin, LimitOffsetPagination, AP
             **serializer.validated_data,
         )
         word = NounDeclensionsFormService(NounDeclensionsFormRepository()).create_object(data)
-        #data = WordDetailApi.OutputSerializer(word).data
         return Response(f'{word}')
 
 class NounDeclensionsFormDetailApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
-    class OutputSerializer(serializers.Serializer):
-        id = serializers.IntegerField()
-        noun = serializers.CharField()
-        nominativ = serializers.CharField()
-        akkusativ = serializers.CharField()
-        dativ = serializers.CharField()
-        genitiv = serializers.CharField()
-        plural_nominativ = serializers.CharField()
-        plural_akkusativ = serializers.CharField()
-        plural_dativ = serializers.CharField()
-        plural_genitiv = serializers.CharField()
+
 
     def get(self, request, noun_declensions_id):
         noun_declensions = noundecl_get(noun_declensions_id)
         if noun_declensions is None:
             raise Http404
         dto = NounDeclensionsFormService(NounDeclensionsFormRepository()).detail_object(noun_declensions)
-        data = self.OutputSerializer(dto).data
+        data = OutputSerializer(dto).data
         return Response(data)
 
 class NounDeclensionsFormListApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
@@ -79,21 +79,13 @@ class NounDeclensionsFormListApi(LoginRequiredMixin, LimitOffsetPagination, APIV
     class FilterSerializer(serializers.Serializer):
         id = serializers.IntegerField(required=False)
 
-
-    class OutputSerializer(serializers.ModelSerializer):
-        class Meta:
-            model = NounDeclensionsForm
-            fields = ('id', 'noun','nominativ',
-                        'genitiv', 'dativ', 'akkusativ',
-                        'plural_nominativ', 'plural_genitiv',
-                        'plural_dativ', 'plural_akkusativ')
     def get(self, request):
         filters_serializer = self.FilterSerializer(data=request.query_params)
         filters_serializer.is_valid(raise_exception=True)
         noun_declensions = NounDeclensionsFormService(NounDeclensionsFormRepository()).list_objects()
         return get_pagination_response(
             pagination_class=self.Pagination,
-            serializer_class=self.OutputSerializer,
+            serializer_class=OutputSerializer,
             queryset=noun_declensions,
             request=request,
             view=self,
@@ -112,13 +104,10 @@ class NounDeclensionsFormUpdateApi(LoginRequiredMixin, LimitOffsetPagination, AP
         plural_genitiv = serializers.CharField(required=False)
 
     def post(self, request, noun_declensions_id):
-        print(request.data)
         noun_declensions = noundecl_get(noun_declensions_id)
-
         merged_data = {**NounDeclensionsFormService(NounDeclensionsFormRepository()).detail_object(noun_declensions).__dict__, **request.data}
         if isinstance(merged_data.get('noun'), Noun):
             merged_data['noun'] = str(merged_data['noun'].id)
-        print(merged_data)
         serializer = self.InputSerializer(data=merged_data)
         serializer.is_valid(raise_exception=True)
         serializer.validated_data['id'] = noun_declensions_id
@@ -127,7 +116,7 @@ class NounDeclensionsFormUpdateApi(LoginRequiredMixin, LimitOffsetPagination, AP
         )
 
         NounDeclensionsFormService(NounDeclensionsFormRepository()).update_object(dto)
-        data = NounDeclensionsFormDetailApi.OutputSerializer(noun_declensions).data
+        data = OutputSerializer(noun_declensions).data
         return Response(data)
 
 class NounDeclensionsFormDeleteApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
@@ -135,14 +124,7 @@ class NounDeclensionsFormDeleteApi(LoginRequiredMixin, LimitOffsetPagination, AP
         id = serializers.IntegerField()
     class Pagination(LimitOffsetPagination):
         default_limit = 5
-    class OutputSerializer(serializers.ModelSerializer):
 
-        class Meta:
-            model = Noun
-            fields = ('id', 'noun','nominativ',
-                        'genitiv', 'dativ', 'akkusativ',
-                        'plural_nominativ', 'plural_genitiv',
-                        'plural_dativ', 'plural_akkusativ')
     def post(self, request, noun_id):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -150,7 +132,7 @@ class NounDeclensionsFormDeleteApi(LoginRequiredMixin, LimitOffsetPagination, AP
         noun_declensions = NounDeclensionsFormService(NounDeclensionsFormRepository()).list_objects()
         return get_pagination_response(
             pagination_class=self.Pagination,
-            serializer_class=self.OutputSerializer,
+            serializer_class=OutputSerializer,
             queryset=noun_declensions,
             request=request,
             view=self,
