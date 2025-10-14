@@ -2,8 +2,8 @@ from dictionary.dictionary_apps.users.models import BaseUser, UserRole
 
 from django.db import transaction
 
-from dictionary.dictionary_apps.users.selectors import user_list
-from dictionary.dictionary_apps.dtos.users.response_dto import UserDTO
+from dictionary.dictionary_apps.users.selectors import user_list, user_role_list
+from dictionary.dictionary_apps.dtos.users.response_dto import UserDTO, UserRoleDTO
 from dictionary.dictionary_apps.common.services import model_update
 
 class UsersRepository:
@@ -42,6 +42,8 @@ class UsersRepository:
             lifes = obj.lifes,
             chat_id =obj.chat_id,
             telegram_username=obj.telegram_username,
+            registration_date=obj.registration_date,
+            last_login_date=obj.last_login_date,
         )
         return dto
 
@@ -63,6 +65,8 @@ class UsersRepository:
                 lifes = obj.lifes,
                 chat_id = obj.chat_id,
                 telegram_username=obj.telegram_username,
+                registration_date=obj.registration_date,
+                last_login_date=obj.last_login_date,
             )
             lst_dto.append(tmp_dto)
         return lst_dto
@@ -70,10 +74,10 @@ class UsersRepository:
     def update_object(self, dto):
 
         user = self.model.objects.get(id=dto.id)
-        for key, value in dto.__dict__.items():
-            user.__dict__[key] = value
+        for field, value in dto.__dict__.items():
+            if field in [f.name for f in user._meta.fields]:
+                setattr(user, field, value)
         # user, has_updated = model_update(instance=user, fields=non_side_effect_fields, data=data)
-
         user.save()
 
 
@@ -103,3 +107,34 @@ class UsersRepository:
         user = BaseUser.objects.get(chat_id=chat_id)
         user.telegram_username = username
         user.save()
+
+
+class UserRoleRepository:
+    model = UserRole
+
+    @transaction.atomic
+    def create_object(self, dto):
+        user = self.model.objects.create_user(
+            name=dto.name,
+            description=dto.description,
+        )
+        return user
+
+    def detail_object(self, obj):
+        dto = UserRoleDTO(
+            id=obj.id,
+            name=obj.name,
+            description=obj.description,
+        )
+        return dto
+
+    def list_objects(self):
+        lst_dto = []
+        for obj in user_role_list(filters=None):
+            tmp_dto = UserRoleDTO(
+                    id=obj.id,
+                    name=obj.name,
+                    description=obj.description,
+            )
+            lst_dto.append(tmp_dto)
+        return lst_dto

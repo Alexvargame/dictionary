@@ -22,3 +22,8 @@ class CreateUserDTO:
 
 
 
+@dataclass
+class  CreateUserRoleDTO:
+
+    name: str
+    description: str

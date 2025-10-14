@@ -48,3 +48,19 @@ class UsersService:
 
     def get_user_by_id(self, user_id):
         self.repository.get_user_by_id(user_id)
+
+
+class UserRoleService:
+
+    def __init__(self, repository):
+        self.repository = repository
+
+    def create_object(self, dto):
+        return self.repository.create_object(dto)
+
+
+    def detail_object(self, obj):
+        return self.repository.detail_object(obj)
+
+    def list_objects(self):
+        return self.repository.list_objects()

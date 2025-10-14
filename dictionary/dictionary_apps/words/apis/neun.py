@@ -232,9 +232,7 @@ class NounUpdateApi(LoginRequiredMixin, LimitOffsetPagination, APIView):
         #     default=1
         # )
     def post(self, request, noun_id):
-        print(request.data)
         noun = noun_get(noun_id)
-
         merged_data = {**NounService(NounRepository()).detail_object(noun).__dict__, **request.data}
         if isinstance(merged_data.get('lection'), Lection):
             merged_data['lection'] = str(merged_data['lection'].id)

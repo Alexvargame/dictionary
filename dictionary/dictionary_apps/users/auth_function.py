@@ -9,10 +9,10 @@ def register(request):
         form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()  # Создаем пользователя
-            message.success(request, 'URA')
+            messages.success(request, 'URA')
             login(request, user)  # Залогиним пользователя сразу
 
-            return redirect('main_page')  # Перенаправляем на главную страницу
+            return redirect('api:main_page')  # Перенаправляем на главную страницу
     else:
         form = CustomUserCreationForm()
     return render(request, 'users/user_registration.html', {'form': form})
