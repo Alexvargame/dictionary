@@ -27,17 +27,14 @@
               {% endfor %}
             </select>
           </div>
-
           <div>
             <label class="block text-sm font-medium text-black">Активен</label>
             <input type="checkbox" name="is_active" {% if user_profile.is_active %}checked{% endif %} class="h-4 w-4" />
           </div>
-
           <div>
             <label class="block text-sm font-medium text-black">Администратор</label>
             <input type="checkbox" name="is_admin" {% if user_profile.is_admin %}checked{% endif %} class="h-4 w-4" />
           </div>
-
           <div>
             <label class="block text-sm font-medium text-black">Очки (score)</label>
             <input type="number" name="score" value="{{ user_profile.score }}" class="w-full border rounded p-2 text-black" />

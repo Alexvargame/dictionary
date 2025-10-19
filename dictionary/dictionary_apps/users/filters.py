@@ -7,7 +7,6 @@ class BaseUserFilter(django_filters.FilterSet):
     class Meta:
         model = BaseUser
         fields = ("id", "email", "is_admin", "user_role")
-
 class UserRoleFilter(django_filters.FilterSet):
     class Meta:
         model = UserRole

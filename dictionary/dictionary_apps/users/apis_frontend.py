@@ -225,7 +225,6 @@ class UserFrontUpdateApi(LoginRequiredMixin, APIView):
             'is_admin_editing': is_admin_editing,
             'roles': roles,
         })
-
     def post(self, request, user_id):
         print(request.POST)
         user = user_get(user_id)

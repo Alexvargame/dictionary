@@ -57,8 +57,6 @@ class UserRoleService:
 
     def create_object(self, dto):
         return self.repository.create_object(dto)
-
-
     def detail_object(self, obj):
         return self.repository.detail_object(obj)
 

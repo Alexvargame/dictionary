@@ -9,7 +9,6 @@
       <a href="{% url 'api:exercises:exercises_page' %}" class="px-3 py-2 rounded-md text-white font-medium">Упражнения</a>
       <a href="#" class="px-3 py-2 rounded-md text-white font-medium">Контакты</a>
       <a href="#" class="px-3 py-2 rounded-md text-white font-medium">Полезные ссылки</a>
-
       {% if user.is_authenticated %}
         <a href="{% url 'api:users:user_detail' user_id=user.id %}" class="px-3 py-2 rounded-md text-white font-medium">Профиль</a>
         <a href="{% url 'api:users:user_logout' %}" class="px-3 py-2 rounded-md text-white font-medium">Выход</a>

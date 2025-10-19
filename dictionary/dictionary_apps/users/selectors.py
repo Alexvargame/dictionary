@@ -16,12 +16,6 @@ def user_get(user_id):
     user = get_object(BaseUser, id=user_id)
     print('gET-USR', user)
     return user
-# def user_get(user_id):
-#     try:
-#         return BaseUser.objects.get(id=user_id)
-#     except BaseUser.DoesNotExist:
-#         return None
-
 
 def user_role_list(*, filters=None):
     filters = filters or {}

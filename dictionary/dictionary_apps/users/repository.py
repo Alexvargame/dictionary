@@ -79,8 +79,6 @@ class UsersRepository:
                 setattr(user, field, value)
         # user, has_updated = model_update(instance=user, fields=non_side_effect_fields, data=data)
         user.save()
-
-
     def get_user_by_email(self, email):
         user = BaseUser.objects.get(email=email)
         return user

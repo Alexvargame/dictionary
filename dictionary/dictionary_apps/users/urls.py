@@ -16,7 +16,6 @@ urlpatterns =[
     path('logout/', logout_view, name='user_logout'),
     path('list/', UserFrontListApi.as_view(), name='users_list'),
 
-    # path('fr/<int:user_id>/', UserDetailApiFrontEnd.as_view(), name='user_detail_frontend'),
-    # path('fr/<int:user_id>/list/', UserPropertyListApiFrontEnd.as_view(), name='user_list_objects'),
+
 
 ]

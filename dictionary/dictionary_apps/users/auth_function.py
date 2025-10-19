@@ -3,7 +3,6 @@ from django.contrib.auth import login, logout
 from .forms import CustomUserCreationForm, CustomAuthenticationForm
 from django.contrib import messages
 
-
 def register(request):
     if request.method == 'POST':
         form = CustomUserCreationForm(request.POST)

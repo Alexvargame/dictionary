@@ -3,7 +3,6 @@
 {% block content %}
 <div class="max-w-6xl mx-auto p-6">
   <h1 class="text-2xl font-bold mb-4 text-black">Пользователи</h1>
-
   <!-- Форма фильтра -->
   <form method="get" class="flex flex-wrap gap-4 mb-6">
     <input type="text" name="email" placeholder="Email" value="{{ request.GET.email|default:'' }}" class="border rounded p-2 text-black" />

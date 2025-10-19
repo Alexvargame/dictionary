@@ -26,6 +26,8 @@ class  UserRoleDTO:
     id: int
     name: str
     description: str
+
+
 # class UserDTO:
 #     # предположим, у тебя __init__ ожидает эти параметры (подгони под свой)
 #     def __init__(self, id, password, username, is_admin, is_active,
