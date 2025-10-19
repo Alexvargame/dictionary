@@ -5,16 +5,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="b0768931-b005-4c61-9d36-3c166854d500" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_05_08_2025_13_31_[Changes]/shelved.patch" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_05_08_2025_13_31__Changes_.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/shelf/Uncommitted_changes_before_Update_at_05_08_2025_13_31__Changes_.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dictionary/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/dictionary/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/dictionary/config/django/base.py" beforeDir="false" afterPath="$PROJECT_DIR$/dictionary/config/django/base.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dictionary/dictionary_apps/callback/apis/callback_telegram.py" beforeDir="false" afterPath="$PROJECT_DIR$/dictionary/dictionary_apps/callback/apis/callback_telegram.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dictionary/dictionary_apps/callback/urls.py" beforeDir="false" afterPath="$PROJECT_DIR$/dictionary/dictionary_apps/callback/urls.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dictionary/dictionary_apps/templates/include/footer.html" beforeDir="false" afterPath="$PROJECT_DIR$/dictionary/dictionary_apps/templates/include/footer.html" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dictionary/dictionary_apps/users/models.py" beforeDir="false" afterPath="$PROJECT_DIR$/dictionary/dictionary_apps/users/models.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dictionary/dictionary_apps/users/repository.py" beforeDir="false" afterPath="$PROJECT_DIR$/dictionary/dictionary_apps/users/repository.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dictionary/dictionary_apps/users/services.py" beforeDir="false" afterPath="$PROJECT_DIR$/dictionary/dictionary_apps/users/services.py" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -24,21 +18,21 @@
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
-  <component name="ProjectColorInfo"><![CDATA[{
-  "customColor": "",
-  "associatedIndex": 1
-}]]></component>
+  <component name="ProjectColorInfo">{
+  &quot;customColor&quot;: &quot;&quot;,
+  &quot;associatedIndex&quot;: 1
+}</component>
   <component name="ProjectId" id="31U9yXu0knw7774TcApHcntis7z" />
   <component name="ProjectViewState">
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "git-widget-placeholder": "main"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;main&quot;
   }
-}]]></component>
+}</component>
   <component name="RecentsManager">
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\Python311\django\dictionary" />

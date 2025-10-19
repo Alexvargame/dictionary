@@ -23,7 +23,7 @@ CHAT_ID = os.environ.get("TELEGRAM_OWNER_CHAT_ID")
 SECRET_KEY = 'django-insecure-hcxau%c85fa^d2+s!qxcu06*=or^!vcj-ri0(kip0@jlfydc%^'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
 ALLOWED_HOSTS = ['alex2776.pythonanywhere.com', '127.0.0.1']
 
