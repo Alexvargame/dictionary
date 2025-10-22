@@ -8,11 +8,6 @@ from dictionary.dictionary_apps.dtos.callback.response_dto import MessagerDTO
 from dictionary.dictionary_apps.dtos.callback.request_dto import CreateMessageDTO
 from dictionary.dictionary_apps.common.services import model_update
 
-
-
-
-
-
 class MessageRepository:
     model = SiteMessage
     dto = MessagerDTO

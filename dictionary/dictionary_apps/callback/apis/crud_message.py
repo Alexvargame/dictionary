@@ -10,7 +10,6 @@ from dictionary.dictionary_apps.api.pagination import (
     LimitOffsetPagination,
     get_pagination_response,
 )
-
 from dictionary.dictionary_apps.callback.models import SiteMessage
 
 from dictionary.dictionary_apps.callback.selectors import (message_list, message_get)
