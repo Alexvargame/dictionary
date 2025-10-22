@@ -94,6 +94,7 @@ class CallBackTelegram(LoginRequiredMixin, APIView):
         # message_telegram_id = messagetext.get('id')
         user = UsersService(UsersRepository()).get_user_by_email(contact)
         print(user, user.chat_id)
+        print('TOKE, chat', BOT_TOKEN, CHAT_ID)
         dto = CreateMessageDTO(
             user = user,
             text = messagetext,
@@ -103,7 +104,7 @@ class CallBackTelegram(LoginRequiredMixin, APIView):
         )
         message = MessageService(MessageRepository()).create_object(dto)
         text = f"📩 Новое сообщение с сайта\n\n👤 Контакт: {message.user}\n💬 Сообщение: {message.text}"
-        print('TOKE, chat', BOT_TOKEN, CHAT_ID)
+
         if BOT_TOKEN and CHAT_ID:
             url = f'https://api.telegram.org/bot{BOT_TOKEN}/sendMessage'
             requests.post(url, data = {'chat_id': user.chat_id, 'text': text})
