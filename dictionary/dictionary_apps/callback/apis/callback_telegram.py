@@ -198,7 +198,9 @@ class CallBackWebhookTelegram(APIView):
             print('NOT REPLY')
         user = None
         try:
+            print('Провервка ющера', chat_id,  chat.get('username') )
             user = UsersService(UsersRepository()).get_user_by_chat_id(chat_id)
+            print('uSER', user)
             if user.telegram_username == None:
                 UsersService(UsersRepository()).set_telegram_username(chat_id, chat.get('username', ''))
             print(f"Найден пользователь по chat_id: {user.email}")
@@ -213,8 +215,9 @@ class CallBackWebhookTelegram(APIView):
                     send_message(chat_id, "Спасибо! Теперь я смогу писать вам сюда 🙌")
                 except Exception as e:
                     print(f"Ошибка при вызове ask_email: {e}")
-                    send_message(chat_id, "Произошла ошибка при сохранении emeil" )
+                    send_message(chat_id, "Произошла ошибка при сохранении email" )
             else:
+                print('_ USERRRCHAT_AI' , chat_id)
                 ask_email(chat_id)
                 # Если пользователь найден — логируем
         else:
@@ -226,7 +229,7 @@ class CallBackWebhookTelegram(APIView):
                 return Response({'ok': True})
             if text.startswith("/message_user"):
                 abonent_user, message_text = handle_command_user_message(int(CHAT_ID), text)
-                print(abonent_user, message_text)
+                print('A<JYYTN', abonent_user, message_text)
                 if abonent_user and message_text:
                     dto = CreateMessageDTO(
                         user=user,
