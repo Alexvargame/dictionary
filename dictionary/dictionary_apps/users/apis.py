@@ -2,13 +2,14 @@ from django.http import Http404
 from rest_framework import serializers
 from rest_framework.response import Response
 from rest_framework.views import APIView
+import datetime
 
 from dictionary.dictionary_apps.api.pagination import (
     LimitOffsetPagination,
     get_pagination_response,
 )
 
-from dictionary.dictionary_apps.users.models import BaseUser
+from dictionary.dictionary_apps.users.models import BaseUser, UserRole
 from dictionary.dictionary_apps.users.selectors import user_get
 
 from dictionary.dictionary_apps.users.services import UsersService
@@ -134,6 +135,10 @@ class UserUpdateApi(LimitOffsetPagination, APIView):
         serializer = self.InputSerializer(data=merged_data)
         serializer.is_valid(raise_exception=True)
         serializer.validated_data['id'] = user.id
+        serializer.validated_data['registration_date'] = user.registration_date
+        serializer.validated_data['last_login_date'] = datetime.datetime.now()
+        serializer.validated_data['user_role'] = UserRole.objects.get(id=merged_data['user_role'])
+
         dto = UserDTO(
            **serializer.validated_data
         )
