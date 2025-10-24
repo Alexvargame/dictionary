@@ -131,6 +131,7 @@ class CallBackWebhookTelegram(APIView):
         except Exception as e:
             print("JSON Error:", e)
             return Response({'ok': False, 'error': 'Invalid JSON'}, status=400)
+        print('ADTAaa', data)
         message = data.get('message')
         message_telegram_id = message.get('message_id')
         print('MESSAGE', message)
