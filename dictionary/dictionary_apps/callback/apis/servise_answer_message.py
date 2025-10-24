@@ -59,10 +59,11 @@ class ReplyMessageApi(APIView):
                 f"Email: {dto.recipient.email}\n"
                 f"Username: {dto.recipient.telegram_username}\n"
                 f"ChatID: {dto.recipient.chat_id}\n"
+                f"Telegram_id: {dto.telegram_id}\n"
                 f"Text: {dto.answer_text}"
             )
             print('Answr', formatted_reply)
-            send_message(dto.recipient.chat_id, formatted_reply)
+            send_message(dto.user.chat_id, formatted_reply)
             send_message(int(CHAT_ID), f"✅ Ответ отправлен пользователю {dto.recipient.chat_id}")
 
         return redirect('api:callback:messages_list_sort')

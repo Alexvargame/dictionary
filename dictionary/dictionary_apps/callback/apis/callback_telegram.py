@@ -146,7 +146,19 @@ class CallBackWebhookTelegram(APIView):
             if chat_id == int(CHAT_ID):
                 original_text = reply_to.get('text', '')
                 print('ORIGINAL', original_text)
-                message_for_reply_telegram_id = int(original_text.split('Telegram_id: ')[1].split('\n')[0])
+                if 'Telegram_id:' not in original_text:
+                    print('⚠️ В тексте нет Telegram_id — ответить невозможно')
+                    send_message(int(CHAT_ID),
+                                 "⚠️ Невозможно определить сообщение. Ответьте именно на сообщение с Telegram_id.")
+                    return Response({'ok': True})
+
+                try:
+                    message_for_reply_telegram_id = int(original_text.split('Telegram_id: ')[1].split('\n')[0])
+                except Exception as e:
+                    print('Ошибка извлечения Telegram_id:', e)
+                    send_message(int(CHAT_ID), "⚠️ Ошибка при определении Telegram_id.")
+                    return Response({'ok': True})
+               # message_for_reply_telegram_id = int(original_text.split('Telegram_id: ')[1].split('\n')[0])
                 print('MESS__TEL__ID', message_for_reply_telegram_id)
                 message_for_reply = MessageService(MessageRepository()).get_message_for_telegram_id(message_for_reply_telegram_id)
                 print('MESSAGE_FOR_RAPLY_BEFORE', message_for_reply)
