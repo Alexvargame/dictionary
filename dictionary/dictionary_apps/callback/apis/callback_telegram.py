@@ -234,6 +234,7 @@ class CallBackWebhookTelegram(APIView):
                 # Если пользователь найден — логируем
         else:
             # 1) Повторный /start
+            print('TEZT_прокверка комманд!!!!!!!!!!!!!!!!', text)
             if text == '/start':
                 print('sTART')
                 send_message(user.chat_id,
