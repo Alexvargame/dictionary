@@ -37,7 +37,7 @@ class ReplyMessageApi(APIView):
         message = MessageService(MessageRepository()).get_message_for_id(message_id)
 
         reply_text = request.POST.get('reply')
-        print('ans_message_reply_text', message, reply_text)
+        print('ans_message_reply_text', message, message.text, reply_text)
         if not reply_text:
             return redirect('api:callback:messages_list_sort')
         if reply_text:
