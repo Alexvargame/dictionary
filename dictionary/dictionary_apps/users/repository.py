@@ -84,9 +84,7 @@ class UsersRepository:
         return user
 
     def get_user_by_chat_id(self, chat_id):
-        print('repository')
         user = BaseUser.objects.get(chat_id=chat_id)
-        print( 'repotstiry', user)
         return user
 
     def get_user_by_id(self, user_id):
