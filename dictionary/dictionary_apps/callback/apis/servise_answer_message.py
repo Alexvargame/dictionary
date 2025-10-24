@@ -62,7 +62,7 @@ class ReplyMessageApi(APIView):
                 f"Text: {dto.answer_text}"
             )
             print('Answr', formatted_reply)
-            send_message(dto.recipient.chat_id, formatted_reply)
+            send_message(dto.user.chat_id, formatted_reply)
             send_message(int(CHAT_ID), f"✅ Ответ отправлен пользователю {dto.recipient.chat_id}")
 
         return redirect('api:callback:messages_list_sort')
