@@ -37,6 +37,7 @@ class ReplyMessageApi(APIView):
         message = MessageService(MessageRepository()).get_message_for_id(message_id)
 
         reply_text = request.POST.get('reply')
+        print('ans_message_reply_text', message, reply_text)
         if not reply_text:
             return redirect('api:callback:messages_list_sort')
         if reply_text:
@@ -52,6 +53,7 @@ class ReplyMessageApi(APIView):
                 recipient=message.recipient,
             )
             MessageService(MessageRepository()).update_object(dto)
+        print('Aдресат', message.recipient, message.recipient.chat_id)
         if message.recipient.chat_id:
             formatted_reply = (
                 f"Email: {dto.recipient.email}\n"
@@ -59,6 +61,7 @@ class ReplyMessageApi(APIView):
                 f"ChatID: {dto.recipient.chat_id}\n"
                 f"Text: {dto.answer_text}"
             )
+            print('Answr', formatted_reply)
             send_message(dto.recipient.chat_id, formatted_reply)
             send_message(int(CHAT_ID), f"✅ Ответ отправлен пользователю {dto.recipient.chat_id}")
 
