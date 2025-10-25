@@ -29,7 +29,7 @@ def handle_command_user_message(chat_id, text):
     # Пример: "/message_user @alex Привет, тест!"
     # if text.startswith("/message_user"):
     print('TO USER', chat_id, text)
-    text_clean = text.replace('#012', ' ').replace('\n', ' ').replace('\r', ' ').strip()
+    text_clean = text.replace('#012', ' ').replace('\n', ' ').replace('\r', ' ').replace("\xa0", " ").strip()
     print('CLELREAN', text_clean)
     parts = text_clean.split(" ", 2)  # ['/message_user', '@alex', 'Привет, тест!']
     if len(parts) < 3:
