@@ -146,20 +146,22 @@ class CallBackWebhookTelegram(APIView):
         except Exception as e:
             print("JSON Error:", e)
             return Response({'ok': False, 'error': 'Invalid JSON'}, status=400)
-        print('ADTAaa', data)
-        message = data.get('message') or data.get('edited_message')
-        message_telegram_id = message.get('message_id')
-        poll_answer = data.get("poll_answer")
+        print('ADTAaa', data, data.keys())
+        if 'message' in data.keys() or 'edited_message' in data.keys():
+            message = data.get('message') or data.get('edited_message')
+            message_telegram_id = message.get('message_id')
+        elif "poll_answer" in data.keys():
+            poll_answer = data.get("poll_answer")
 
-        if poll_answer:
-            user_id = poll_answer["user"]["id"]
-            option_ids = poll_answer["option_ids"]
-            poll_id = poll_answer["poll_id"]
-            print(f"Пользователь {user_id} выбрал вариант {option_ids} в опросе {poll_id}")
-            # тут можешь сохранить ответ, начислить баллы и т.п.
-            print('jQnswr, ID qwiz')
+            if poll_answer:
+                user_id = poll_answer["user"]["id"]
+                option_ids = poll_answer["option_ids"]
+                poll_id = poll_answer["poll_id"]
+                print(f"Пользователь {user_id} выбрал вариант {option_ids} в опросе {poll_id}")
+                # тут можешь сохранить ответ, начислить баллы и т.п.
+                print('jQnswr, ID qwiz')
 
-            return Response({"ok": True})
+                return Response({"ok": True})
         print('MESSAGE', message)
         if not message:
             return Response({'ok': True})
