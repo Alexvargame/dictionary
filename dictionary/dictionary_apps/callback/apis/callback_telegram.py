@@ -86,6 +86,22 @@ def send_message(chat_id: int, text: str):
     except Exception as e:
         print("Ошибка при отправке сообщения:", e)
         return None
+
+def send_quiz(chat_id, question, options, correct_option_id):
+    print('SEND_QWIZ')
+    if not BOT_TOKEN:
+        print("Ошибка: BOT_TOKEN пустой")
+        return
+    url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendPoll"
+    data = {
+        "chat_id": chat_id,
+        "question": question,
+        "options": json.dumps(options),
+        "type": "quiz",
+        "correct_option_id": correct_option_id,
+        "is_anonymous": False,
+    }
+    return requests.post(url, data=data).json()
 class CallBackTelegram(LoginRequiredMixin, APIView):
 
     def post(self, request):
@@ -293,53 +309,53 @@ class CallBackWebhookTelegram(APIView):
                         recipient = abonent_user,
                     )
                     message_user = MessageService(MessageRepository()).create_object(dto)
-                    # try:
-                    #     question, *options_raw = message_text.split("|")
-                    #     correct_option_id = int(options_raw[-1])
-                    #     options = options_raw[:-1]
-                    #
-                    #     quiz_result = send_quiz(
-                    #         message_user.recipient.chat_id,
-                    #         question.strip(),
-                    #         options,
-                    #         correct_option_id
-                    #     )
-                    #     print('QUIZ SENT', quiz_result)
-                    # except Exception as e:
-                    #     print("Ошибка квиза:", e)
-                    #     send_message(chat_id, f"❌ Ошибка квиза: {e}")
-                    #     return Response({'ok': False, 'error': str(e)})
-                    #
-                    # return Response({'ok': True})
-                    # return
-                    message_note = (
-                        f"📩 Сообщение от пользователя\n"
-                        f"Email: {message_user.user.email or '—'}\n"
-                        f"Username: @{username or '—'}\n"
-                        f"ChatID: {message_user.user.chat_id}\n"
-                        f"Telegram_id: {message_user.telegram_id}\n"
-                        f"Текст: {message_user.text}"
-                        f"Пользователю {message_user.recipient}\n"
-                        f"ChatID: {message_user.recipient.chat_id}"
-                    )
-                    telegram_answer = send_message(message_user.recipient.chat_id, message_note)
-                    if telegram_answer["result"]["from"]["is_bot"]:
-                        dto = MessagerDTO(
-                            id=message_user.id,
-                            user=message_user.user,
-                            text=message_user.text,
-                            is_answered=True,
-                            answer_text='',
-                            created_at=message_user.created_at,
-                            answered_at=datetime.datetime.now(),
-                            telegram_id=message_user.telegram_id,
-                            recipient=message_user.recipient,
+                    try:
+                        question, *options_raw = message_text.split("|")
+                        correct_option_id = int(options_raw[-1])
+                        options = options_raw[:-1]
+
+                        quiz_result = send_quiz(
+                            message_user.recipient.chat_id,
+                            question.strip(),
+                            options,
+                            correct_option_id
                         )
-                        MessageService(MessageRepository()).update_object(dto)
+                        print('QUIZ SENT', quiz_result)
+                    except Exception as e:
+                        print("Ошибка квиза:", e)
+                        send_message(chat_id, f"❌ Ошибка квиза: {e}")
+                        return Response({'ok': False, 'error': str(e)})
 
                     return Response({'ok': True})
-                else:
                     return
+                #     message_note = (
+                #         f"📩 Сообщение от пользователя\n"
+                #         f"Email: {message_user.user.email or '—'}\n"
+                #         f"Username: @{username or '—'}\n"
+                #         f"ChatID: {message_user.user.chat_id}\n"
+                #         f"Telegram_id: {message_user.telegram_id}\n"
+                #         f"Текст: {message_user.text}"
+                #         f"Пользователю {message_user.recipient}\n"
+                #         f"ChatID: {message_user.recipient.chat_id}"
+                #     )
+                #     telegram_answer = send_message(message_user.recipient.chat_id, message_note)
+                #     if telegram_answer["result"]["from"]["is_bot"]:
+                #         dto = MessagerDTO(
+                #             id=message_user.id,
+                #             user=message_user.user,
+                #             text=message_user.text,
+                #             is_answered=True,
+                #             answer_text='',
+                #             created_at=message_user.created_at,
+                #             answered_at=datetime.datetime.now(),
+                #             telegram_id=message_user.telegram_id,
+                #             recipient=message_user.recipient,
+                #         )
+                #         MessageService(MessageRepository()).update_object(dto)
+                #
+                #     return Response({'ok': True})
+                # else:
+                #     return
             # 2) Любое другое сообщение — перекидываем админу и подтверждаем юзеру
             if text:
                 print('REPLYSTART')
