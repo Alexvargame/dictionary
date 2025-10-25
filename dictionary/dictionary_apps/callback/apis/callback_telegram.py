@@ -160,6 +160,14 @@ class CallBackWebhookTelegram(APIView):
                 print(f"Пользователь {user_id} выбрал вариант {option_ids} в опросе {poll_id}")
                 # тут можешь сохранить ответ, начислить баллы и т.п.
                 print('jQnswr, ID qwiz')
+                if "poll_answer" in data:
+                    poll_id = data["poll_answer"]["poll_id"]
+                    user_id = data["poll_answer"]["user"]["id"]
+                    selected_options = data["poll_answer"]["option_ids"]  # список выбранных индексов
+
+                    print(f"Пользователь {user_id} ответил на викторину {poll_id}")
+                    print("Выбранные варианты:", selected_options)
+
 
                 return Response({"ok": True})
         print('MESSAGE', message)
