@@ -141,7 +141,6 @@ def ask_email(chat_id):
 @method_decorator(csrf_exempt, name='dispatch')
 class CallBackWebhookTelegram(APIView):
     def post(self, request):
-        print('WEBHOOK')
         try:
             data = json.loads(request.body)
         except Exception as e:
@@ -150,6 +149,17 @@ class CallBackWebhookTelegram(APIView):
         print('ADTAaa', data)
         message = data.get('message') or data.get('edited_message')
         message_telegram_id = message.get('message_id')
+        poll_answer = data.get("poll_answer")
+
+        if poll_answer:
+            user_id = poll_answer["user"]["id"]
+            option_ids = poll_answer["option_ids"]
+            poll_id = poll_answer["poll_id"]
+            print(f"Пользователь {user_id} выбрал вариант {option_ids} в опросе {poll_id}")
+            # тут можешь сохранить ответ, начислить баллы и т.п.
+            print('jQnswr, ID qwiz')
+
+            return Response({"ok": True})
         print('MESSAGE', message)
         if not message:
             return Response({'ok': True})
