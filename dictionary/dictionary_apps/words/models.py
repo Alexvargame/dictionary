@@ -64,7 +64,7 @@ class Word(models.Model):
         verbose_name_plural = 'Слова'
 
     def __str__(self):
-        return f"{self.word_type}"
+        return f"{self.word}"
 #
 class Noun(Word):
     word = models.CharField(max_length=30, verbose_name="Существительное")
@@ -80,7 +80,7 @@ class Noun(Word):
         verbose_name_plural = 'Существительные'
 
     def __str__(self):
-        return f"{self.word_type}: {self.id}"
+        return f"{self.word}"
 #
 class Verb(Word):
     word = models.CharField(max_length=30, verbose_name="Глагол")
@@ -105,7 +105,7 @@ class Verb(Word):
         verbose_name_plural = 'Глаголы'
 
     def __str__(self):
-        return f'{self.word_type}: {self.id}'
+        return f'{self.word}'
 
 
 class Adjective(Word):
@@ -124,7 +124,7 @@ class Adjective(Word):
         verbose_name_plural = "Прилагательные"
 
     def __str__(self):
-        return f'{self.word}: {self.id}'
+        return f'{self.word}'
 class Numeral(Word):
     word = models.CharField(max_length=30, verbose_name="Числительное")
     word_translate = models.CharField(max_length=50, verbose_name="Перевод")
@@ -135,7 +135,7 @@ class Numeral(Word):
         verbose_name_plural = "Числительные"
 
     def __str__(self):
-        return f'{self.word}: {self.id}'
+        return f'{self.word}'
 
 class Pronoun(Word):
     word = models.CharField(max_length=30, verbose_name="Местоимение")
@@ -153,7 +153,7 @@ class Pronoun(Word):
         verbose_name_plural = "Местоимения"
 
     def __str__(self):
-        return f'{self.word}: {self.id}'
+        return f'{self.word}'
 
 class OtherWords(Word):
     word = models.CharField(max_length=30, verbose_name="Слово")
@@ -163,7 +163,7 @@ class OtherWords(Word):
         verbose_name = 'Остальное слово'
         verbose_name_plural = 'Остальные слова'
     def __str__(self):
-        return f"{self.word_type}: {self.id}"
+        return f"{self.word}"
 
 class NounDeclensionsForm(models.Model):
 
@@ -182,4 +182,5 @@ class NounDeclensionsForm(models.Model):
         verbose_name_plural = "Склонения существительного"
 
     def __str__(self):
-        return f'{self.noun}: {self.id}'
+        return f'{self.noun}'
+

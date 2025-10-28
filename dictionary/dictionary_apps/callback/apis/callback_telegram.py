@@ -19,11 +19,11 @@ from dictionary.config.django.base import BOT_TOKEN, CHAT_ID
 from dictionary.dictionary_apps.users.models import BaseUser
 from dictionary.dictionary_apps.users.repository import UsersRepository
 from dictionary.dictionary_apps.users.services import UsersService
-from dictionary.dictionary_apps.callback.models import SiteMessage
-from dictionary.dictionary_apps.dtos.callback.response_dto import MessagerDTO
-from dictionary.dictionary_apps.dtos.callback.request_dto import CreateMessageDTO
-from dictionary.dictionary_apps.callback.repository import MessageRepository
-from dictionary.dictionary_apps.callback.services import MessageService
+from dictionary.dictionary_apps.callback.models import SiteMessage, Qwiz
+from dictionary.dictionary_apps.dtos.callback.response_dto import MessagerDTO, QwizDTO
+from dictionary.dictionary_apps.dtos.callback.request_dto import CreateMessageDTO, CreateQwizDTO
+from dictionary.dictionary_apps.callback.repository import MessageRepository, QwizRepository
+from dictionary.dictionary_apps.callback.services import MessageService, QwizService
 
 def handle_command_user_message(chat_id, text):
     # Пример: "/message_user @alex Привет, тест!"
@@ -152,107 +152,100 @@ class CallBackWebhookTelegram(APIView):
             message_telegram_id = message.get('message_id')
         elif "poll_answer" in data.keys():
             poll_answer = data.get("poll_answer")
+            poll_telegram_id = poll_answer.get('poll_id')
 
-            if poll_answer:
-                user_id = poll_answer["user"]["id"]
-                option_ids = poll_answer["option_ids"]
-                poll_id = poll_answer["poll_id"]
-                print(f"Пользователь {user_id} выбрал вариант {option_ids} в опросе {poll_id}")
-                selected_options = poll_answer["option_ids"]  # список выбранных индексов
-                print(f"Пользователь {user_id} ответил на викторину {poll_id}")
-                print('VARIANT', poll_answer['options'])
-                print("Выбранные варианты:", selected_options)
-                for sel in selected_options:
-                    print('select', poll_answer['options'][sel]['text'])
-                # тут можешь сохранить ответ, начислить баллы и т.п.
-                # print('jQnswr, ID qwiz')
-                # if "poll_answer" in data:
-                #     poll_id = data["poll_answer"]["poll_id"]
-                #     user_id = data["poll_answer"]["user"]["id"]
-                #     selected_options = data["poll_answer"]["option_ids"]  # список выбранных индексов
-                #
-                #     print(f"Пользователь {user_id} ответил на викторину {poll_id}")
-                #     print("Выбранные варианты:", selected_options, )
-
-
-                return Response({"ok": True})
-        print('MESSAGE', message)
-        if not message:
+        if not message and not poll_answer:
             return Response({'ok': True})
-        chat = message.get('chat', {})
-        chat_id = chat.get('id')
-        first_name = chat.get("first_name", "")
-        username = chat.get("username", "")
-        text = (message.get('text') or '').strip()
-        print('TEXT', text)
-        reply_to = message.get('reply_to_message')
-        print('TO_REPLY', reply_to, type(reply_to))
-        if reply_to and isinstance(reply_to, dict):
-            if chat_id == int(CHAT_ID):
-                original_text = reply_to.get('text', '')
-                print('ORIGINAL', original_text)
-                if 'Telegram_id:' not in original_text:
-                    print('⚠️ В тексте нет Telegram_id — ответить невозможно')
-                    send_message(int(CHAT_ID),
-                                 "⚠️ Невозможно определить сообщение. Ответьте именно на сообщение с Telegram_id.")
-                    return Response({'ok': True})
+        if poll_answer:
+            user_id = poll_answer["user"]["id"]
+            option_ids = poll_answer["option_ids"]
+            poll_id = poll_answer["poll_id"]
+            print(f"Пользователь {user_id} выбрал вариант {option_ids} в опросе {poll_id}")
+            selected_options = poll_answer["option_ids"]  # список выбранных индексов
+            print(f"Пользователь {user_id} ответил на викторину {poll_id}")
+            # print('VARIANT', poll_answer['options'])
+            # print("Выбранные варианты:", selected_options)
+            # for sel in selected_options:
+            #     print('select', poll_answer['options'][sel]['text'])
 
-                try:
-                    message_for_reply_telegram_id = int(original_text.split('Telegram_id: ')[1].split('\n')[0])
-                except Exception as e:
-                    print('Ошибка извлечения Telegram_id:', e)
-                    send_message(int(CHAT_ID), "⚠️ Ошибка при определении Telegram_id.")
-                    return Response({'ok': True})
-               # message_for_reply_telegram_id = int(original_text.split('Telegram_id: ')[1].split('\n')[0])
-                print('MESS__TEL__ID', message_for_reply_telegram_id)
-                message_for_reply = MessageService(MessageRepository()).get_message_for_telegram_id(message_for_reply_telegram_id)
-                print('MESSAGE_FOR_RAPLY_BEFORE', message_for_reply)
-                user_to = reply_to.get('from', {})
-                if user_to.get('is_bot'):
-                    abonent_user = UsersService(UsersRepository()).get_user_by_chat_id(1280790245)
-                    #abonent_user = UsersService(UsersRepository()).get_user_by_chat_id(8253479584)
-                else:
-                    user_to_id = user_to.get('id')
-                    print('REPLY_USR_ID', user_to_id, type(user_to_id))
-                    abonent_user = UsersService(UsersRepository()).get_user_by_chat_id(user_to_id)
-                print('ABINETN', abonent_user)
-                if not message_for_reply.is_answered:
-                    dto = MessagerDTO(
-                        id=message_for_reply.id,
-                        user=message_for_reply.user,
-                        text=message_for_reply.text,
-                        is_answered=True,
-                        answer_text=text,
-                        created_at=message_for_reply.created_at,
-                        answered_at=datetime.datetime.now(),
-                        telegram_id=message_for_reply.telegram_id,
-                        recipient=abonent_user,
-                    )
-                    MessageService(MessageRepository()).update_object(dto)
-                    print('MESSAGE_FOR_RAPLY_AFTER', message_for_reply)
-                    if text:
-                        send_message(int(dto.user.chat_id), text)
-                    reply_text = text
-                    if reply_text:
-                        formatted_reply = (
-                            f"Email: {dto.user.email}\n"
-                            f"Username: {dto.user.telegram_username}\n"
-                            f"ChatID: {dto.user.chat_id}\n"
-                            f"Text: {dto.answer_text}"
-                        )
-                        print('TARGET', dto.user.chat_id)
-                        send_message(dto.user.chat_id, formatted_reply)
-                        print('FORMST', formatted_reply )
-                        send_message(int(CHAT_ID), f"✅ Ответ отправлен пользователю {dto.user.chat_id}")
+            return Response({"ok": True})
+
+        if message:
+            print('MESSAGE', message)
+            chat = message.get('chat', {})
+            chat_id = chat.get('id')
+            first_name = chat.get("first_name", "")
+            username = chat.get("username", "")
+            text = (message.get('text') or '').strip()
+            print('TEXT', text)
+            reply_to = message.get('reply_to_message')
+            print('TO_REPLY', reply_to, type(reply_to))
+            if reply_to and isinstance(reply_to, dict):
+                if chat_id == int(CHAT_ID):
+                    original_text = reply_to.get('text', '')
+                    print('ORIGINAL', original_text)
+                    if 'Telegram_id:' not in original_text:
+                        print('⚠️ В тексте нет Telegram_id — ответить невозможно')
+                        send_message(int(CHAT_ID),
+                                     "⚠️ Невозможно определить сообщение. Ответьте именно на сообщение с Telegram_id.")
                         return Response({'ok': True})
 
+                    try:
+                        message_for_reply_telegram_id = int(original_text.split('Telegram_id: ')[1].split('\n')[0])
+                    except Exception as e:
+                        print('Ошибка извлечения Telegram_id:', e)
+                        send_message(int(CHAT_ID), "⚠️ Ошибка при определении Telegram_id.")
+                        return Response({'ok': True})
+                   # message_for_reply_telegram_id = int(original_text.split('Telegram_id: ')[1].split('\n')[0])
+                    print('MESS__TEL__ID', message_for_reply_telegram_id)
+                    message_for_reply = MessageService(MessageRepository()).get_message_for_telegram_id(message_for_reply_telegram_id)
+                    print('MESSAGE_FOR_RAPLY_BEFORE', message_for_reply)
+                    user_to = reply_to.get('from', {})
+                    if user_to.get('is_bot'):
+                        abonent_user = UsersService(UsersRepository()).get_user_by_chat_id(1280790245)
+                        #abonent_user = UsersService(UsersRepository()).get_user_by_chat_id(8253479584)
                     else:
-                        print('DIDNT fIND CHAT ID')
-                else:
-                    print('УЖЕ ОТВЕЧЕНО!!!!')
-                    Response({'ok': True})
-        else:
-            print('NOT REPLY')
+                        user_to_id = user_to.get('id')
+                        print('REPLY_USR_ID', user_to_id, type(user_to_id))
+                        abonent_user = UsersService(UsersRepository()).get_user_by_chat_id(user_to_id)
+                    print('ABINETN', abonent_user)
+                    if not message_for_reply.is_answered:
+                        dto = MessagerDTO(
+                            id=message_for_reply.id,
+                            user=message_for_reply.user,
+                            text=message_for_reply.text,
+                            is_answered=True,
+                            answer_text=text,
+                            created_at=message_for_reply.created_at,
+                            answered_at=datetime.datetime.now(),
+                            telegram_id=message_for_reply.telegram_id,
+                            recipient=abonent_user,
+                        )
+                        MessageService(MessageRepository()).update_object(dto)
+                        print('MESSAGE_FOR_RAPLY_AFTER', message_for_reply)
+                        if text:
+                            send_message(int(dto.user.chat_id), text)
+                        reply_text = text
+                        if reply_text:
+                            formatted_reply = (
+                                f"Email: {dto.user.email}\n"
+                                f"Username: {dto.user.telegram_username}\n"
+                                f"ChatID: {dto.user.chat_id}\n"
+                                f"Text: {dto.answer_text}"
+                            )
+                            print('TARGET', dto.user.chat_id)
+                            send_message(dto.user.chat_id, formatted_reply)
+                            print('FORMST', formatted_reply )
+                            send_message(int(CHAT_ID), f"✅ Ответ отправлен пользователю {dto.user.chat_id}")
+                            return Response({'ok': True})
+
+                        else:
+                            print('DIDNT fIND CHAT ID')
+                    else:
+                        print('УЖЕ ОТВЕЧЕНО!!!!')
+                        Response({'ok': True})
+            else:
+                print('NOT REPLY')
         user = None
         try:
             print('Провервка ющера', chat_id,  chat.get('username') )
@@ -328,13 +321,6 @@ class CallBackWebhookTelegram(APIView):
                 abonent_user, message_text = handle_command_user_message(int(CHAT_ID), text)
                 print('QWIZ', abonent_user, message_text)
                 if abonent_user and message_text:
-                    dto = CreateMessageDTO(
-                        user=user,
-                        text=message_text,
-                        telegram_id=message_telegram_id,
-                        recipient = abonent_user,
-                    )
-                    message_user = MessageService(MessageRepository()).create_object(dto)
                     try:
                         question, *options_raw = message_text.split("|")
                         correct_option_id = int(options_raw[-1])
@@ -351,6 +337,16 @@ class CallBackWebhookTelegram(APIView):
                         print("Ошибка квиза:", e)
                         send_message(chat_id, f"❌ Ошибка квиза: {e}")
                         return Response({'ok': False, 'error': str(e)})
+                    dto = CreateQwizDTO(
+                        user=user,
+                        question=question,
+                        options=options,
+                        correct_answer=correct_option_id,
+                        poll_id=poll_telegram_id,
+                        recipient = abonent_user,
+                    )
+                    qwiz_user = QwizService(QwizRepository()).create_object(dto)
+
 
                     return Response({'ok': True})
                     return

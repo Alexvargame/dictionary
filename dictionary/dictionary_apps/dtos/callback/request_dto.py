@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-
+from typing import Dict
 
 from dictionary.dictionary_apps.users.models import BaseUser
 
@@ -16,5 +16,14 @@ class CreateMessageDTO:
     # created_at: str
     # answered_at: str
 
-
+@dataclass
+class CreateQwizDTO:
+    user:BaseUser
+    text: str
+    poll_id: int
+    question: str
+    options: Dict
+    answer_text: int
+    correct_answer:int
+    recipient:BaseUser
 

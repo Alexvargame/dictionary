@@ -32,3 +32,34 @@ class MessageService:
             print(f"[!] Сообщение с telegram_id={message_telegram_id} не найдено")
             return None
         return message
+
+
+class QwizService:
+
+    def __init__(self, repository):
+        self.repository = repository
+
+    def create_object(self, dto):
+        return self.repository.create_object(dto)
+
+    def detail_object(self, obj):
+        return self.repository.detail_object(obj)
+
+    def list_objects(self, filters=None):
+        return self.repository.list_objects(filters)
+
+    def update_object(self, dto):
+        return self.repository.update_object(dto)
+
+    def delete_object(self, obj_id):
+        return self.repository.delete_object(obj_id)
+
+    def get_qwiz_for_id(self, qwiz_id):
+        return self.repository.get_qwiz_for_id(qwiz_id)
+
+    def get_qwiz_for_poll_id(self, qwiz_poll_id):
+        qwiz = self.repository.get_qwiz_for_id(qwiz_poll_id)
+        if not qwiz:
+            print(f"[!] Сообщение с poll_id={qwiz_poll_id} не найдено")
+            return None
+        return qwiz

@@ -1,6 +1,6 @@
 import django_filters
 from django import forms
-from dictionary.dictionary_apps.callback.models import SiteMessage
+from dictionary.dictionary_apps.callback.models import SiteMessage, Qwiz
 
 
 class MessageFilter(django_filters.FilterSet):
@@ -42,3 +42,34 @@ class MessageFilter(django_filters.FilterSet):
     class Meta:
         model = SiteMessage
         fields = ("id", "user", 'is_answered')
+
+class QwizFilter(django_filters.FilterSet):
+    id = django_filters.BaseInFilter(
+        field_name='id',
+        lookup_expr='in',
+        widget=forms.TextInput#(attrs={'class': 'border rounded p-2 w-full'})
+    )
+    user = django_filters.CharFilter(
+        field_name='user__email',
+        lookup_expr='icontains',
+        label='User email',
+        widget=forms.TextInput,
+    )
+
+
+    dering = django_filters.OrderingFilter(
+        fields=(
+            ('created_at', 'created_at'),
+            ('user__email', 'user'),
+        ),
+        field_labels={
+            'created_at': 'Дата',
+            'user__email': 'Пользователь',
+        },
+        widget=forms.Select
+
+    )
+    class Meta:
+        model = SiteMessage
+        fields = ("id", "user")
+
