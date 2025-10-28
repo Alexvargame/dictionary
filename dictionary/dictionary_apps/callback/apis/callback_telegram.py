@@ -337,25 +337,26 @@ class CallBackWebhookTelegram(APIView):
                         question, *options_raw = message_text.split("|")
                         correct_option_id = int(options_raw[-1])
                         options = [op.strip() for op in options_raw[:-1]]
-                        dto = CreateQwizDTO(
-                            user=user,
-                            question=question,
-                            options=options,
-                            correct_answer=correct_option_id,
-                            poll_id=poll_telegram_id,
-                            telegram_id=message_telegram_id,
-                            recipient=abonent_user,
-                        )
-                        print('DTO_qWIX', dto)
-                        qwiz_user = QwizService(QwizRepository()).create_object(dto)
-                        
+
+
                         quiz_result = send_quiz(
-                            qwiz_user.recipient.chat_id,
+                            abonent_user,
                             question.strip(),
                             options,
                             correct_option_id
                         )
                         print('QUIZ SENT', quiz_result)
+                        dto = CreateQwizDTO(
+                            user=user,
+                            question=question,
+                            options=options,
+                            correct_answer=correct_option_id,
+                            poll_id=quiz_result['poll']['id'],
+                            telegram_id=quiz_result['result']['message_id'],
+                            recipient=abonent_user,
+                        )
+                        print('DTO_qWIX', dto)
+                        qwiz_user = QwizService(QwizRepository()).create_object(dto)
                         print('QWIz_user', qwiz_user)
                     except Exception as e:
                         print("Ошибка квиза:", e)
