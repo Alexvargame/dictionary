@@ -19,11 +19,10 @@ class CreateMessageDTO:
 @dataclass
 class CreateQwizDTO:
     user:BaseUser
-    text: str
     poll_id: int
     question: str
     options: Dict
-    answer_text: int
+    #answer_text: int
     correct_answer:int
     recipient:BaseUser
 

@@ -23,7 +23,7 @@ class Qwiz(models.Model):
                              help_text='Кому адресована викторина', null=True, blank=True,)
     question = models.TextField()
     options = models.JSONField()
-    answer_text = models.IntegerField()
+    answer_text = models.IntegerField(null=True, blank=True)
     correct_answer = models.IntegerField()
     created_at = models.DateTimeField(auto_now_add=True)
     poll_id = models.IntegerField(blank=True, null=True, default=0)

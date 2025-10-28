@@ -17,7 +17,6 @@ class MessagerDTO:
 class QwizDTO:
     id: int
     user:BaseUser
-    text: str
     poll_id: int
     question: str
     options: Dict
