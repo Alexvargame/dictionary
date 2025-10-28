@@ -349,7 +349,7 @@ class CallBackWebhookTelegram(APIView):
                         print('QWIz_user', qwiz_user)
                     except Exception as e:
                         print("Ошибка квиза:", e)
-                        send_message(chat_id, f"❌ Ошибка квиза: {e}")
+                        send_message(chat_id, f"❌ Ошибка квиза_send: {e}")
                         return Response({'ok': False, 'error': str(e)})
 
                     return Response({'ok': True})
