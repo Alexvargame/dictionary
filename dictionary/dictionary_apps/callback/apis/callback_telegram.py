@@ -171,7 +171,7 @@ class CallBackWebhookTelegram(APIView):
             qwiz_tmp = QwizService(QwizRepository()).get_qwiz_for_poll_id(poll_id)
             if not qwiz_tmp:
                 print(f"[!] poll_id={poll_id} не найден — возможно, старый опрос. Игнорируем.")
-                return JsonResponse({"ok": True})
+                return Response({"ok": True})
             dto_tmp = QwizService(QwizRepository()).detail_object(qwiz_tmp)
             dto_tmp.answer_text = dto.options[option_ids]
             dto_tmp.poll_id = poll_id
