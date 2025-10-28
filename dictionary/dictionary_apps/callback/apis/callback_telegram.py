@@ -174,7 +174,7 @@ class CallBackWebhookTelegram(APIView):
                 return Response({"ok": True})
             print('QWIS', qwiz_tmp)
             dto_tmp = QwizService(QwizRepository()).detail_object(qwiz_tmp)
-            dto_tmp.answer_text = dto_tmp.options[option_ids[0]]
+            dto_tmp.answer_text = option_ids[0]
             QwizService(QwizRepository()).update_object(dto_tmp)
             print('DRO QWIS', dto_tmp)
             # print('VARIANT', poll_answer['options'])
