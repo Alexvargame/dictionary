@@ -65,8 +65,9 @@ class QwizService:
         return qwiz
 
     def get_qwiz_for_telegram_id(self, message_telegram_id):
+        print('message_telegram_id', message_telegram_id)
         qwiz = self.repository.get_qwiz_for_telegram_id(message_telegram_id)
         if not qwiz:
-            print(f"[!] Сообщение с poll_id={message_telegram_id} не найдено")
+            print(f"[!] Сообщение с message_telegram_id={message_telegram_id} не найдено")
             return None
         return qwiz

@@ -346,7 +346,9 @@ class CallBackWebhookTelegram(APIView):
                             telegram_id=message_telegram_id,
                             recipient=abonent_user,
                         )
+                        print('DTO_qWIX', dto)
                         qwiz_user = QwizService(QwizRepository()).create_object(dto)
+                        
                         quiz_result = send_quiz(
                             qwiz_user.recipient.chat_id,
                             question.strip(),
