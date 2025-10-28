@@ -24,3 +24,4 @@ class QwizDTO:
     created_at: str
     correct_answer: int
     recipient:BaseUser
+    telegram_id: int

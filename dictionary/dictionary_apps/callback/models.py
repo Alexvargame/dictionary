@@ -27,6 +27,7 @@ class Qwiz(models.Model):
     correct_answer = models.IntegerField(default=10)
     created_at = models.DateTimeField(auto_now_add=True)
     poll_id = models.IntegerField(blank=True, null=True, default=0)
+    telegram_id = models.IntegerField(blank=True, null=True, default=0)
 
     def __str__(self):
         return f"{self.poll_id} | {self.question}"

@@ -94,7 +94,8 @@ class QwizRepository:
             poll_id=dto.poll_id,
             recipient=dto.recipient,
             options=dto.options,
-            correct_answer=dto.correct_answer
+            correct_answer=dto.correct_answer,
+            telegram_id = dto.telegram_id
 
             # is_answered=dto.is_answered,
             # answer_text=dto.answer_text,
@@ -113,7 +114,8 @@ class QwizRepository:
             created_at=obj.created_at,
             poll_id=obj.poll_id,
             recipient=obj.recipient,
-            correct_answer=obj.correct_answer
+            correct_answer=obj.correct_answer,
+            telegram_id=obj.telegram_id,
         )
         return dto
 
@@ -130,7 +132,8 @@ class QwizRepository:
                 created_at=obj.created_at,
                 poll_id=obj.poll_id,
                 recipient=obj.recipient,
-                correct_answer=obj.correct_answer
+                correct_answer=obj.correct_answer,
+                telegram_id=obj.telegram_id
             )
             lst_dto.append(tmp_dto)
         return lst_dto
@@ -156,4 +159,9 @@ class QwizRepository:
     def get_qwiz_for_id(self, qwiz_id):
         print('GET_QWIz_FOR_TEL_ID', qwiz_id)
         qwiz = self.model.objects.get(id=qwiz_id)
+        return qwiz
+
+    def get_qwiz_for_telegram_id(self, message_telegram_id):
+        print('GET_MESS_FOR_TEL_ID', message_telegram_id)
+        qwiz = self.model.objects.filter(telegram_id=message_telegram_id).first()
         return qwiz

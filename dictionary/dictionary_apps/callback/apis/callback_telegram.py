@@ -171,6 +171,7 @@ class CallBackWebhookTelegram(APIView):
             qwiz_tmp = QwizService(QwizRepository()).get_qwiz_for_poll_id(poll_id)
             dto_tmp = QwizService(QwizRepository()).detail_object(qwiz_tmp)
             dto_tmp.answer_text = dto.options[option_ids]
+            dto_tmp.poll_id = poll_id
             QwizService(QwizRepository()).update_object(dto_tmp)
             print(qwiz_tmp, dto)
             # print('VARIANT', poll_answer['options'])
@@ -329,7 +330,7 @@ class CallBackWebhookTelegram(APIView):
                     return
             if text.startswith("/qwiz_user"):
                 abonent_user, message_text = handle_command_user_message(int(CHAT_ID), text)
-                print('QWIZ', abonent_user, message_text)
+                print('QWIZ', abonent_user, message_text, 'TYEL_ID', message_telegram_id )
 
                 if abonent_user and message_text:
                     try:
@@ -342,6 +343,7 @@ class CallBackWebhookTelegram(APIView):
                             options=options,
                             correct_answer=correct_option_id,
                             poll_id=poll_telegram_id,
+                            telegram_id=message_telegram_id,
                             recipient=abonent_user,
                         )
                         qwiz_user = QwizService(QwizRepository()).create_object(dto)
