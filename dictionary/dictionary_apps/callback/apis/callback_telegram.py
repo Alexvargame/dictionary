@@ -324,36 +324,36 @@ class CallBackWebhookTelegram(APIView):
             if text.startswith("/qwiz_user"):
                 abonent_user, message_text = handle_command_user_message(int(CHAT_ID), text)
                 print('QWIZ', abonent_user, message_text)
+
                 if abonent_user and message_text:
                     try:
                         question, *options_raw = message_text.split("|")
                         correct_option_id = int(options_raw[-1])
                         options = options_raw[:-1]
-
+                        dto = CreateQwizDTO(
+                            user=user,
+                            question=question,
+                            options=options,
+                            correct_answer=correct_option_id,
+                            poll_id=poll_telegram_id,
+                            recipient=abonent_user,
+                        )
+                        qwiz_user = QwizService(QwizRepository()).create_object(dto)
                         quiz_result = send_quiz(
-                            message_user.recipient.chat_id,
+                            qwiz_user.recipient.chat_id,
                             question.strip(),
                             options,
                             correct_option_id
                         )
                         print('QUIZ SENT', quiz_result)
+                        print('QWIz_user', qwiz_user)
                     except Exception as e:
                         print("Ошибка квиза:", e)
                         send_message(chat_id, f"❌ Ошибка квиза: {e}")
                         return Response({'ok': False, 'error': str(e)})
-                    dto = CreateQwizDTO(
-                        user=user,
-                        question=question,
-                        options=options,
-                        correct_answer=correct_option_id,
-                        poll_id=poll_telegram_id,
-                        recipient = abonent_user,
-                    )
-                    qwiz_user = QwizService(QwizRepository()).create_object(dto)
-
 
                     return Response({'ok': True})
-                    return
+                return
                 #     message_note = (
                 #         f"📩 Сообщение от пользователя\n"
                 #         f"Email: {message_user.user.email or '—'}\n"
