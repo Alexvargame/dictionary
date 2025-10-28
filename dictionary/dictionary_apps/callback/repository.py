@@ -152,8 +152,9 @@ class QwizRepository:
         qwiz.delete()
 
     def get_qwiz_for_poll_id(self, qwiz_poll_id):
-        print('GET_qwiz_FOR_POLL_ID', qwiz_poll_id)
+        print('GET_qwiz_FOR_POLL_ID', qwiz_poll_id, type(qwiz_poll_id))
         qwiz = self.model.objects.filter(poll_id=qwiz_poll_id).first()
+        print('check qwiz in repo_ pool_id')
         return qwiz
 
     def get_qwiz_for_id(self, qwiz_id):

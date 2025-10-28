@@ -172,11 +172,12 @@ class CallBackWebhookTelegram(APIView):
             if not qwiz_tmp:
                 print(f"[!] poll_id={poll_id} не найден — возможно, старый опрос. Игнорируем.")
                 return Response({"ok": True})
+            print('QWIS', qwiz_tmp)
             dto_tmp = QwizService(QwizRepository()).detail_object(qwiz_tmp)
             dto_tmp.answer_text = dto.options[option_ids]
             dto_tmp.poll_id = poll_id
             QwizService(QwizRepository()).update_object(dto_tmp)
-            print(qwiz_tmp, dto)
+            print('DRO QWIS', dto)
             # print('VARIANT', poll_answer['options'])
             # print("Выбранные варианты:", selected_options)
             # for sel in selected_options:
@@ -348,7 +349,7 @@ class CallBackWebhookTelegram(APIView):
                             options,
                             correct_option_id
                         )
-                        print('QUIZ SENT', quiz_result)
+                        print('QUIZ SENT', quiz_result, type(quiz_result['result']['poll']['id']))
                         dto = CreateQwizDTO(
                             user=user,
                             question=question,
