@@ -105,11 +105,12 @@ class QwizRepository:
         return qwiz
 
     def detail_object(self, obj):
+        print(' Проверка  detail repo', obj)
         dto = self.dto (
             id=obj.id,
             user=obj.user,
             question=obj.question,
-            options=dto.options,
+            options=obj.options,
             answer_text=obj.answer_text,
             created_at=obj.created_at,
             poll_id=obj.poll_id,
@@ -127,7 +128,7 @@ class QwizRepository:
                 id=obj.id,
                 user=obj.user,
                 question=obj.question,
-                options=dto.options,
+                options=obj.options,
                 answer_text=obj.answer_text,
                 created_at=obj.created_at,
                 poll_id=obj.poll_id,
