@@ -173,15 +173,19 @@ class CallBackWebhookTelegram(APIView):
                 print(f"[!] poll_id={poll_id} не найден — возможно, старый опрос. Игнорируем.")
                 return Response({"ok": True})
             print('QWIS', qwiz_tmp)
+
             dto_tmp = QwizService(QwizRepository()).detail_object(qwiz_tmp)
             dto_tmp.answer_text = option_ids[0]
             QwizService(QwizRepository()).update_object(dto_tmp)
             print('DRO QWIS', dto_tmp)
-            # print('VARIANT', poll_answer['options'])
-            # print("Выбранные варианты:", selected_options)
-            # for sel in selected_options:
-            #     print('select', poll_answer['options'][sel]['text'])
-
+            qwiz_tmp = QwizService(QwizRepository()).get_qwiz_for_poll_id(poll_id)
+            if qwiz_tmp.correct_answer == qwiz_tmp.answer_text:
+                send_message(int(qwiz_tmp.recepient.id),
+           "⚠️ Вы дали правильный ответ. Хотите знать больше? - https://alex2776.pythonanywhere.com/api/")
+            else:
+                send_message(int(qwiz_tmp.recepient.id),
+                             f"⚠️ Вы ошиблись. Правильный ответ {qwiz_tmp.options[qwiz_tmp.correct_answer]}."
+                             f"Хотите знать больше? - https://alex2776.pythonanywhere.com/api/")
             return Response({"ok": True})
 
         if message:
