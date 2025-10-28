@@ -340,7 +340,7 @@ class CallBackWebhookTelegram(APIView):
 
 
                         quiz_result = send_quiz(
-                            abonent_user,
+                            abonent_user.id,
                             question.strip(),
                             options,
                             correct_option_id
