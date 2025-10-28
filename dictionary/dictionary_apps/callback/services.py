@@ -58,7 +58,8 @@ class QwizService:
         return self.repository.get_qwiz_for_id(qwiz_id)
 
     def get_qwiz_for_poll_id(self, qwiz_poll_id):
-        qwiz = self.repository.get_qwiz_for_id(qwiz_poll_id)
+        print('qwiz_poll_id', qwiz_poll_id)
+        qwiz = self.repository.get_qwiz_for_poll_id(qwiz_poll_id)
         if not qwiz:
             print(f"[!] Сообщение с poll_id={qwiz_poll_id} не найдено")
             return None
