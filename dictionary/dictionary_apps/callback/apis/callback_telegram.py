@@ -329,7 +329,7 @@ class CallBackWebhookTelegram(APIView):
                     try:
                         question, *options_raw = message_text.split("|")
                         correct_option_id = int(options_raw[-1])
-                        options = options_raw[:-1]
+                        options = [op.strip() for op in options_raw[:-1]]
                         dto = CreateQwizDTO(
                             user=user,
                             question=question,

@@ -101,7 +101,7 @@ class QwizRepository:
             # created_at=dto.created_at,
             # answered_at=dto.answered_at,
         )
-        return message
+        return qwiz
 
     def detail_object(self, obj):
         dto = self.dto (
