@@ -174,10 +174,9 @@ class CallBackWebhookTelegram(APIView):
                 return Response({"ok": True})
             print('QWIS', qwiz_tmp)
             dto_tmp = QwizService(QwizRepository()).detail_object(qwiz_tmp)
-            dto_tmp.answer_text = dto.options[option_ids]
-            dto_tmp.poll_id = poll_id
+            dto_tmp.answer_text = dto_tmp.options[option_ids]
             QwizService(QwizRepository()).update_object(dto_tmp)
-            print('DRO QWIS', dto)
+            print('DRO QWIS', dto_tmp)
             # print('VARIANT', poll_answer['options'])
             # print("Выбранные варианты:", selected_options)
             # for sel in selected_options:
