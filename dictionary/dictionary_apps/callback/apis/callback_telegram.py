@@ -141,6 +141,10 @@ def ask_email(chat_id):
 @method_decorator(csrf_exempt, name='dispatch')
 class CallBackWebhookTelegram(APIView):
     def post(self, request):
+        message = None
+        poll_answer = None
+        poll_telegram_id = None
+        message_telegram_id = None
         try:
             data = json.loads(request.body)
         except Exception as e:
