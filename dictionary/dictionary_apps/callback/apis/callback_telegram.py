@@ -351,7 +351,7 @@ class CallBackWebhookTelegram(APIView):
                             question=question,
                             options=options,
                             correct_answer=correct_option_id,
-                            poll_id=quiz_result['poll']['id'],
+                            poll_id=quiz_result['result']['poll']['id'],
                             telegram_id=quiz_result['result']['message_id'],
                             recipient=abonent_user,
                         )
