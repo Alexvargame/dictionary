@@ -179,6 +179,7 @@ class CallBackWebhookTelegram(APIView):
             QwizService(QwizRepository()).update_object(dto_tmp)
             print('DRO QWIS', dto_tmp)
             qwiz_tmp = QwizService(QwizRepository()).get_qwiz_for_poll_id(poll_id)
+            print(qwiz_tmp.correct_answer == qwiz_tmp.answer_text)
             if qwiz_tmp.correct_answer == qwiz_tmp.answer_text:
                 print('Write')
                 send_message(int(qwiz_tmp.recipient.id),
