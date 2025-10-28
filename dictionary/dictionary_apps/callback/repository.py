@@ -105,7 +105,7 @@ class QwizRepository:
         return qwiz
 
     def detail_object(self, obj):
-        print(' Проверка  detail repo', obj)
+        print(' Проверка  detail repo', obj.__dict__)
         dto = self.dto (
             id=obj.id,
             user=obj.user,
