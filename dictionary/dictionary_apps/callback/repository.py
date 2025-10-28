@@ -137,7 +137,7 @@ class QwizRepository:
     @transaction.atomic
     def update_object(self, dto):
         print('UPDATE_QWIZ_DTO', dto, dto.id)
-        mqwiz = self.model.objects.get(id=dto.id)
+        qwiz = self.model.objects.get(id=dto.id)
         for key, value in dto.__dict__.items():
            qwiz.__dict__[key] = value
         # user, has_updated = model_update(instance=user, fields=non_side_effect_fields, data=data)

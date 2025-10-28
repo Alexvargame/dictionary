@@ -161,12 +161,18 @@ class CallBackWebhookTelegram(APIView):
         if not message and not poll_answer:
             return Response({'ok': True})
         if poll_answer:
+            qwiz_answer_text = ''
             user_id = poll_answer["user"]["id"]
             option_ids = poll_answer["option_ids"]
             poll_id = poll_answer["poll_id"]
             print(f"Пользователь {user_id} выбрал вариант {option_ids} в опросе {poll_id}")
             selected_options = poll_answer["option_ids"]  # список выбранных индексов
             print(f"Пользователь {user_id} ответил на викторину {poll_id}")
+            qwiz_tmp = QwizService(QwizRepository()).get_qwiz_for_poll_id(poll_id)
+            dto_tmp = QwizService(QwizRepository()).detail_object(qwiz_tmp)
+            dto_tmp.answer_text = dto.options[option_ids]
+            QwizService(QwizRepository()).update_object(dto_tmp)
+            print(qwiz_tmp, dto)
             # print('VARIANT', poll_answer['options'])
             # print("Выбранные варианты:", selected_options)
             # for sel in selected_options:
@@ -338,9 +344,7 @@ class CallBackWebhookTelegram(APIView):
                             poll_id=poll_telegram_id,
                             recipient=abonent_user,
                         )
-                        print('DTO_QWIZ_XREATe', dto)
                         qwiz_user = QwizService(QwizRepository()).create_object(dto)
-                        print('QWIZ_USER', qwiz_user)
                         quiz_result = send_quiz(
                             qwiz_user.recipient.chat_id,
                             question.strip(),
