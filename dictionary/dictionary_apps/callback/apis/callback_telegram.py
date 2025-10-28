@@ -180,10 +180,12 @@ class CallBackWebhookTelegram(APIView):
             print('DRO QWIS', dto_tmp)
             qwiz_tmp = QwizService(QwizRepository()).get_qwiz_for_poll_id(poll_id)
             if qwiz_tmp.correct_answer == qwiz_tmp.answer_text:
-                send_message(int(qwiz_tmp.recepient.id),
+                print('Write')
+                send_message(int(qwiz_tmp.recipient.id),
            "⚠️ Вы дали правильный ответ. Хотите знать больше? - https://alex2776.pythonanywhere.com/api/")
             else:
-                send_message(int(qwiz_tmp.recepient.id),
+                print('Wrong')
+                send_message(int(qwiz_tmp.recipient.id),
                              f"⚠️ Вы ошиблись. Правильный ответ {qwiz_tmp.options[qwiz_tmp.correct_answer]}."
                              f"Хотите знать больше? - https://alex2776.pythonanywhere.com/api/")
             return Response({"ok": True})
