@@ -63,3 +63,10 @@ class QwizService:
             print(f"[!] Сообщение с poll_id={qwiz_poll_id} не найдено")
             return None
         return qwiz
+
+    def get_qwiz_for_telegram_id(self, message_telegram_id):
+        qwiz = self.repository.get_qwiz_for_telegram_id(message_telegram_id)
+        if not qwiz:
+            print(f"[!] Сообщение с poll_id={message_telegram_id} не найдено")
+            return None
+        return qwiz

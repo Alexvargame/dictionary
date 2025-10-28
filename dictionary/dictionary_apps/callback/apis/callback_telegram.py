@@ -168,7 +168,7 @@ class CallBackWebhookTelegram(APIView):
             print(f"Пользователь {user_id} выбрал вариант {option_ids} в опросе {poll_id}")
             selected_options = poll_answer["option_ids"]  # список выбранных индексов
             print(f"Пользователь {user_id} ответил на викторину {poll_id}")
-            qwiz_tmp = QwizService(QwizRepository()).get_qwiz_for_poll_id(poll_id)
+            qwiz_tmp = QwizService(QwizRepository()).get_qwiz_for_telegram_id(message_telegram_id)
             dto_tmp = QwizService(QwizRepository()).detail_object(qwiz_tmp)
             dto_tmp.answer_text = dto.options[option_ids]
             dto_tmp.poll_id = poll_id
