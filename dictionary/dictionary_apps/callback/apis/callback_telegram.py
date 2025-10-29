@@ -1,12 +1,8 @@
 import json
-import os
-import re
 
 import requests
 import datetime
 
-from django.http import Http404
-from rest_framework import serializers
 from rest_framework.response import Response
 from django.shortcuts import redirect
 from django.utils.decorators import method_decorator
@@ -16,15 +12,14 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 
 
 from dictionary.config.django.base import BOT_TOKEN, CHAT_ID
-from dictionary.dictionary_apps.users.models import BaseUser
 from dictionary.dictionary_apps.users.repository import UsersRepository
 from dictionary.dictionary_apps.users.services import UsersService
-from dictionary.dictionary_apps.callback.models import SiteMessage, Qwiz
-from dictionary.dictionary_apps.dtos.callback.response_dto import MessagerDTO, QwizDTO
+from dictionary.dictionary_apps.dtos.callback.response_dto import MessagerDTO
 from dictionary.dictionary_apps.dtos.callback.request_dto import CreateMessageDTO, CreateQwizDTO
 from dictionary.dictionary_apps.callback.repository import MessageRepository, QwizRepository
 from dictionary.dictionary_apps.callback.services import MessageService, QwizService
-from dictionary.dictionary_apps.callback.apis.create_qwiz import TranslateWordQwiz, dict_type_words, NounArticleQwiz
+from dictionary.dictionary_apps.callback.apis.create_qwiz import (TranslateWordQwiz, dict_type_words,
+                                                                  NounArticleQwiz, TranslateNumeralQwiz)
 from dictionary.dictionary_apps.words.models import Noun
 
 def handle_command_user_message(chat_id, text):
@@ -424,6 +419,43 @@ class CallBackWebhookTelegram(APIView):
                 qwiz = NounArticleQwiz(Noun)
                 message_text = qwiz.create()
                 print('MESSFAE_TEXXT_article', message_text)
+                if abonent_user and message_text:
+                    try:
+                        question, *options_raw = message_text.split("|")
+                        correct_option_id = int(options_raw[-1])
+                        options = [op.strip() for op in options_raw[:-1]]
+                        quiz_result = send_quiz(
+                            abonent_user.chat_id,
+                            question.strip(),
+                            options,
+                            correct_option_id
+                        )
+                        print('QUIZ SENT', quiz_result, type(quiz_result['result']['poll']['id']))
+                        dto = CreateQwizDTO(
+                            user=user,
+                            question=question,
+                            options=options,
+                            correct_answer=correct_option_id,
+                            poll_id=quiz_result['result']['poll']['id'],
+                            telegram_id=quiz_result['result']['message_id'],
+                            recipient=abonent_user,
+                        )
+                        print('DTO_qWIX', dto)
+                        qwiz_user = QwizService(QwizRepository()).create_object(dto)
+                        print('QWIz_user', qwiz_user)
+                    except Exception as e:
+                        print("Ошибка квиза:", e)
+                        send_message(chat_id, f"❌ Ошибка квиза_send: {e}")
+                        return Response({'ok': False, 'error': str(e)})
+                    return Response({'ok': True})
+                return
+            if text.startswith("/qwiz_digit_user"):
+                abonent_user, message_text = handle_command_user_message(int(CHAT_ID), text)
+                print('QWIZ', abonent_user, message_text, 'TYEL_ID', message_telegram_id )
+
+                qwiz = TranslateNumeralQwiz()
+                message_text = qwiz.create()
+                print('MESSFAE_TEXXT_DIGIT', message_text)
                 if abonent_user and message_text:
                     try:
                         question, *options_raw = message_text.split("|")

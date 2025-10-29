@@ -15,6 +15,7 @@ from .apis.numerals import (Numerals, numerals_results_stop, numerals_results_re
 from .apis.adjectivs_exercises import (AdjectiveExercises, adjectivs_results_stop,
                                        adjectivs_results_repeat,
                                        AdjectiveCasusExercises)
+from .apis.qwiz import Qwiz
 
 app_name = 'exercises'
 urlpatterns =[
@@ -46,5 +47,6 @@ urlpatterns =[
     path('exercises_adjectivs/casus/', AdjectiveCasusExercises.as_view(), name='exercises_adjectivs_casus'),
     path("exercises/adjectivs/results/repeat/", adjectivs_results_repeat, name="adjectivs_results_repeat"),
     path("exercises/adjectivs/results/stop/", adjectivs_results_stop, name="adjectivs_results_stop"),
+    path("qwiz/", Qwiz.as_view(), name="qwiz"),
 
 ]

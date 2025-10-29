@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}Упражнение: Викторина %} {% endblock %}
+{% block logo_and_title %}{% endblock %}
+
+{% block content %}
+<style>
+    @keyframes blink-red {
+      0%, 100% { background-color: inherit; }
+      50% { background-color: #f87171; }
+    }
+    .blink-red {
+      animation: blink-red 0.5s ease;
+    }
+</style>
+
+<main class="container mx-auto p-4">
+
+
+    <h2 class="text-2xl font-bold mb-4">Упражнение: Викторина</h2>
+    <div class="flex justify-center items-center mb-4 gap-4 text-lg font-semibold">
+        <div id="user-name" class="text-blue-700">{{ user.username }}</div>
+        <div id="lifes" class="text-red-600">❤️ {{ user.lifes }}</div>
+        <div id="score_all" class="text-red-600"> Всего баллов: {{ user.score }}</div>
+        <div id="score" class="text-green-600">Баллы: {{ user.score }}</div>
+    </div>
+
+    <div id="qwiz-container" class="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {% for qwiz in qwizes %}
+        <div class="p-4 rounded-2xl shadow bg-white text-black" data-answer="{{ qwiz.richt_answer_value }}">
+            <p class="font-semibold mb-3 text-lg">
+                {{ forloop.counter }}. {{ qwiz.question }}
+            </p>
+            <ul class="space-y-2">
+                {% for variant in qwiz.variants %}
+                <li class="variant border border-gray-400 bg-white text-black p-2 rounded-lg hover:bg-blue-100 cursor-pointer transition">
+                    <div data-correct="{{ variant }}">{{ variant }}</div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="text-center mt-8">
+        <button id="check-btn" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold">
+            Проверить
+        </button>
+    </div>
+
+    <div id="result-container" class="text-center mt-4 font-semibold text-lg"></div>
+</main>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const variants = document.querySelectorAll('.variant');
+    const checkBtn = document.getElementById('check-btn');
+    const resultContainer = document.createElement('div');
+    resultContainer.classList.add('text-center', 'mt-4', 'font-semibold', 'text-lg');
+    checkBtn.parentNode.appendChild(resultContainer);
+
+    // Выбор варианта
+    variants.forEach(v => {
+        v.addEventListener('click', () => {
+            // Снять выделение со всех соседей
+            const parent = v.parentElement;
+            parent.querySelectorAll('.variant').forEach(sib => sib.classList.remove('bg-blue-200'));
+            v.classList.add('bg-blue-200');
+        });
+    });
+
+    // Проверка ответов
+    checkBtn.addEventListener('click', () => {
+        let correctCount = 0;
+        const total = document.querySelectorAll('#qwiz-container > div').length;
+
+        document.querySelectorAll('#qwiz-container > div').forEach(block => {
+            const correctAnswer = block.dataset.answer;
+            const selectedLi = block.querySelector('.variant.bg-blue-200');
+
+            if (selectedLi) {
+                const selectedAnswer = selectedLi.querySelector('div').dataset.correct;
+                if (selectedAnswer === correctAnswer) {
+                    selectedLi.classList.remove('bg-blue-200');
+                    selectedLi.classList.add('bg-green-300'); // правильный ответ
+                    correctCount++;
+                } else {
+                    selectedLi.classList.remove('bg-blue-200');
+                    selectedLi.classList.add('bg-red-300'); // неправильный ответ
+                }
+            }
+        });
+
+        // Показываем результат и текст оценки
+        let message = '';
+        const percent = (correctCount / total) * 100;
+        if (percent >= 90) message = 'Великолепно!';
+        else if (percent >= 70) message = 'Отлично!';
+        else if (percent >= 50) message = 'Хороший результат';
+        else if (percent >= 30) message = 'Нужно быть внимательнее';
+        else message = 'Вы, наверное, даже не читали вопросы';
+
+        resultContainer.innerHTML = `Вы ответили на ${correctCount} из ${total}. <br> ${message}`;
+
+        // Кнопки «Еще раз» и «Назад»
+        const btnRepeat = document.createElement('button');
+        btnRepeat.textContent = 'Еще раз';
+        btnRepeat.classList.add('bg-green-500', 'text-white', 'px-4', 'py-1', 'rounded', 'mx-2');
+        btnRepeat.addEventListener('click', () => location.reload());
+
+        const btnBack = document.createElement('button');
+        btnBack.textContent = 'Назад';
+        btnBack.classList.add('bg-gray-500', 'text-white', 'px-4', 'py-1', 'rounded', 'mx-2');
+        btnBack.addEventListener('click', () => window.history.back());
+
+        // Добавляем кнопки под сообщением
+        resultContainer.appendChild(document.createElement('br'));
+        resultContainer.appendChild(btnRepeat);
+        resultContainer.appendChild(btnBack);
+    });
+});
+</script>
+
+{% endblock %}
