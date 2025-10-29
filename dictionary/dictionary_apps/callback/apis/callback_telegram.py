@@ -38,8 +38,10 @@ def handle_command_user_message(chat_id, text):
     if len(parts) < 2:
         send_message(chat_id, "❌ Использование: /message_user <username|chat_id> <текст>")
         return None, None
-
-    target, msg_text = parts[1], parts[2]
+    if len(parts) > 2:
+        target, msg_text = parts[1], parts[2]
+    else:
+        target, msg_text = parts[1], ''
     print('PSTSR', target, msg_text)
     # Если указали username
     if target.startswith("@"):
