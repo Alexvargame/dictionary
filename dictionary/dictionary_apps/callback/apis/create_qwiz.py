@@ -75,7 +75,7 @@ class TranslateNumeralQwiz():
         print(varinats)
         answer_words = list(varinats)
         question_word = digit_in_german
-        richt_answer = str(digit)
+        richt_answer = answer_words.index(digit)
         qwiz_str = (f"Какое это число  {question_word}? | {answer_words[0]} | "
                     f"{answer_words[1]} | {answer_words[2]} | {richt_answer}")
 
