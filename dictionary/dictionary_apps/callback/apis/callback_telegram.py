@@ -35,7 +35,7 @@ def handle_command_user_message(chat_id, text):
     print('CLELREAN', text_clean)
     parts = text_clean.split(" ", 2)  # ['/message_user', '@alex', 'Привет, тест!']
     print(parts)
-    if len(parts) < 3:
+    if len(parts) < 2:
         send_message(chat_id, "❌ Использование: /message_user <username|chat_id> <текст>")
         return None, None
 
@@ -384,7 +384,7 @@ class CallBackWebhookTelegram(APIView):
 
                 qwiz = TranslateWordQwiz(dict_type_words)
                 message_text = qwiz.create()
-                print(message_text)
+                print('MESSFAE_TEXXT', message_text)
                 if abonent_user and message_text:
                     try:
                         question, *options_raw = message_text.split("|")
@@ -413,7 +413,6 @@ class CallBackWebhookTelegram(APIView):
                         print("Ошибка квиза:", e)
                         send_message(chat_id, f"❌ Ошибка квиза_send: {e}")
                         return Response({'ok': False, 'error': str(e)})
-
                     return Response({'ok': True})
                 return
             if text:
