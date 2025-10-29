@@ -24,7 +24,7 @@ from dictionary.dictionary_apps.dtos.callback.response_dto import MessagerDTO, Q
 from dictionary.dictionary_apps.dtos.callback.request_dto import CreateMessageDTO, CreateQwizDTO
 from dictionary.dictionary_apps.callback.repository import MessageRepository, QwizRepository
 from dictionary.dictionary_apps.callback.services import MessageService, QwizService
-
+from dictionary.dictionary_apps.callback.apis.create_qwiz import TranslateWordQwiz
 def handle_command_user_message(chat_id, text):
     # Пример: "/message_user @alex Привет, тест!"
     # if text.startswith("/message_user"):
@@ -375,35 +375,41 @@ class CallBackWebhookTelegram(APIView):
 
                     return Response({'ok': True})
                 return
-                #     message_note = (
-                #         f"📩 Сообщение от пользователя\n"
-                #         f"Email: {message_user.user.email or '—'}\n"
-                #         f"Username: @{username or '—'}\n"
-                #         f"ChatID: {message_user.user.chat_id}\n"
-                #         f"Telegram_id: {message_user.telegram_id}\n"
-                #         f"Текст: {message_user.text}"
-                #         f"Пользователю {message_user.recipient}\n"
-                #         f"ChatID: {message_user.recipient.chat_id}"
-                #     )
-                #     telegram_answer = send_message(message_user.recipient.chat_id, message_note)
-                #     if telegram_answer["result"]["from"]["is_bot"]:
-                #         dto = MessagerDTO(
-                #             id=message_user.id,
-                #             user=message_user.user,
-                #             text=message_user.text,
-                #             is_answered=True,
-                #             answer_text='',
-                #             created_at=message_user.created_at,
-                #             answered_at=datetime.datetime.now(),
-                #             telegram_id=message_user.telegram_id,
-                #             recipient=message_user.recipient,
-                #         )
-                #         MessageService(MessageRepository()).update_object(dto)
-                #
-                #     return Response({'ok': True})
-                # else:
-                #     return
-            # 2) Любое другое сообщение — перекидываем админу и подтверждаем юзеру
+            if text.startswith("/qwiz_translate_user"):
+                abonent_user, message_text = handle_command_user_message(int(CHAT_ID), text)
+                print('QWIZ', abonent_user, message_text, 'TYEL_ID', message_telegram_id )
+                message_text = TranslateWordQwiz().create()
+                if abonent_user and message_text:
+                    try:
+                        question, *options_raw = message_text.split("|")
+                        correct_option_id = int(options_raw[-1])
+                        options = [op.strip() for op in options_raw[:-1]]
+                        quiz_result = send_quiz(
+                            abonent_user.chat_id,
+                            question.strip(),
+                            options,
+                            correct_option_id
+                        )
+                        print('QUIZ SENT', quiz_result, type(quiz_result['result']['poll']['id']))
+                        dto = CreateQwizDTO(
+                            user=user,
+                            question=question,
+                            options=options,
+                            correct_answer=correct_option_id,
+                            poll_id=quiz_result['result']['poll']['id'],
+                            telegram_id=quiz_result['result']['message_id'],
+                            recipient=abonent_user,
+                        )
+                        print('DTO_qWIX', dto)
+                        qwiz_user = QwizService(QwizRepository()).create_object(dto)
+                        print('QWIz_user', qwiz_user)
+                    except Exception as e:
+                        print("Ошибка квиза:", e)
+                        send_message(chat_id, f"❌ Ошибка квиза_send: {e}")
+                        return Response({'ok': False, 'error': str(e)})
+
+                    return Response({'ok': True})
+                return
             if text:
                 print('REPLYSTART')
 
