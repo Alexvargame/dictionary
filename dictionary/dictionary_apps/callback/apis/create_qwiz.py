@@ -20,33 +20,40 @@ class TranslateWordQwiz():
         self.dict_type_words=dict_type_words
 
     def create(self):
-
         type_word = random.choice(list(self.dict_type_words.keys()))
-
         model = self.dict_type_words[str(type_word)]
-        print(model)
         min_id, max_id = model.objects.aggregate(Min('id'), Max('id')).values()
-
         random_ids = set()
         while len(random_ids) < 3:
             random_id = random.randint(min_id, max_id)
             if model.objects.filter(id=random_id).exists():
                 random_ids.add(random_id)
         random_words = list(model.objects.filter(id__in=random_ids))
-        print(random_words)
         answer_words = [w.word_translate for w in random_words]
-        print(answer_words)
         question_word = random_words[0].word
         random.shuffle(answer_words)
-        print(answer_words)
         richt_answer = answer_words.index(random_words[0].word_translate)
-        print(richt_answer)
-
-        print(random_words)
         qwiz_str = (f"Как переводится это слово {question_word}? | {answer_words[0]} | "
                     f"{answer_words[1]} | {answer_words[2]} | {richt_answer}")
+        return qwiz_str
 
-        print(qwiz_str)
+class NounArticleQwiz():
+
+    def __init__(self, model):
+        self.model = model
+    def create(self):
+        min_id, max_id = self.model.objects.aggregate(Min('id'), Max('id')).values()
+        qwiz_word = None
+        while not qwiz_word:
+            random_id = random.randint(min_id, max_id)
+            if self.model.objects.filter(id=random_id).exists():
+                qwiz_word =  self.model.objects.filter(id=random_id).first()
+        print(qwiz_word, qwiz_word.article.name)
+        answer_words = ['der', 'die', 'das']
+        question_word = qwiz_word.word
+        richt_answer = answer_words.index(qwiz_word.article.name)
+        qwiz_str = (f"Какой артикль у слова {question_word}? | {answer_words[0]} | "
+                    f"{answer_words[1]} | {answer_words[2]} | {richt_answer}")
 
         return qwiz_str
 
