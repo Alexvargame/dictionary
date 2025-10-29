@@ -304,7 +304,7 @@ class CallBackWebhookTelegram(APIView):
                 send_message(user.chat_id,
                              f"Привет, {first_name or user.email}! Вы уже связаны с ботом 🙌\nНапишите сюда сообщение — я передам его оператору.")
                 return Response({'ok': True})
-            if text.startswith("/message_user"):
+            if text.startswith("/message_to_user"):
                 abonent_user, message_text = handle_command_user_message(int(CHAT_ID), text)
                 print('A<JYYTN', abonent_user, message_text)
                 if abonent_user and message_text:
@@ -343,7 +343,7 @@ class CallBackWebhookTelegram(APIView):
                     return Response({'ok': True})
                 else:
                     return
-            if text.startswith("/qwiz_user"):
+            if text.startswith("/qwiz_to_user"):
                 abonent_user, message_text = handle_command_user_message(int(CHAT_ID), text)
                 print('QWIZ', abonent_user, message_text, 'TYEL_ID', message_telegram_id )
 
