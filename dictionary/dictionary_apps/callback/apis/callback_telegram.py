@@ -25,6 +25,8 @@ from dictionary.dictionary_apps.dtos.callback.request_dto import CreateMessageDT
 from dictionary.dictionary_apps.callback.repository import MessageRepository, QwizRepository
 from dictionary.dictionary_apps.callback.services import MessageService, QwizService
 from dictionary.dictionary_apps.callback.apis.create_qwiz import TranslateWordQwiz, dict_type_words
+
+
 def handle_command_user_message(chat_id, text):
     # Пример: "/message_user @alex Привет, тест!"
     # if text.startswith("/message_user"):
@@ -35,7 +37,7 @@ def handle_command_user_message(chat_id, text):
     print(parts)
     if len(parts) < 3:
         send_message(chat_id, "❌ Использование: /message_user <username|chat_id> <текст>")
-        return
+        return None, None
 
     target, msg_text = parts[1], parts[2]
     print('PSTSR', target, msg_text)
