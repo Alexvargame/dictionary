@@ -52,45 +52,56 @@
 </main>
 <script>
 document.addEventListener('DOMContentLoaded', () => {
-    const variants = document.querySelectorAll('.variant');
+    const qwizBlocks = document.querySelectorAll('#qwiz-container > div');
     const checkBtn = document.getElementById('check-btn');
+
+    // Контейнер для результата
     const resultContainer = document.createElement('div');
     resultContainer.classList.add('text-center', 'mt-4', 'font-semibold', 'text-lg');
     checkBtn.parentNode.appendChild(resultContainer);
 
     // Выбор варианта
-    variants.forEach(v => {
-        v.addEventListener('click', () => {
-            // Снять выделение со всех соседей
-            const parent = v.parentElement;
-            parent.querySelectorAll('.variant').forEach(sib => sib.classList.remove('bg-blue-200'));
-            v.classList.add('bg-blue-200');
+    qwizBlocks.forEach(block => {
+        const variants = block.querySelectorAll('.variant');
+        variants.forEach(v => {
+            v.addEventListener('click', () => {
+                variants.forEach(sib => sib.classList.remove('bg-blue-200'));
+                v.classList.add('bg-blue-200');
+            });
         });
     });
 
     // Проверка ответов
     checkBtn.addEventListener('click', () => {
         let correctCount = 0;
-        const total = document.querySelectorAll('#qwiz-container > div').length;
+        const total = qwizBlocks.length;
 
-        document.querySelectorAll('#qwiz-container > div').forEach(block => {
-            const correctAnswer = block.dataset.answer;
+        qwizBlocks.forEach(block => {
+            const correctAnswer = block.dataset.answer.trim();
             const selectedLi = block.querySelector('.variant.bg-blue-200');
 
             if (selectedLi) {
-                const selectedAnswer = selectedLi.querySelector('div').dataset.correct;
+                const selectedAnswer = selectedLi.querySelector('div').dataset.correct.trim();
                 if (selectedAnswer === correctAnswer) {
                     selectedLi.classList.remove('bg-blue-200');
-                    selectedLi.classList.add('bg-green-300'); // правильный ответ
+                    selectedLi.classList.add('bg-green-300');
                     correctCount++;
                 } else {
                     selectedLi.classList.remove('bg-blue-200');
-                    selectedLi.classList.add('bg-red-300'); // неправильный ответ
+                    selectedLi.classList.add('bg-red-300');
                 }
             }
+
+            // Подсветка правильного варианта, если пользователь не выбрал или выбрал неправильно
+            block.querySelectorAll('.variant').forEach(li => {
+                const answer = li.querySelector('div').dataset.correct.trim();
+                if (answer === correctAnswer && !li.classList.contains('bg-green-300')) {
+                    li.classList.add('bg-green-300');
+                }
+            });
         });
 
-        // Показываем результат и текст оценки
+        // Текст оценки
         let message = '';
         const percent = (correctCount / total) * 100;
         if (percent >= 90) message = 'Великолепно!';
@@ -99,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (percent >= 30) message = 'Нужно быть внимательнее';
         else message = 'Вы, наверное, даже не читали вопросы';
 
-        resultContainer.innerHTML = `Вы ответили на ${correctCount} из ${total}. <br> ${message}`;
+        resultContainer.innerHTML = `Вы ответили на ${correctCount} из ${total}.<br>${message}`;
 
         // Кнопки «Еще раз» и «Назад»
         const btnRepeat = document.createElement('button');
@@ -112,12 +123,12 @@ document.addEventListener('DOMContentLoaded', () => {
         btnBack.classList.add('bg-gray-500', 'text-white', 'px-4', 'py-1', 'rounded', 'mx-2');
         btnBack.addEventListener('click', () => window.history.back());
 
-        // Добавляем кнопки под сообщением
         resultContainer.appendChild(document.createElement('br'));
         resultContainer.appendChild(btnRepeat);
         resultContainer.appendChild(btnBack);
     });
 });
 </script>
+
 
 {% endblock %}
