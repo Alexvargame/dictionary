@@ -22,9 +22,10 @@ class TranslateWordQwiz():
         self.dict_type_words=dict_type_words
 
     def create(self):
+
         type_word = random.choice(list(self.dict_type_words.keys()))
         model = self.dict_type_words[str(type_word)]
-
+        min_id, max_id = self.model.objects.aggregate(Min('id'), Max('id')).values()
         random_ids = set()
         while len(random_ids) < 3:
             random_id = random.randint(min_id, max_id)
