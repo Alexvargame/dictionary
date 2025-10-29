@@ -25,7 +25,7 @@ from dictionary.dictionary_apps.dtos.callback.request_dto import CreateMessageDT
 from dictionary.dictionary_apps.callback.repository import MessageRepository, QwizRepository
 from dictionary.dictionary_apps.callback.services import MessageService, QwizService
 from dictionary.dictionary_apps.callback.apis.create_qwiz import TranslateWordQwiz, dict_type_words, NounArticleQwiz
-
+from dictionary.dictionary_apps.words.models import Noun
 
 def handle_command_user_message(chat_id, text):
     # Пример: "/message_user @alex Привет, тест!"
