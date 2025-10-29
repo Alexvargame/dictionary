@@ -421,7 +421,7 @@ class CallBackWebhookTelegram(APIView):
                 abonent_user, message_text = handle_command_user_message(int(CHAT_ID), text)
                 print('QWIZ', abonent_user, message_text, 'TYEL_ID', message_telegram_id )
 
-                qwiz = NounArticleQwiz(dict_type_words)
+                qwiz = NounArticleQwiz(Noun)
                 message_text = qwiz.create()
                 print('MESSFAE_TEXXT_article', message_text)
                 if abonent_user and message_text:
