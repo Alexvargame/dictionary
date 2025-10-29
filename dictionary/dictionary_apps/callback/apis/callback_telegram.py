@@ -24,7 +24,7 @@ from dictionary.dictionary_apps.dtos.callback.response_dto import MessagerDTO, Q
 from dictionary.dictionary_apps.dtos.callback.request_dto import CreateMessageDTO, CreateQwizDTO
 from dictionary.dictionary_apps.callback.repository import MessageRepository, QwizRepository
 from dictionary.dictionary_apps.callback.services import MessageService, QwizService
-from dictionary.dictionary_apps.callback.apis.create_qwiz import TranslateWordQwiz
+from dictionary.dictionary_apps.callback.apis.create_qwiz import TranslateWordQwiz, dict_type_words
 def handle_command_user_message(chat_id, text):
     # Пример: "/message_user @alex Привет, тест!"
     # if text.startswith("/message_user"):
@@ -378,7 +378,10 @@ class CallBackWebhookTelegram(APIView):
             if text.startswith("/qwiz_translate_user"):
                 abonent_user, message_text = handle_command_user_message(int(CHAT_ID), text)
                 print('QWIZ', abonent_user, message_text, 'TYEL_ID', message_telegram_id )
-                message_text = TranslateWordQwiz().create()
+
+                qwiz = TranslateWordQwiz(dict_type_words)
+                message_text = qwiz.create()
+                print(message_text)
                 if abonent_user and message_text:
                     try:
                         question, *options_raw = message_text.split("|")
