@@ -107,7 +107,6 @@ class OrderingWords(LoginRequiredMixin, APIView):
                 )
         random.shuffle(german_list)
         random.shuffle(russian_list)
-        print(german_list)
         context = {
             'german_list': german_list,
             'russian_list': russian_list,

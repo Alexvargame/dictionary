@@ -57,6 +57,13 @@ class VerbPaarExerciseGermanDTO:
     word_type: str
 
 @dataclass
+class WordPaarTranslateExerciseDTO:
+    id: int
+    word: str
+    word_translate: str
+    article: str
+    word_type: str
+@dataclass
 class RussianPaarExerciseGermanDTO:
     id: int
     word_translate: str

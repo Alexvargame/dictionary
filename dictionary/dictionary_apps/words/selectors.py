@@ -1,5 +1,5 @@
 from typing import Optional
-
+from django.shortcuts import get_object_or_404
 from django.db.models.query import QuerySet
 
 from dictionary.dictionary_apps.common.utils import (get_object)
@@ -20,7 +20,7 @@ def word_list(*, filters=None):
     return WordFilter(filters, qs).qs
 
 def word_get(word_id):
-    word = get_object(Word, id=word_id)
+    word = get_object_or_404(Word.objects.select_subclasses(), id=word_id)
     return word
 
 def noun_list(*, filters=None):

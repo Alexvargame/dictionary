@@ -85,6 +85,8 @@ class BaseUser(BaseModel, AbstractBaseUser, PermissionsMixin):
     score = models.IntegerField(blank=True, null=True, default=0)
     lifes = models.IntegerField(blank=True, null=True, default=5)
     last_life_update = models.DateTimeField(default=timezone.now)#null=True, blank=True)
+    user_bot_id = models.IntegerField(blank=True, null=True, default=0)
+    user_bot_pass = models.CharField(max_length=100, blank=True, null=True, default='')
 
     groups = models.ManyToManyField(
         Group,
