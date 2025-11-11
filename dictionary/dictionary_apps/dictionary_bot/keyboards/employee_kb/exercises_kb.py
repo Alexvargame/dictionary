@@ -28,7 +28,13 @@ class ArticleDataAction(Enum):
 class ArticleData(CallbackData, prefix='articles'):
     action: ArticleDataAction
 
-
+class VerbFormsDataAction(Enum):
+    present= "present"
+    prateritum = "prateritum"
+    perfect = "perfect"
+    cancel = 'cancel'
+class VerbFormsData(CallbackData, prefix='verb_forms'):
+    action: VerbFormsDataAction
 class WordData(CallbackData, prefix="word"):
     idx: int
     selected: bool = False
@@ -49,7 +55,12 @@ def create_enum_digit_from_data(emun_name, data):
     print('enum_members', enum_members)
     return Enum(emun_name, enum_members)
 
-
+def create_enum_present_verb_from_data(emun_name, data):
+    print('create_enum', data)
+    enum_members = {item: item for item in data}
+    enum_members['cancel'] = 'cancel'
+    print('enum_members', enum_members)
+    return Enum(emun_name, enum_members)
 def build_exercises_kb():
     print ('KWYBOARD_EXERCISES')
 
@@ -165,6 +176,52 @@ def build_article_quiz_kb():
     return markup
 
 def build_translate_digits_kb(action, data):
+    builder = InlineKeyboardBuilder()
+    print(action._member_map_.items())
+    for key, value in action._member_map_.items():
+        print(key, value)
+        if key != 'cancel':
+            button = builder.button(
+                text=str(value.value),
+                callback_data=data(action=value).pack(),
+            )
+        else:
+            button = builder.button(
+                text=value.value,
+                callback_data=data(action=value).pack()
+            )
+
+    builder.adjust(3)
+    return builder.as_markup()
+
+def build_verbs_form_kb():
+    print ('KWYBOARD_VEBS_FORMS')
+
+    present = InlineKeyboardButton(
+        text="📝Презент",
+        callback_data=VerbFormsData(action=VerbFormsDataAction.present).pack()
+    )
+    praterotum = InlineKeyboardButton(
+        text="📝Претеритум",
+        callback_data=VerbFormsData(action=VerbFormsDataAction.prateritum).pack()
+    )
+    perfect = InlineKeyboardButton(
+        text="📝Перфект",
+        callback_data=VerbFormsData(action=VerbFormsDataAction.perfect).pack()
+    )
+    cancel = InlineKeyboardButton(
+        text='Отмена',
+        callback_data=VerbFormsData(action=VerbFormsDataAction.cancel).pack()
+
+    )
+    first_line = [present, praterotum, perfect]
+    second_line = [cancel]
+    markup = InlineKeyboardMarkup(
+        inline_keyboard=[first_line, second_line],
+    )
+    return markup
+
+def build_present_form_verb_kb(action, data):
     builder = InlineKeyboardBuilder()
     print(action._member_map_.items())
     for key, value in action._member_map_.items():

@@ -1,6 +1,3 @@
-
-
-
 from .main_employee_kb import build_admin_kb, build_employee_kb
 from .exercises_kb import build_exercises_kb
 
@@ -17,6 +14,14 @@ kb_dict_cancel = {
             'A': build_exercises_kb,
             'E': build_exercises_kb,
         },
+        'translate_digits:cancel':{
+            'A': build_exercises_kb,
+            'E': build_exercises_kb,
+        },
+        'verb_forms:cancel':{
+            'A': build_exercises_kb,
+            'E': build_exercises_kb,
+        },
         'articles:cancel':{
             'A': build_exercises_kb,
             'E': build_exercises_kb,
@@ -26,6 +31,10 @@ kb_dict_cancel = {
             'E': build_employee_kb,
         },
         'employee:cancel': {
+            'A': build_admin_kb,
+            'E': build_employee_kb,
+        },
+        'present_forms:cancel': {
             'A': build_admin_kb,
             'E': build_employee_kb,
         },

@@ -31,7 +31,6 @@ from dictionary.dictionary_apps.words.repository import WordRepository
 from dictionary.dictionary_apps.words.services import WordService
 from dictionary.dictionary_apps.words.selectors import  word_get
 from dictionary.dictionary_apps.users.selectors import user_get
-# from dictionary.dictionary_apps.users.models import BaseUser
 from dictionary.dictionary_apps.dtos.words.response_dto import (NounPaarExerciseGermanDTO, VerbPaarExerciseGermanDTO,
                                                                 RussianPaarExerciseGermanDTO, WordPaarTranslateExerciseDTO)
 from ..states import OrderExercises

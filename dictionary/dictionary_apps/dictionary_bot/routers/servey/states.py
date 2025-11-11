@@ -27,9 +27,18 @@ class OrderExercisesArticle(StatesGroup):
 
 
 class OrderExercisesTranslateDigits(StatesGroup):
+    waiting_for_exercise = State()
     waiting_for_selected_exercises = State()
     waiting_for_current_index = State()
     waiting_for_correct_answers = State()
+
+class OrderExercisesVerbForms(StatesGroup):
+    waiting_for_exercise = State()
+    waiting_for_verb_form = State()
+    waiting_for_selected_verbs = State()
+    waiting_for_current_index = State()
+    waiting_for_correct_answers = State()
+
 
 # class OrderEmployeeObjects(StatesGroup):
 #     waiting_for_type_object = State()

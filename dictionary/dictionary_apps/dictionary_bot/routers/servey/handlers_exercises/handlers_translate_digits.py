@@ -48,6 +48,7 @@ def get_noun_for_id(noun_id):
 @sync_to_async
 def get_user_async(user_id):
     return user_get(user_id)
+
 units = {
     1: "ein", 2: "zwei", 3: "drei", 4: "vier", 5: "fünf",
     6: "sechs", 7: "sieben", 8: "acht", 9: "neun"
