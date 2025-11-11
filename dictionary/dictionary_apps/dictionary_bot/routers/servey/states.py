@@ -39,6 +39,13 @@ class OrderExercisesVerbForms(StatesGroup):
     waiting_for_current_index = State()
     waiting_for_correct_answers = State()
 
+class OrderExercisesVerbPresentForms(StatesGroup):
+    waiting_for_verb_form = State()
+    waiting_for_selected_verbs = State()
+    waiting_for_selected_pronouns = State()
+    waiting_for_current_index = State()
+    waiting_for_correct_answers = State()
+    waiting_for_verb_form_for_pronoun = State()
 
 # class OrderEmployeeObjects(StatesGroup):
 #     waiting_for_type_object = State()

@@ -193,6 +193,7 @@ class UserFrontUpdateApi(LoginRequiredMixin, APIView):
         lifes = serializers.IntegerField()
         username = serializers.CharField()
         registration_date = serializers.DateTimeField()
+        user_bot_pass = serializers.CharField()
 
     # Serializer только для редактируемых полей
     class UserInputSerializer(serializers.Serializer):
@@ -201,6 +202,7 @@ class UserFrontUpdateApi(LoginRequiredMixin, APIView):
         email = serializers.EmailField(required=False)
         phone = serializers.CharField(required=False, allow_blank=True)
         telegram_username = serializers.CharField(required=False, allow_blank=True)
+        user_bot_pass = serializers.CharField(required=False, allow_blank=True)
 
     class AdminInputSerializer(UserInputSerializer):
         is_active = serializers.BooleanField(required=False)
@@ -236,10 +238,11 @@ class UserFrontUpdateApi(LoginRequiredMixin, APIView):
         dto_data = UsersService(UsersRepository()).detail_object(user).__dict__.copy()
         # Исключаем служебные поля, которые не нужны DTO
         dto_data.pop('_state', None)
-
+        print(dto_data)
         for field, value in serializer.validated_data.items():
             dto_data[field] = value
-        dto_data['user_role'] = user_role_get(dto_data['user_role'])
+        print(dto_data)
+        #dto_data['user_role'] = user_role_get(dto_data['user_role'])
         if dto_data['user_role'].id == 1:
             dto_data['is_admin'] = True
         else:

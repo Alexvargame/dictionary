@@ -31,7 +31,7 @@ from dictionary.dictionary_apps.words.selectors import  verb_get
 from dictionary.dictionary_apps.users.selectors import user_get
 
 from .data_file import separable_prefixes, inseparable_prefixes, umlauts_map
-from ..states import OrderExercisesVerbForms
+from ..states import OrderExercisesVerbForms, OrderExercisesVerbPresentForms
 from .statistic import count_score_lifes
 
 
@@ -91,14 +91,20 @@ def change_vowel(verb):
         if l in [k for k in umlauts_map.values()]:
             kk = next((k for k, v in umlauts_map.items() if v == umlauts_map[kk]), None)
             verb_tem = verb_tem.replace(l, key)
+    add_word = random.sample(['haben', 'sein'], k=1)
+    verb_tem = add_word[0] + ' ' + verb_tem
     return verb_tem
     # Проверяем на неотделяемую приставку in inseparable_prefixes):
 def add_ge_et_to_verb(verb):
     verb_tem = 'ge'+verb[:-2]+'et'
+    add_word = random.sample(['haben', 'sein'], k=1)
+    verb_tem = add_word[0] + ' ' + verb_tem
     return verb_tem
 
 def add_et_to_verb(verb):
     verb_tem = verb[:-2]+'et'
+    add_word = random.sample(['haben', 'sein'], k=1)
+    verb_tem = add_word[0] + ' ' + verb_tem
     return verb_tem
 
 random_verb_change_dict = {
@@ -107,38 +113,13 @@ random_verb_change_dict = {
     'et': add_et_to_verb,
 }
 
+
 async def generate_present_verbs_form_for_exercises(verb):
     verbs_for_kb = []
     method_for = random.sample([k for k in random_verb_change_dict.keys()], 2)
     for m in method_for:
         verbs_for_kb.append(random_verb_change_dict[m](verb))
     return verbs_for_kb
-# async def send_article_quiz_poll(message, words):
-#     for word in words:
-#         question = f"Какой артикль у слова {word.word}?"
-#         options = ['der', 'die', 'das', 'die.']
-#         correct_option_id = options.index(word.article.name)  # индекс правильного ответа
-#
-#         await message.answer_poll(
-#             question=question,
-#             options=options,
-#             type='quiz',            # важно: 'quiz', чтобы был правильный ответ
-#             correct_option_id=correct_option_id,
-#             is_anonymous=False
-#         )
-
-# async def create_article_qwiz(words):
-#     qwiz_str_list = []
-#     qwiz_word = None
-#     for word in words:
-#         answer_words = ['der', 'die', 'das', 'die.']
-#         question_word = word.word
-#         richt_answer = answer_words.index(word.article.name)
-#         qwiz_str = (f"Какой артикль у слова {question_word}? | {answer_words[0]} | "
-#                     f"{answer_words[1]} | {answer_words[2]} | {richt_answer}")
-#         qwiz_str_list.append(qwiz_str)
-#     return qwiz_str_list
-
 @router.callback_query(ExercisesData.filter(F.action == ExercisesDataAction.verb_forms))
 async def choice_verb_form(clbk:CallbackQuery, state:FSMContext):
     print(clbk.data)
@@ -157,10 +138,14 @@ async def create_exercises_articles(clbk: CallbackQuery, state: FSMContext):
     await state.set_state(OrderExercisesVerbForms.waiting_for_verb_form)
     await state.update_data(waiting_for_verb_form=clbk.data.split(':')[1])
     data = await state.get_data()
-    if data['waiting_for_verb_form'] == 'present':
+    if data['waiting_for_verb_form'] == 'perfect':
+        await perfect_form(clbk, state)
+    elif data['waiting_for_verb_form'] == 'present':
+        await state.set_state(OrderExercisesVerbPresentForms.waiting_for_verb_form)
+        await state.update_data(waiting_for_verb_form=clbk.data.split(':')[1])
         await present_form(clbk, state)
-async def present_form(clbk, state):
-    print('EXERCISES_verbs_present', clbk.data)
+async def perfect_form(clbk, state):
+    print('EXERCISES_verbs_perfect', clbk.data)
     limit = 5
     filters = {}
     all_words = await create_verbs_ids()
@@ -256,5 +241,41 @@ async def handle_article_answer(clbk: CallbackQuery, state: FSMContext):
     )
 
 
+async def present_form(clbk, state):
+    pronouns = ['ich', 'du', 'er_sie_es', 'wir', 'ihr', 'Sie_sie']
+    print('EXERCISES_verbs_present', clbk.data)
+    limit = 5
+    filters = {}
+    all_words = await create_verbs_ids()
+    all_ids = [w.id for w in all_words]
+    if len(all_ids) >= limit:
+        random_ids = random.sample(all_ids, limit)
+    filters = {'id__in': random_ids}
+    selected_words = await create_words_ids(filters)
+    selected_pronouns = random.sample(pronouns, limit)
+    print('sel', selected_words)
+    print('sel_pr', selected_pronouns)
+    # await state.update_data(waiting_for_selected_verbs=selected_words)
+    # await state.update_data(waiting_for_selected_pronouns=selected_pronouns)
+    user = await get_user_async(BotDB.get_user_id(clbk.message.chat.id))
+    text_for_user = f"{user.username}  Ваши баллы:{user.score},\n"
+    text_for_user += f"  Ваши жизни: {user.lifes} \n\n"
+    text_for_user += f"Выберите правильную форму глагола для местоимения:\n"
+    await state.update_data(waiting_for_selected_verbs=selected_words,
+                            waiting_for_selected_pronouns=selected_pronouns,
+                            waiting_for_current_index=0,
+                            waiting_for_correct_aswers=0)
+    current_word = selected_words[0]
+    current_pronoun = selected_pronouns[0]
+    text_for_user += f"Какая форма у глагола: <b>{current_word.word}</b> \n для метсоимения {current_pronoun}?"
+    try:
+        await clbk.message.delete()  # 💥 удалить сообщение с кнопками
+    except Exception as e:
+        print(f"Не удалось удалить сообщение: {e}")
 
-
+    await clbk.message.answer(
+        text=text_for_user,
+        parse_mode=ParseMode.HTML,
+        #reply_markup=build_present_form_verb_kb(PresentVerbFormAction, PresentVerbFormData)
+    )
+    await state.set_state(OrderExercisesVerbPresentForms.waiting_for_verb_form_for_pronoun)

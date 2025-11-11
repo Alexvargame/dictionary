@@ -19,6 +19,7 @@ class CreateUserDTO:
     user_role: UserRole
     chat_id: Optional[int] = None
     telegram_username: Optional[str] = None
+    user_bot_pass: Optional[str] = None
 
 
 

@@ -20,6 +20,7 @@ class UserDTO:
     telegram_username: str
     registration_date: str
     last_login_date: str
+    user_bot_pass: str
 
 @dataclass
 class  UserRoleDTO:

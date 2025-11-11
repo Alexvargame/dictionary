@@ -88,6 +88,7 @@ class BaseUser(BaseModel, AbstractBaseUser, PermissionsMixin):
     user_bot_id = models.IntegerField(blank=True, null=True, default=0)
     user_bot_pass = models.CharField(max_length=100, blank=True, null=True, default='')
 
+
     groups = models.ManyToManyField(
         Group,
         verbose_name="groups",
@@ -119,14 +120,15 @@ class BaseUser(BaseModel, AbstractBaseUser, PermissionsMixin):
         print('RESTORE')
         if self.email == 'aleshinaolg@gmail.com' or self.email == 'alex@gmail.com':
             self.lifes = 1000
-            self.save(update_fields=['lifes', 'last_life_update'])
+            self.save(update_fields=['lifes', 'last_life_update', 'last_login_date'])
         if self.lifes >= self.MAX_LIFES:
             return
 
-        now = timezone.now()
+        now_update = timezone.now()
         if self.last_life_update is None:
-            self.last_life_update = now
-            self.save(update_fields=['last_life_update'])
+            self.last_life_update = now_update
+            self.last_login_date = now_update
+            self.save(update_fields=['last_life_update', 'last_login_date'])
             return
         elasped = now - self.last_life_update
         hours_passred = int(elasped.total_seconds() // 3600)

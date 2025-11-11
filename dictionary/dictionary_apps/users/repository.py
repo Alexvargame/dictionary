@@ -22,6 +22,7 @@ class UsersRepository:
             password=dto.password,
             telegram_username=dto.telegram_username,
             chat_id=dto.chat_id,
+            user_bot_pass=dto.user_bot_pass,
 
         )
         return user
@@ -44,6 +45,7 @@ class UsersRepository:
             telegram_username=obj.telegram_username,
             registration_date=obj.registration_date,
             last_login_date=obj.last_login_date,
+            user_bot_pass=obj.user_bot_pass,
         )
         return dto
 
@@ -67,6 +69,7 @@ class UsersRepository:
                 telegram_username=obj.telegram_username,
                 registration_date=obj.registration_date,
                 last_login_date=obj.last_login_date,
+                user_bot_pass=obj.user_bot_pass,
             )
             lst_dto.append(tmp_dto)
         return lst_dto
