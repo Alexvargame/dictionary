@@ -13,7 +13,7 @@
         <a href="{% url 'api:users:user_update' user_id=user.id %}" class="px-3 py-2 rounded-md text-white font-medium">Профиль</a>
         <a href="{% url 'api:users:user_logout' %}" class="px-3 py-2 rounded-md text-white font-medium">Выход</a>
       {% else %}
-        <a href="{% url 'api:users:user_registration' %ы}" class="px-3 py-2 rounded-md text-white font-medium">Регистрация</a>
+        <a href="{% url 'api:users:user_registration' %}" class="px-3 py-2 rounded-md text-white font-medium">Регистрация</a>
         <a href="{% url 'api:users:user_login' %}" class="px-3 py-2 rounded-md text-white font-medium">Вход</a>
       {% endif %}
       {% if user.is_authenticated and user.is_staff %}

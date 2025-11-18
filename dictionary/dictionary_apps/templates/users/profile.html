@@ -44,6 +44,10 @@
             <label class="block text-sm font-medium text-black">Жизни (lifes)</label>
             <input type="number" name="lifes" value="{{ user_profile.lifes }}" class="w-full border rounded p-2 text-black" />
           </div>
+          <div>
+            <label class="block text-sm font-medium text-black">Пароль для телеграм-бота</label>
+            <input type="text" name="user_bot_pass" value="{{ user_profile.user_bot_pass }}" class="w-full border rounded p-2 text-black" />
+          </div>
 
         </div>
 
@@ -73,6 +77,10 @@
             <label class="block text-sm font-medium text-black">Telegram</label>
             <input type="text" value="{{ user_profile.telegram_username }}" class="w-full border rounded p-2 bg-gray-100 text-black" disabled />
           </div>
+          <div>
+            <label class="block text-sm font-medium text-black">Последний логин</label>
+            <input type="text" value="{{ user_profile.last_login_date }}" class="w-full border rounded p-2 bg-gray-100 text-black" disabled />
+          </div>
         </div>
 
       {% else %}
@@ -98,6 +106,10 @@
             <label class="block text-sm font-medium text-black">Telegram</label>
             <input type="text" name="telegram_username" value="{{ user_profile.telegram_username }}" class="w-full border rounded p-2 text-black" />
           </div>
+          <div>
+            <label class="block text-sm font-medium text-black">Пароль для телеграм-бота</label>
+            <input type="text" name="user_bot_pass" value="{{ user_profile.user_bot_pass }}" class="w-full border rounded p-2 text-black" />
+          </div>
         </div>
 
         {# Правая колонка — только для просмотра #}
@@ -121,6 +133,10 @@
           <div>
             <label class="block text-sm font-medium text-black">Никнейм</label>
             <input type="text" value="{% if user_profile.username %}Да{% else %}Нет{% endif %}" class="w-full border rounded p-2 bg-gray-100 text-black" disabled />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-black">Последний логин</label>
+            <input type="text" value="{{ user_profile.last_login_date }}" class="w-full border rounded p-2 bg-gray-100 text-black" disabled />
           </div>
         </div>
       {% endif %}
