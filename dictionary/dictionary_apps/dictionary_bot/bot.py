@@ -7,7 +7,8 @@ from aiogram import Bot, Dispatcher
 from aiogram.types import BotCommand
 from aiogram.fsm.storage.memory import MemoryStorage
 from aiogram.fsm.state import State, StatesGroup
-from routers import router as main_router
+from dictionary.dictionary_apps.dictionary_bot.routers import router as main_router
+
 logger = logging.getLogger(__name__)
 
 class OrderRegister(StatesGroup):
