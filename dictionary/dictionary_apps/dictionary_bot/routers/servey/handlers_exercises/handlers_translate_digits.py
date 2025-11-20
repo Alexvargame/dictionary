@@ -21,10 +21,7 @@ from dictionary.dictionary_apps.dictionary_bot.base_name import BotDB
 from dictionary.dictionary_apps.dictionary_bot.keyboards.employee_kb.exercises_kb import (ExercisesData, ExercisesDataAction,
                                                                                           build_exercises_kb, build_translate_digits_kb,
                                                                                           create_enum_digit_from_data)
-from dictionary.dictionary_apps.words.models import Noun
-from dictionary.dictionary_apps.words.repository import NounRepository, WordRepository
-from dictionary.dictionary_apps.words.services import NounService, WordService
-from dictionary.dictionary_apps.words.selectors import  noun_get
+
 from dictionary.dictionary_apps.users.selectors import user_get
 from dictionary.dictionary_apps.dtos.words.request_dto import CreateDigitsExerciseDTO
 
@@ -35,13 +32,13 @@ from .statistic import count_score_lifes
 
 router = Router(name='translate_digits')
 
+TRANSLATE_DIGIT_QWIZ_LIMIT = 5
+
 @sync_to_async
 def create_nouns_ids():
     return NounService(NounRepository()).list_objects()
 
-@sync_to_async
-def create_words_ids(filters):
-    return WordService(WordRepository()).list_objects(filters)
+
 @sync_to_async
 def get_noun_for_id(noun_id):
     return noun_get(noun_id)
@@ -119,21 +116,18 @@ def create_callback_class_for_enum(enum_cls):
         action: enum_cls
     return TranslateDigitsData
 
+async def get_user_stats_text(chat_id):
+    user = await get_user_async(BotDB.get_user_id(chat_id))
+    return f"{user.username}  Ваши баллы:{user.score},\nВаши жизни: {user.lifes}\n\n"
 
 @router.callback_query(ExercisesData.filter(F.action == ExercisesDataAction.translate_digits))
 async def create_exercises_articles(clbk: CallbackQuery, state: FSMContext):
     print('EXERCISES_TRANSLATE_DIGOTS ')
-    limit = 5
-    random_numbers = random.sample(range(1, 1001), limit)
+    random_numbers = random.sample(range(1, 1001), TRANSLATE_DIGIT_QWIZ_LIMIT)
     exercises_translate_digits = await generate_exercise(random_numbers)
-
     print('sel', exercises_translate_digits)
-    #await state.update_data(waiting_for_selected_exercises=exercises_translate_digits)
-
-    user = await get_user_async(BotDB.get_user_id(clbk.message.chat.id))
-    text_for_user = f"{user.username}  Ваши баллы:{user.score},\n"
-    text_for_user += f"  Ваши жизни: {user.lifes} \n\n"
-    text_for_user += f"Расставьте артикли:\n"
+    text_for_user = await get_user_stats_text(clbk.message.chat.id)
+    text_for_user += f"Переведите числа:\n"
     # res = await create_article_qwiz(selected_words)
     # print(res)
     await state.update_data(waiting_for_selected_exercises=exercises_translate_digits,
@@ -154,13 +148,12 @@ async def create_exercises_articles(clbk: CallbackQuery, state: FSMContext):
     await state.update_data(waiting_for_action_kb=TranslateDigitAction,
                             waiting_for_data_kb=TranslateDigitData,
                             )
-    text_for_user += f"Как переводится это число:\n <b>{current_digit.correct_answer}</b>?"
+    text_for_user += f"Переведите число:\n <b>{current_digit.correct_answer}</b>?"
     await clbk.message.answer(
         text=text_for_user,
         parse_mode=ParseMode.HTML,
         reply_markup=build_translate_digits_kb(TranslateDigitAction, TranslateDigitData)
     )
-    #await send_article_quiz_poll(clbk.message, selected_words)
 
 @router.callback_query(lambda c: c.data.startswith("translate_digits:") and not c.data.endswith(':cancel'))
 async def handle_article_answer(clbk: CallbackQuery, state: FSMContext):
@@ -174,8 +167,6 @@ async def handle_article_answer(clbk: CallbackQuery, state: FSMContext):
     correct_count = data['waiting_for_correct_aswers']
 
     current_exercise = exercises[index]
-
-    # допустим, в callback_data: "article:der"
     chosen_digit = int(clbk.data.split(":")[1])
     print(chosen_digit, current_exercise)
     if chosen_digit == current_exercise.digit:
@@ -201,11 +192,10 @@ async def handle_article_answer(clbk: CallbackQuery, state: FSMContext):
     else:
         user = await get_user_async(BotDB.get_user_id(clbk.message.chat.id))
         await count_score_lifes(user, correct_count, len(exercises))
-        text_for_user = f"Квиз завершён! Правильных ответов: {correct_count}/{len(exercises)}"
-        text_for_user += f"{user.username}  Ваши баллы:{user.score},\n"
-        text_for_user += f"  Ваши жизни: {user.lifes} \n\n"
+        text_for_user = f"Квиз завершён! \nПравильных ответов: {correct_count}/{len(exercises)}\n"
+        text_for_user += await get_user_stats_text(clbk.message.chat.id)
         try:
-            await clbk.message.delete()  # 💥 вместо clbk.message.delete()
+            await clbk.message.delete()
         except Exception as e:
             print(f"Не удалось удалить сообщение: {e}")
         await clbk.message.answer(
@@ -214,8 +204,7 @@ async def handle_article_answer(clbk: CallbackQuery, state: FSMContext):
             reply_markup=build_exercises_kb()
         )
 
-        #await clbk.message.edit_text(f"Квиз завершён! Правильных ответов: {correct_count}/{len(selected_words)}")
-        await state.clear()  # можно очистить FSM
+        await state.clear()
 
     # сохраняем новое состояние
     await state.update_data(

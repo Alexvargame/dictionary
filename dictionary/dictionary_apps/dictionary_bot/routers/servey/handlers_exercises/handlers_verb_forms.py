@@ -2,10 +2,8 @@ from asgiref.sync import sync_to_async
 import django
 import os
 import random
-import asyncio
 
 from aiogram import Router, F, types
-#from aiogram.utils import markdown
 from aiogram.fsm.context import FSMContext
 from aiogram.enums import ParseMode
 from aiogram.types import CallbackQuery
@@ -21,14 +19,11 @@ from dictionary.dictionary_apps.dictionary_bot.base_name import BotDB
 
 
 from dictionary.dictionary_apps.dictionary_bot.keyboards.employee_kb.exercises_kb import (ExercisesData, ExercisesDataAction,
-                                                                                          build_exercises_kb, build_article_quiz_kb,
-                                                                                          VerbFormsDataAction, VerbFormsData,
-                                                                                          build_verbs_form_kb, build_perfect_form_verb_kb,
+                                                                                          build_exercises_kb, build_verbs_form_kb,
+                                                                                          build_perfect_form_verb_kb,
                                                                                           create_enum_perfect_verb_from_data)
-from dictionary.dictionary_apps.words.models import Noun
 from dictionary.dictionary_apps.words.repository import VerbRepository, WordRepository
 from dictionary.dictionary_apps.words.services import VerbService, WordService
-from dictionary.dictionary_apps.words.selectors import  verb_get
 from dictionary.dictionary_apps.users.selectors import user_get
 
 from .data_file import separable_prefixes, inseparable_prefixes, umlauts_map
@@ -37,6 +32,8 @@ from .statistic import count_score_lifes
 
 
 router = Router(name='verb_forms')
+
+VERB_FORM_QWIZ_LIMIT = 5
 @sync_to_async
 def create_verbs_ids():
     return VerbService(VerbRepository()).list_objects()
@@ -45,9 +42,7 @@ def create_verbs_ids():
 def create_words_ids(filters):
     return WordService(WordRepository()).list_objects(filters)
 
-@sync_to_async
-def get_verb_for_id(verb_id):
-    return verb_get(verb_id)
+
 @sync_to_async
 def get_user_async(user_id):
     return user_get(user_id)
@@ -56,27 +51,6 @@ def create_callback_class_for_enum(enum_cls):
         action: enum_cls
     return TranslateDigitsData
 def change_vowel(verb):
-    separable_prefixes = [
-        "ab", "an", "auf", "aus", "bei", "ein", "fern",
-        "mit", "nach", "vor", "weg", "zu", "zurück", "zusammen"
-    ]
-
-    # Inseparable prefixes — неотделяемые приставки
-    inseparable_prefixes = [
-        "be", "emp", "ent", "er", "ge", "miss", "ver", "zer",
-    ]
-
-    # Словарь обычная_буква -> буква_с_умлаутом
-    umlauts_map = {
-        "a": "ä",
-        "o": "ö",
-        "u": "ü",
-        "A": "Ä",
-        "O": "Ö",
-        "U": "Ü",
-        "ss": "ß"
-    }
-
     verb_tem = verb
     for prefix in sorted(separable_prefixes, key=len, reverse=True):
         if verb.startswith(prefix):
@@ -87,11 +61,12 @@ def change_vowel(verb):
             verb_tem = verb[len(prefix):]
             break
     for l in verb_tem:
+        kk =''
         if l in [k for k in umlauts_map.keys()]:
             verb_tem = verb_tem.replace(l, umlauts_map[l])
         if l in [k for k in umlauts_map.values()]:
             kk = next((k for k, v in umlauts_map.items() if v == umlauts_map[kk]), None)
-            verb_tem = verb_tem.replace(l, key)
+            verb_tem = verb_tem.replace(l, kk)
     add_word = random.sample(['haben', 'sein'], k=1)
     verb_tem = add_word[0] + ' ' + verb_tem
     return verb_tem
@@ -122,6 +97,14 @@ async def generate_present_verbs_form_for_exercises(verb):
         verbs_for_kb.append(random_verb_change_dict[m](verb))
     return verbs_for_kb
 
+async def select_random_verbs(limit):
+    filters = {}
+    all_verbs = await create_verbs_ids()
+    all_ids = [w.id for w in all_verbs]
+    if len(all_ids) >= limit:
+        random_ids = random.sample(all_ids, limit)
+    filters = {'id__in': random_ids}
+    return await create_words_ids(filters)
 
 @router.callback_query(ExercisesData.filter(F.action == ExercisesDataAction.verb_forms))
 async def choice_verb_form(clbk:CallbackQuery, state:FSMContext):
@@ -160,14 +143,13 @@ async def create_exercises_articles(clbk: CallbackQuery, state: FSMContext):
 
 async def perfect_form(clbk, state):
     print('EXERCISES_verbs_perfect', clbk.data)
-    limit = 5
-    filters = {}
-    all_words = await create_verbs_ids()
-    all_ids = [w.id for w in all_words]
-    if len(all_ids) >= limit:
-        random_ids = random.sample(all_ids, limit)
-    filters = {'id__in': random_ids}
-    selected_words = await create_words_ids(filters)
+    # filters = {}
+    # all_words = await create_verbs_ids()
+    # all_ids = [w.id for w in all_words]
+    # if len(all_ids) >= VERB_FORM_QWIZ_LIMIT:
+    #     random_ids = random.sample(all_ids, VERB_FORM_QWIZ_LIMIT)
+    # filters = {'id__in': random_ids}
+    selected_words = await select_random_verbs(VERB_FORM_QWIZ_LIMIT)#create_words_ids(filters)
     print('sel', selected_words)
     await state.update_data(waiting_for_selected_verbs=selected_words)
 
@@ -177,7 +159,7 @@ async def perfect_form(clbk, state):
     text_for_user += f"Выберите правильную форму глагола:\n"
     await state.update_data(waiting_for_selected_verbs=selected_words,
                             waiting_for_current_index=0,
-                            waiting_for_correct_aswers=0)
+                            waiting_for_correct_answers=0)
     current_word = selected_words[0]
     added_verb_form = await generate_present_verbs_form_for_exercises(current_word.word)
     print(added_verb_form)
@@ -206,7 +188,7 @@ async def handle_perfect_form_answer(clbk: CallbackQuery, state: FSMContext):
     data = await state.get_data()
     selected_words = data['waiting_for_selected_verbs']
     index = data['waiting_for_current_index']
-    correct_count = data['waiting_for_correct_aswers']
+    correct_count = data['waiting_for_correct_answers']
     current_word = selected_words[index]
     chosen_form = clbk.data.split(":")[1]
     if chosen_form == current_word.past_perfect_form:
@@ -251,22 +233,21 @@ async def handle_perfect_form_answer(clbk: CallbackQuery, state: FSMContext):
     # сохраняем новое состояние
     await state.update_data(
         waiting_for_current_index=index,
-        waiting_for_correct_aswers=correct_count
+        waiting_for_correct_answers=correct_count
     )
 
 
 async def present_form(clbk, state):
     pronouns = ['ich', 'du', 'er_sie_es', 'wir', 'ihr', 'Sie_sie']
     print('EXERCISES_verbs_present', clbk.data)
-    limit = 5
-    filters = {}
-    all_words = await create_verbs_ids()
-    all_ids = [w.id for w in all_words]
-    if len(all_ids) >= limit:
-        random_ids = random.sample(all_ids, limit)
-    filters = {'id__in': random_ids}
-    selected_words = await create_words_ids(filters)
-    selected_pronouns = random.sample(pronouns, limit)
+    # filters = {}
+    # all_words = await create_verbs_ids()
+    # all_ids = [w.id for w in all_words]
+    # if len(all_ids) >= VERB_FORM_QWIZ_LIMIT:
+    #     random_ids = random.sample(all_ids, VERB_FORM_QWIZ_LIMIT)
+    # filters = {'id__in': random_ids}
+    selected_words = await select_random_verbs(VERB_FORM_QWIZ_LIMIT)#await create_words_ids(filters)
+    selected_pronouns = random.sample(pronouns, VERB_FORM_QWIZ_LIMIT)
     user = await get_user_async(BotDB.get_user_id(clbk.message.chat.id))
     text_for_user = f"{user.username}  Ваши баллы:{user.score},\n"
     text_for_user += f"  Ваши жизни: {user.lifes} \n\n"
@@ -274,7 +255,7 @@ async def present_form(clbk, state):
     await state.update_data(waiting_for_selected_verbs=selected_words,
                             waiting_for_selected_pronouns=selected_pronouns,
                             waiting_for_current_index=0,
-                            waiting_for_correct_aswers=0)
+                            waiting_for_correct_answers=0)
     current_word = selected_words[0]
     current_pronoun = selected_pronouns[0]
     text_for_user += f"Какая форма у глагола: <b>{current_word.word}</b> \n для местоимения {current_pronoun}?"
@@ -297,8 +278,11 @@ async def handle_present_form_answer(msg:types.Message, state: FSMContext):
     selected_verbs = data['waiting_for_selected_verbs']
     selected_pronouns = data['waiting_for_selected_pronouns']
     index = data['waiting_for_current_index']
-    correct_count = data['waiting_for_correct_aswers']
+    correct_count = data['waiting_for_correct_answers']
     current_word = selected_verbs[index]
+    if not msg.text or not msg.text.strip():
+        await msg.answer("⚠ Введите форму глагола текстом.")
+        return
     chosen_form = msg.text.lower()
     print('CHOSEN_FORM', chosen_form)
     field_name = f"{selected_pronouns[index]}_form"
@@ -345,21 +329,19 @@ async def handle_present_form_answer(msg:types.Message, state: FSMContext):
     # сохраняем новое состояние
     await state.update_data(
         waiting_for_current_index=index,
-        waiting_for_correct_aswers=correct_count
+        waiting_for_correct_answers=correct_count
     )
 
 async def prateritum_form(clbk, state, pronouns):
-    #pronouns = ['ich', 'du', 'er_sie_es', 'wir', 'ihr', 'Sie_sie']
     print('EXERCISES_verbs_prateritum', clbk.data)
-    limit = 5
-    filters = {}
-    all_words = await create_verbs_ids()
-    all_ids = [w.id for w in all_words]
-    if len(all_ids) >= limit:
-        random_ids = random.sample(all_ids, limit)
-    filters = {'id__in': random_ids}
-    selected_verbs = await create_words_ids(filters)
-    selected_pronouns = random.sample(pronouns, limit)
+    # filters = {}
+    # all_words = await create_verbs_ids()
+    # all_ids = [w.id for w in all_words]
+    # if len(all_ids) >= VERB_FORM_QWIZ_LIMIT:
+    #     random_ids = random.sample(all_ids, VERB_FORM_QWIZ_LIMIT)
+    # filters = {'id__in': random_ids}
+    selected_verbs = await select_random_verbs(VERB_FORM_QWIZ_LIMIT)#await create_words_ids(filters)
+    selected_pronouns = random.sample(pronouns, VERB_FORM_QWIZ_LIMIT)
     user = await get_user_async(BotDB.get_user_id(clbk.message.chat.id))
     text_for_user = f"{user.username}  Ваши баллы:{user.score},\n"
     text_for_user += f"  Ваши жизни: {user.lifes} \n\n"
@@ -367,7 +349,7 @@ async def prateritum_form(clbk, state, pronouns):
     await state.update_data(waiting_for_selected_verbs=selected_verbs,
                             waiting_for_selected_pronouns=selected_pronouns,
                             waiting_for_current_index=0,
-                            waiting_for_correct_aswers=0)
+                            waiting_for_correct_answers=0)
     current_verb = selected_verbs[0]
     current_pronoun = selected_pronouns[0]
     text_for_user += f"Какая форма у глагола: <b>{current_verb.word}</b> \n для местоимения {current_pronoun}?"
@@ -390,8 +372,11 @@ async def handle_prateritum_form_answer(msg:types.Message, state: FSMContext):
     selected_verbs = data['waiting_for_selected_verbs']
     selected_pronouns = data['waiting_for_selected_pronouns']
     index = data['waiting_for_current_index']
-    correct_count = data['waiting_for_correct_aswers']
+    correct_count = data['waiting_for_correct_answers']
     current_verb = selected_verbs[index]
+    if not msg.text or not msg.text.strip():
+        await msg.answer("⚠ Введите форму глагола текстом.")
+        return
     chosen_form = msg.text.lower()
     print('CHOSEN_FORM_Prat', chosen_form)
     field_name = f"past_prateritum_{selected_pronouns[index]}_form"
@@ -438,5 +423,5 @@ async def handle_prateritum_form_answer(msg:types.Message, state: FSMContext):
     # сохраняем новое состояние
     await state.update_data(
         waiting_for_current_index=index,
-        waiting_for_correct_aswers=correct_count
+        waiting_for_correct_answers=correct_count
     )

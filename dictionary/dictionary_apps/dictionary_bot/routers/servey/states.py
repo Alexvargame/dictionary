@@ -15,6 +15,8 @@ class OrderExercises(StatesGroup):
     waiting_for_pair_words = State()
     waiting_for_tmp_left = State()
     waiting_for_tmp_right = State()
+    waiting_for_data = State()
+
 
 
 class OrderExercisesArticle(StatesGroup):

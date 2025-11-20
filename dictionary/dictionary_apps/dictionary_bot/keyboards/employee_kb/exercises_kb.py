@@ -100,11 +100,13 @@ def build_exercises_kb():
 
     )
 
-    first_line = [translate_words, articles, pronouns]
-    second_line = [translate_digits, verb_forms, adjectiv]
-    third_line = [cancel]
+    first_line = [translate_words]
+    second_line = [translate_digits]
+    third_line = [articles, pronouns]
+    fourth_line =  [verb_forms, adjectiv]
+    fifth_line = [cancel]
     markup = InlineKeyboardMarkup(
-        inline_keyboard=[first_line, second_line, third_line],
+        inline_keyboard=[first_line, second_line, third_line, fourth_line, fifth_line],
     )
     return markup
 

@@ -4,7 +4,6 @@ import os
 import random
 
 from aiogram import Router, F, types
-from aiogram.utils import markdown
 from aiogram.fsm.context import FSMContext
 from aiogram.enums import ParseMode
 from aiogram.types import CallbackQuery
@@ -26,7 +25,7 @@ from dictionary.dictionary_apps.dictionary_bot.keyboards.employee_kb.exercises_k
                                                                                           build_exercises_kb, build_translate_words_kb,
                                                                                           # TranslateWord, TranslateWordAction,
                                                                                           create_enum_from_data)
-from dictionary.dictionary_apps.words.models import Word
+
 from dictionary.dictionary_apps.words.repository import WordRepository
 from dictionary.dictionary_apps.words.services import WordService
 from dictionary.dictionary_apps.words.selectors import  word_get
@@ -37,6 +36,8 @@ from ..states import OrderExercises
 from .statistic import count_score_lifes
 from dictionary.dictionary_apps.dictionary_bot.keyboards.employee_kb.dictionarys_for_kb import kb_dict_cancel
 router = Router(name='translate_words')
+
+TRANSLATE_WORDS_QWIZ_LIMIT = 15
 @sync_to_async
 def create_words_ids(filters):
     return WordService(WordRepository()).list_objects(filters)
@@ -66,21 +67,20 @@ def shuffle_dict(dictionary):
     return new_dict
 
 async def create_exercises_translate_words(clbk: CallbackQuery, state: FSMContext):
-    global TranslateWordAction
-    global TranslateWord
-    limit = 15
+    # global TranslateWordAction
+    # global TranslateWord
     german_list = []
     russian_list = []
     translate_word_list = []
     filters = {}
     all_words = await create_words_ids(filters)
     all_ids = [w.id for w in all_words]
-    if len(all_ids) >= limit:
-        random_ids = random.sample(all_ids, limit)
+    if len(all_ids) >= TRANSLATE_WORDS_QWIZ_LIMIT:
+        random_ids = random.sample(all_ids, TRANSLATE_WORDS_QWIZ_LIMIT)
     filters = {'id__in': random_ids}
-
-    selected_words = []
     tmp_selected = await create_words_ids(filters)
+    selected_words = []
+    limit = TRANSLATE_WORDS_QWIZ_LIMIT
     while limit > 5 and len(selected_words) < 5:
         if len(tmp_selected[limit - 1].word_translate.encode('utf-8')) <= 64:
             selected_words.append(tmp_selected[limit - 1])
@@ -144,17 +144,6 @@ async def create_exercises_translate_words(clbk: CallbackQuery, state: FSMContex
     text_for_user = f"{user.username}  Ваши баллы:{user.score},\n"
     text_for_user += f"  Ваши жизни: {user.lifes} \n\n"
     text_for_user += f"Переведите слова:\n"
-    # text_for_user += "🇩🇪 Немецкие:\n"
-    # for ger in german_list:
-    #     if ger.word_type == 'Noun':
-    #         text_for_user += ger.article +' '+ ger.word + "\n"
-    #     else:
-    #         text_for_user += ger.word + "\n"
-    # text_for_user += "\n"
-    # text_for_user += "🇷🇺 Русские:\n"
-    # for rus in russian_list:
-    #     text_for_user += rus.word_translate + "\n"
-    # text_for_user += "\n\nНапиши ответ в виде: <code>1A, 2B...</code>"
     try:
         await clbk.message.delete()  # 💥 удалить сообщение с кнопками
     except Exception as e:
@@ -163,7 +152,7 @@ async def create_exercises_translate_words(clbk: CallbackQuery, state: FSMContex
     class TranslateWord(CallbackData, prefix='translate_words'):
         action: TranslateWordAction
     await state.update_data(waiting_for_action=TranslateWordAction)
-
+    await state.update_data(waiting_for_data=TranslateWord)
     selected_dict = shuffle_dict(TranslateWordAction._member_map_.items())
 
     await clbk.message.answer(
@@ -225,20 +214,9 @@ async def handle_dynamic_translate_buttons(clbk: CallbackQuery, state: FSMContex
     selected_right = data.get("selected_right", [])
     matched_pairs = data.get("matched_pairs", [])
     print('Lrft', selected_left, 'richr', selected_right,'pai', matched_pairs)
-    # print('DATA_BUTTON actio', data)
     action_str = clbk.data.split(":", 1)[1]
-    # print("Callback data:", clbk.data)
-    # print("Action =", action_str)
-    action_enum = TranslateWordAction(action_str)  # action_str из clbk.data
+    action_enum = data['waiting_for_action'](action_str)#TranslateWordAction(action_str)  # action_str из clbk.data
     action_value = action_enum.value
-    # print('action_enum', action_enum, action_enum.name)
-    # print('action_value', action_value)
-    #
-    # # Получаем текущее состояние
-    #
-    # # Определяем колонку
-    # print(action_enum.name.endswith('_w'))
-    # print(action_enum.name.endswith('_t'))
     if action_enum.name.endswith('_w'):  # левая колонка
         if action_value in selected_left:
             selected_left.remove(action_value)
@@ -263,18 +241,14 @@ async def handle_dynamic_translate_buttons(clbk: CallbackQuery, state: FSMContex
         await state.update_data(waiting_for_tmp_right= None)
         print('PAIRS', matched_pairs)
 
-        # 🔹 Здесь можно пересоздать клавиатуру через build_translate_words_kb
-        # с параметром matched_pairs, чтобы закрасить выбранные и заблокировать их
-        # например: reply_markup=build_translate_words_kb(TranslateWordAction, TranslateWord, matched_pairs=matched_pairs)
 
-        # Сохраняем обратно в FSM
     await state.update_data(
         selected_left=selected_left,
         selected_right=selected_right,
         matched_pairs=matched_pairs
     )
     kb_translate_words = build_translate_words_kb(
-        TranslateWord,
+        data['waiting_for_data'],
         selected_dict=data['waiting_for_list_words'],
         selected_left=selected_left,
         selected_right=selected_right,
@@ -301,7 +275,7 @@ async def handle_dynamic_translate_buttons(clbk: CallbackQuery, state: FSMContex
 @router.message(OrderExercises.waiting_for_answer)
 async def check_ordering_answer(msg: types.Message, state: FSMContext):
     try:
-        await msg.delete()  # 💥 вместо clbk.message.delete()
+        await msg.delete()
     except Exception as e:
         print(f"Не удалось удалить сообщение: {e}")
     print('CHECk_ANSWER')

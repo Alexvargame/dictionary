@@ -3,8 +3,7 @@ import django
 import os
 import random
 
-from aiogram import Router, F, types
-#from aiogram.utils import markdown
+from aiogram import Router, F
 from aiogram.fsm.context import FSMContext
 from aiogram.enums import ParseMode
 from aiogram.types import CallbackQuery
@@ -21,10 +20,10 @@ from dictionary.dictionary_apps.dictionary_bot.base_name import BotDB
 from dictionary.dictionary_apps.dictionary_bot.keyboards.employee_kb.exercises_kb import (ExercisesData, ExercisesDataAction,
                                                                                           build_exercises_kb, build_form_pronoun_kb,
                                                                                           create_enum_pronouns_from_data)
-from dictionary.dictionary_apps.words.models import Pronoun
+#from dictionary.dictionary_apps.words.models import Pronoun
 from dictionary.dictionary_apps.words.repository import PronounRepository, WordRepository
 from dictionary.dictionary_apps.words.services import PronounService, WordService
-from dictionary.dictionary_apps.words.selectors import  pronoun_get, pronoun_list
+from dictionary.dictionary_apps.words.selectors import   pronoun_list
 from dictionary.dictionary_apps.users.selectors import user_get
 
 from ..states import OrderExercisesPronouns
@@ -32,6 +31,8 @@ from .statistic import count_score_lifes
 
 
 router = Router(name='pronouns')
+
+PRONOUN_QWIZ_LIMIT = 5
 @sync_to_async
 def create_pronouns_ids():
     return PronounService(PronounRepository()).list_objects()
@@ -64,28 +65,30 @@ def create_callback_class_for_enum(enum_cls):
         action: enum_cls
     return TranslateDigitsData
 
-@router.callback_query(ExercisesData.filter(F.action == ExercisesDataAction.pronouns))
-async def create_exercises_pronouns(clbk: CallbackQuery, state: FSMContext):
-    print('EXERCISES_PRONOUNS')
-    print('PRONUNS_DATA', clbk.data)
-    casuses = ['akkusativ', 'dativ', 'prossessive', 'reflexive',]
-    limit = 5
+async def get_user_stats_text(chat_id):
+    user = await get_user_async(BotDB.get_user_id(chat_id))
+    return f"{user.username}  Ваши баллы:{user.score},\nВаши жизни: {user.lifes}\n\n"
+
+
+async def select_random_pronouns(limit):
     filters = {}
     all_pronouns = await create_pronouns_ids()
     all_ids = [w.id for w in all_pronouns]
     if len(all_ids) >= limit:
         random_ids = random.sample(all_ids, limit)
     filters = {'id__in': random_ids}
-    selected_pronouns = await create_words_ids(filters)
-    selected_casuses = random.choices(casuses, k=limit)
-    print('sel', selected_pronouns)
+    return await create_words_ids(filters)
+@router.callback_query(ExercisesData.filter(F.action == ExercisesDataAction.pronouns))
+async def create_exercises_pronouns(clbk: CallbackQuery, state: FSMContext):
+    print('EXERCISES_PRONOUNS')
+    casuses = ['akkusativ', 'dativ', 'prossessive', 'reflexive',]
+    selected_pronouns = await select_random_pronouns(PRONOUN_QWIZ_LIMIT)
+    selected_casuses = random.choices(casuses, k=PRONOUN_QWIZ_LIMIT)
     all_values = await get_added_values(casuses)
     await state.update_data(waiting_for_selected_pronouns=selected_pronouns)
     await state.update_data(waiting_for_selected_casuses=selected_casuses)
     await state.update_data(waiting_for_all_values=all_values)
-    user = await get_user_async(BotDB.get_user_id(clbk.message.chat.id))
-    text_for_user = f"{user.username}  Ваши баллы:{user.score},\n"
-    text_for_user += f"  Ваши жизни: {user.lifes} \n\n"
+    text_for_user = await get_user_stats_text(clbk.message.chat.id)
     text_for_user += f"Выберите форму местоимения:\n"
     await state.update_data(waiting_for_selected_pronouns=selected_pronouns,
                             waiting_for_current_index=0,
@@ -94,7 +97,6 @@ async def create_exercises_pronouns(clbk: CallbackQuery, state: FSMContext):
     current_casus = selected_casuses[0]
     added_values = random.sample(all_values, 2)
     correct_answer = getattr(current_pronoun, current_casus)
-    print('correct_answerr', correct_answer)
     added_values.append(correct_answer)
     random.shuffle(added_values)
     PronounFormAction = create_enum_pronouns_from_data('PronounFormData', added_values)
@@ -113,9 +115,6 @@ async def create_exercises_pronouns(clbk: CallbackQuery, state: FSMContext):
 
 @router.callback_query(lambda c: c.data.startswith("pronouns:") and not c.data.endswith(':cancel'))
 async def handle_article_answer(clbk: CallbackQuery, state: FSMContext):
-    # await state.set_state(OrderExercisesArticle.waiting_for_selected_words)
-    # await state.set_state(OrderExercisesArticle.waiting_for_current_index)
-    # await state.set_state(OrderExercisesArticle.waiting_for_correct_answers)
     data = await state.get_data()
     selected_pronuons = data['waiting_for_selected_pronouns']
     index = data['waiting_for_current_index']
@@ -129,7 +128,6 @@ async def handle_article_answer(clbk: CallbackQuery, state: FSMContext):
     correct_answer = getattr(current_pronoun, current_casus)
     added_values.append(correct_answer)
     random.shuffle(added_values)
-    # допустим, в callback_data: "article:der"
     chosen_form = clbk.data.split(":")[1]
     if chosen_form == getattr(current_pronoun, current_casus):
         correct_count += 1
@@ -155,10 +153,9 @@ async def handle_article_answer(clbk: CallbackQuery, state: FSMContext):
         user = await get_user_async(BotDB.get_user_id(clbk.message.chat.id))
         await count_score_lifes(user, correct_count, len(selected_pronuons))
         text_for_user = f"Квиз завершён! Правильных ответов: {correct_count}/{len(selected_pronuons)}"
-        text_for_user += f"{user.username}  Ваши баллы:{user.score},\n"
-        text_for_user += f"  Ваши жизни: {user.lifes} \n\n"
+        text_for_user += await get_user_stats_text(clbk.message.chat.id)
         try:
-            await clbk.message.delete()  # 💥 вместо clbk.message.delete()
+            await clbk.message.delete()
         except Exception as e:
             print(f"Не удалось удалить сообщение: {e}")
         await clbk.message.answer(
@@ -166,11 +163,7 @@ async def handle_article_answer(clbk: CallbackQuery, state: FSMContext):
             parse_mode=ParseMode.HTML,
             reply_markup=build_exercises_kb()
         )
-
-        #await clbk.message.edit_text(f"Квиз завершён! Правильных ответов: {correct_count}/{len(selected_words)}")
         await state.clear()  # можно очистить FSM
-
-    # сохраняем новое состояние
     await state.update_data(
         waiting_for_current_index=index,
         waiting_for_correct_aswers=correct_count
