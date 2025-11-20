@@ -9,6 +9,7 @@ from aiogram import Router, F, types
 from aiogram.fsm.context import FSMContext
 from aiogram.enums import ParseMode
 from aiogram.types import CallbackQuery
+from aiogram.filters import StateFilter
 from aiogram.filters.callback_data import CallbackData
 
 
@@ -22,8 +23,8 @@ from dictionary.dictionary_apps.dictionary_bot.base_name import BotDB
 from dictionary.dictionary_apps.dictionary_bot.keyboards.employee_kb.exercises_kb import (ExercisesData, ExercisesDataAction,
                                                                                           build_exercises_kb, build_article_quiz_kb,
                                                                                           VerbFormsDataAction, VerbFormsData,
-                                                                                          build_verbs_form_kb, build_present_form_verb_kb,
-                                                                                          create_enum_present_verb_from_data)
+                                                                                          build_verbs_form_kb, build_perfect_form_verb_kb,
+                                                                                          create_enum_perfect_verb_from_data)
 from dictionary.dictionary_apps.words.models import Noun
 from dictionary.dictionary_apps.words.repository import VerbRepository, WordRepository
 from dictionary.dictionary_apps.words.services import VerbService, WordService
@@ -31,7 +32,7 @@ from dictionary.dictionary_apps.words.selectors import  verb_get
 from dictionary.dictionary_apps.users.selectors import user_get
 
 from .data_file import separable_prefixes, inseparable_prefixes, umlauts_map
-from ..states import OrderExercisesVerbForms, OrderExercisesVerbPresentForms
+from ..states import OrderExercisesVerbForms, OrderExercisesVerbPresentForms, OrderExercisesVerbPrateritumForms
 from .statistic import count_score_lifes
 
 
@@ -51,7 +52,7 @@ def get_verb_for_id(verb_id):
 def get_user_async(user_id):
     return user_get(user_id)
 def create_callback_class_for_enum(enum_cls):
-    class TranslateDigitsData(CallbackData, prefix='present_forms'):
+    class TranslateDigitsData(CallbackData, prefix='perfect_forms'):
         action: enum_cls
     return TranslateDigitsData
 def change_vowel(verb):
@@ -120,6 +121,8 @@ async def generate_present_verbs_form_for_exercises(verb):
     for m in method_for:
         verbs_for_kb.append(random_verb_change_dict[m](verb))
     return verbs_for_kb
+
+
 @router.callback_query(ExercisesData.filter(F.action == ExercisesDataAction.verb_forms))
 async def choice_verb_form(clbk:CallbackQuery, state:FSMContext):
     print(clbk.data)
@@ -144,6 +147,17 @@ async def create_exercises_articles(clbk: CallbackQuery, state: FSMContext):
         await state.set_state(OrderExercisesVerbPresentForms.waiting_for_verb_form)
         await state.update_data(waiting_for_verb_form=clbk.data.split(':')[1])
         await present_form(clbk, state)
+    elif data['waiting_for_verb_form'] == 'prateritum':
+        pronouns = ['ich', 'du', 'er_sie_es', 'wir', 'ihr', 'Sie_sie']
+        await state.set_state(OrderExercisesVerbPrateritumForms.waiting_for_verb_form)
+        await state.update_data(waiting_for_verb_form=clbk.data.split(':')[1])
+        await prateritum_form(clbk, state, pronouns)
+    elif data['waiting_for_verb_form'] == 'prateritum_easy':
+        pronouns = ['ich', 'Sie_sie', 'ich', 'Sie_sie', 'ich', 'Sie_sie']
+        await state.set_state(OrderExercisesVerbPrateritumForms.waiting_for_verb_form)
+        await state.update_data(waiting_for_verb_form=clbk.data.split(':')[1])
+        await prateritum_form(clbk, state, pronouns)
+
 async def perfect_form(clbk, state):
     print('EXERCISES_verbs_perfect', clbk.data)
     limit = 5
@@ -169,8 +183,8 @@ async def perfect_form(clbk, state):
     print(added_verb_form)
     added_verb_form = added_verb_form + [current_word.past_perfect_form]
     random.shuffle(added_verb_form)
-    PresentVerbFormAction = create_enum_present_verb_from_data('PresentVerbFormData', added_verb_form)
-    PresentVerbFormData = create_callback_class_for_enum(PresentVerbFormAction)
+    PerfectVerbFormAction = create_enum_perfect_verb_from_data('PerfectVerbFormData', added_verb_form)
+    PerfectVerbFormData = create_callback_class_for_enum(PerfectVerbFormAction)
     text_for_user += f"Какая форма у глагола: <b>{current_word.word}</b>?"
     try:
         await clbk.message.delete()  # 💥 удалить сообщение с кнопками
@@ -180,12 +194,12 @@ async def perfect_form(clbk, state):
     await clbk.message.answer(
         text=text_for_user,
         parse_mode=ParseMode.HTML,
-        reply_markup=build_present_form_verb_kb(PresentVerbFormAction, PresentVerbFormData)
+        reply_markup=build_perfect_form_verb_kb(PerfectVerbFormAction, PerfectVerbFormData)
     )
 
 
-@router.callback_query(lambda c: c.data.startswith("present_forms:") and not c.data.endswith(':cancel'))
-async def handle_article_answer(clbk: CallbackQuery, state: FSMContext):
+@router.callback_query(lambda c: c.data.startswith("perfect_forms:") and not c.data.endswith(':cancel'))
+async def handle_perfect_form_answer(clbk: CallbackQuery, state: FSMContext):
     await state.set_state(OrderExercisesVerbForms.waiting_for_selected_verbs)
     await state.set_state(OrderExercisesVerbForms.waiting_for_current_index)
     await state.set_state(OrderExercisesVerbForms.waiting_for_correct_answers)
@@ -208,13 +222,13 @@ async def handle_article_answer(clbk: CallbackQuery, state: FSMContext):
         added_verb_form = await generate_present_verbs_form_for_exercises(next_word.word)
         added_verb_form = added_verb_form + [next_word.past_perfect_form]
         random.shuffle(added_verb_form)
-        PresentVerbFormAction = create_enum_present_verb_from_data('PresentVerbFormData', added_verb_form)
-        PresentVerbFormData = create_callback_class_for_enum(PresentVerbFormAction)
+        PerfectVerbFormAction = create_enum_perfect_verb_from_data('PerfectVerbFormData', added_verb_form)
+        PerfectVerbFormData = create_callback_class_for_enum(PerfectVerbFormAction)
         text = f"Какая форма у глагола: <b>{next_word.word}</b>?"
         await clbk.message.edit_text(
             text,
             parse_mode="HTML",
-            reply_markup=build_present_form_verb_kb(PresentVerbFormAction, PresentVerbFormData)
+            reply_markup=build_perfect_form_verb_kb(PerfectVerbFormAction, PerfectVerbFormData)
         )
     else:
         user = await get_user_async(BotDB.get_user_id(clbk.message.chat.id))
@@ -253,10 +267,6 @@ async def present_form(clbk, state):
     filters = {'id__in': random_ids}
     selected_words = await create_words_ids(filters)
     selected_pronouns = random.sample(pronouns, limit)
-    print('sel', selected_words)
-    print('sel_pr', selected_pronouns)
-    # await state.update_data(waiting_for_selected_verbs=selected_words)
-    # await state.update_data(waiting_for_selected_pronouns=selected_pronouns)
     user = await get_user_async(BotDB.get_user_id(clbk.message.chat.id))
     text_for_user = f"{user.username}  Ваши баллы:{user.score},\n"
     text_for_user += f"  Ваши жизни: {user.lifes} \n\n"
@@ -267,7 +277,7 @@ async def present_form(clbk, state):
                             waiting_for_correct_aswers=0)
     current_word = selected_words[0]
     current_pronoun = selected_pronouns[0]
-    text_for_user += f"Какая форма у глагола: <b>{current_word.word}</b> \n для метсоимения {current_pronoun}?"
+    text_for_user += f"Какая форма у глагола: <b>{current_word.word}</b> \n для местоимения {current_pronoun}?"
     try:
         await clbk.message.delete()  # 💥 удалить сообщение с кнопками
     except Exception as e:
@@ -276,6 +286,157 @@ async def present_form(clbk, state):
     await clbk.message.answer(
         text=text_for_user,
         parse_mode=ParseMode.HTML,
-        #reply_markup=build_present_form_verb_kb(PresentVerbFormAction, PresentVerbFormData)
     )
     await state.set_state(OrderExercisesVerbPresentForms.waiting_for_verb_form_for_pronoun)
+
+
+@router.message(StateFilter(OrderExercisesVerbPresentForms.waiting_for_verb_form_for_pronoun))
+async def handle_present_form_answer(msg:types.Message, state: FSMContext):
+    print("CURRENT STATE IN CALLBACK:", await state.get_state())
+    data = await state.get_data()
+    selected_verbs = data['waiting_for_selected_verbs']
+    selected_pronouns = data['waiting_for_selected_pronouns']
+    index = data['waiting_for_current_index']
+    correct_count = data['waiting_for_correct_aswers']
+    current_word = selected_verbs[index]
+    chosen_form = msg.text.lower()
+    print('CHOSEN_FORM', chosen_form)
+    field_name = f"{selected_pronouns[index]}_form"
+    correct_answer = getattr(selected_verbs[index], field_name)
+
+
+    if chosen_form == correct_answer:
+        correct_count += 1
+        await msg.answer("✅ Правильно!")
+    else:
+        await msg.answer(f"❌ Неверно. Правильный ответ: {correct_answer}")
+
+    index += 1
+
+    if index < len(selected_verbs):
+        next_word = selected_verbs[index]
+        next_pronoun = selected_pronouns[index]
+        text =   f"Какая форма у глагола: <b>{next_word.word}</b> \n для местоимения {next_pronoun}?"
+        await msg.answer(
+            text,
+            parse_mode="HTML",
+            #reply_markup=build_present_form_verb_kb(PresentVerbFormAction, PresentVerbFormData)
+        )
+        await state.set_state(OrderExercisesVerbPresentForms.waiting_for_verb_form_for_pronoun)
+    else:
+
+        user = await get_user_async(BotDB.get_user_id(msg.chat.id))
+        await count_score_lifes(user, correct_count, len(selected_verbs))
+        text_for_user = f"Квиз завершён! Правильных ответов: {correct_count}/{len(selected_verbs)}\n"
+        text_for_user += f"{user.username}  Ваши баллы:{user.score},\n"
+        text_for_user += f"  Ваши жизни: {user.lifes} \n\n"
+        try:
+            await msg.delete()  # 💥 вместо clbk.message.delete()
+        except Exception as e:
+            print(f"Не удалось удалить сообщение: {e}")
+        await msg.answer(
+            text=text_for_user,
+            parse_mode=ParseMode.HTML,
+            reply_markup=build_exercises_kb()
+        )
+
+        await state.clear()  # можно очистить FSM
+
+    # сохраняем новое состояние
+    await state.update_data(
+        waiting_for_current_index=index,
+        waiting_for_correct_aswers=correct_count
+    )
+
+async def prateritum_form(clbk, state, pronouns):
+    #pronouns = ['ich', 'du', 'er_sie_es', 'wir', 'ihr', 'Sie_sie']
+    print('EXERCISES_verbs_prateritum', clbk.data)
+    limit = 5
+    filters = {}
+    all_words = await create_verbs_ids()
+    all_ids = [w.id for w in all_words]
+    if len(all_ids) >= limit:
+        random_ids = random.sample(all_ids, limit)
+    filters = {'id__in': random_ids}
+    selected_verbs = await create_words_ids(filters)
+    selected_pronouns = random.sample(pronouns, limit)
+    user = await get_user_async(BotDB.get_user_id(clbk.message.chat.id))
+    text_for_user = f"{user.username}  Ваши баллы:{user.score},\n"
+    text_for_user += f"  Ваши жизни: {user.lifes} \n\n"
+    text_for_user += f"Выберите правильную форму глагола для местоимения:\n"
+    await state.update_data(waiting_for_selected_verbs=selected_verbs,
+                            waiting_for_selected_pronouns=selected_pronouns,
+                            waiting_for_current_index=0,
+                            waiting_for_correct_aswers=0)
+    current_verb = selected_verbs[0]
+    current_pronoun = selected_pronouns[0]
+    text_for_user += f"Какая форма у глагола: <b>{current_verb.word}</b> \n для местоимения {current_pronoun}?"
+    try:
+        await clbk.message.delete()  # 💥 удалить сообщение с кнопками
+    except Exception as e:
+        print(f"Не удалось удалить сообщение: {e}")
+
+    await clbk.message.answer(
+        text=text_for_user,
+        parse_mode=ParseMode.HTML,
+    )
+    await state.set_state(OrderExercisesVerbPrateritumForms.waiting_for_verb_form_for_pronoun)
+
+@router.message(StateFilter(OrderExercisesVerbPrateritumForms.waiting_for_verb_form_for_pronoun))
+async def handle_prateritum_form_answer(msg:types.Message, state: FSMContext):
+
+    print("CURRENT STATE IN CALLBACK:", await state.get_state())
+    data = await state.get_data()
+    selected_verbs = data['waiting_for_selected_verbs']
+    selected_pronouns = data['waiting_for_selected_pronouns']
+    index = data['waiting_for_current_index']
+    correct_count = data['waiting_for_correct_aswers']
+    current_verb = selected_verbs[index]
+    chosen_form = msg.text.lower()
+    print('CHOSEN_FORM_Prat', chosen_form)
+    field_name = f"past_prateritum_{selected_pronouns[index]}_form"
+    correct_answer = getattr(selected_verbs[index], field_name)
+
+
+    if chosen_form == correct_answer:
+        correct_count += 1
+        await msg.answer("✅ Правильно!")
+    else:
+        await msg.answer(f"❌ Неверно. Правильный ответ: {correct_answer}")
+
+    index += 1
+
+    if index < len(selected_verbs):
+        next_verb = selected_verbs[index]
+        next_pronoun = selected_pronouns[index]
+        text =   f"Какая форма у глагола: <b>{next_verb.word}</b> \n для местоимения {next_pronoun}?"
+        await msg.answer(
+            text,
+            parse_mode="HTML",
+            #reply_markup=build_present_form_verb_kb(PresentVerbFormAction, PresentVerbFormData)
+        )
+        await state.set_state(OrderExercisesVerbPrateritumForms.waiting_for_verb_form_for_pronoun)
+    else:
+
+        user = await get_user_async(BotDB.get_user_id(msg.chat.id))
+        await count_score_lifes(user, correct_count, len(selected_verbs))
+        text_for_user = f"Квиз завершён! Правильных ответов: {correct_count}/{len(selected_verbs)}\n"
+        text_for_user += f"{user.username}  Ваши баллы:{user.score},\n"
+        text_for_user += f"  Ваши жизни: {user.lifes} \n\n"
+        try:
+            await msg.delete()  # 💥 вместо clbk.message.delete()
+        except Exception as e:
+            print(f"Не удалось удалить сообщение: {e}")
+        await msg.answer(
+            text=text_for_user,
+            parse_mode=ParseMode.HTML,
+            reply_markup=build_exercises_kb()
+        )
+
+        await state.clear()  # можно очистить FSM
+
+    # сохраняем новое состояние
+    await state.update_data(
+        waiting_for_current_index=index,
+        waiting_for_correct_aswers=correct_count
+    )

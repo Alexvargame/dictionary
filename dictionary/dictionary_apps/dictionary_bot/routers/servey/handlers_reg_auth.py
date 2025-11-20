@@ -51,9 +51,6 @@ async def check_password(message: types.Message, state: FSMContext):
     await state.update_data(password=message.text)
     data = await state.get_data()
     user_profile = BotDB.get_user_profile(BotDB.get_user_id(message.from_user.id))
-    print(message.from_user.id)
-    print(user_profile)
-
     user = await get_user_async(BotDB.get_user_id(message.from_user.id))
     if user_profile[19] == message.from_user.id and user_profile[14] == message.text:
         try:

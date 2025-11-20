@@ -11,10 +11,8 @@ class ExercisesDataAction(Enum):
     articles = 'articles'
     verb_forms = 'verb_forms'
     translate_digits = 'translate_digits'
-    pronouns = 'proniouns'
-    numeral = 'numeral'
+    pronouns = 'pronouns'
     adjective = 'adjective'
-    qwiz = 'qwiz'
     cancel = 'cancel'
 
 class ExercisesData(CallbackData, prefix='exercises'):
@@ -31,6 +29,7 @@ class ArticleData(CallbackData, prefix='articles'):
 class VerbFormsDataAction(Enum):
     present= "present"
     prateritum = "prateritum"
+    prateritum_easy = "prateritum_easy"
     perfect = "perfect"
     cancel = 'cancel'
 class VerbFormsData(CallbackData, prefix='verb_forms'):
@@ -55,7 +54,14 @@ def create_enum_digit_from_data(emun_name, data):
     print('enum_members', enum_members)
     return Enum(emun_name, enum_members)
 
-def create_enum_present_verb_from_data(emun_name, data):
+def create_enum_perfect_verb_from_data(emun_name, data):
+    print('create_enum', data)
+    enum_members = {item: item for item in data}
+    enum_members['cancel'] = 'cancel'
+    print('enum_members', enum_members)
+    return Enum(emun_name, enum_members)
+
+def create_enum_pronouns_from_data(emun_name, data):
     print('create_enum', data)
     enum_members = {item: item for item in data}
     enum_members['cancel'] = 'cancel'
@@ -84,19 +90,10 @@ def build_exercises_kb():
         text="📝Местоимения",
         callback_data=ExercisesData(action=ExercisesDataAction.pronouns).pack()
     )
-    numeral = InlineKeyboardButton(
-        text="📝Числительные",
-        callback_data=ExercisesData(action=ExercisesDataAction.numeral).pack()
-    )
     adjectiv = InlineKeyboardButton(
         text="📝Прилагательные",
         callback_data=ExercisesData(action=ExercisesDataAction.adjective).pack()
     )
-    qwiz = InlineKeyboardButton(
-        text="📝Викторина",
-        callback_data=ExercisesData(action=ExercisesDataAction.qwiz).pack()
-    )
-
     cancel = InlineKeyboardButton(
         text='Отмена',
         callback_data=ExercisesData(action=ExercisesDataAction.cancel).pack()
@@ -104,8 +101,8 @@ def build_exercises_kb():
     )
 
     first_line = [translate_words, articles, pronouns]
-    second_line = [translate_digits, verb_forms, numeral]
-    third_line = [adjectiv, qwiz, cancel]
+    second_line = [translate_digits, verb_forms, adjectiv]
+    third_line = [cancel]
     markup = InlineKeyboardMarkup(
         inline_keyboard=[first_line, second_line, third_line],
     )
@@ -201,7 +198,7 @@ def build_verbs_form_kb():
         text="📝Презент",
         callback_data=VerbFormsData(action=VerbFormsDataAction.present).pack()
     )
-    praterotum = InlineKeyboardButton(
+    prateritum = InlineKeyboardButton(
         text="📝Претеритум",
         callback_data=VerbFormsData(action=VerbFormsDataAction.prateritum).pack()
     )
@@ -209,23 +206,45 @@ def build_verbs_form_kb():
         text="📝Перфект",
         callback_data=VerbFormsData(action=VerbFormsDataAction.perfect).pack()
     )
+    prateritum_easy = InlineKeyboardButton(
+        text="📝Претеритум_легкий",
+        callback_data=VerbFormsData(action=VerbFormsDataAction.prateritum_easy).pack()
+    )
     cancel = InlineKeyboardButton(
         text='Отмена',
         callback_data=VerbFormsData(action=VerbFormsDataAction.cancel).pack()
 
     )
-    first_line = [present, praterotum, perfect]
-    second_line = [cancel]
+    first_line = [present, prateritum, perfect]
+    second_line = [prateritum_easy]
+    third_line = [cancel]
+
     markup = InlineKeyboardMarkup(
-        inline_keyboard=[first_line, second_line],
+        inline_keyboard=[first_line, second_line, third_line],
     )
     return markup
 
-def build_present_form_verb_kb(action, data):
+def build_perfect_form_verb_kb(action, data):
     builder = InlineKeyboardBuilder()
-    print(action._member_map_.items())
     for key, value in action._member_map_.items():
         print(key, value)
+        if key != 'cancel':
+            button = builder.button(
+                text=str(value.value),
+                callback_data=data(action=value).pack(),
+            )
+        else:
+            button = builder.button(
+                text=value.value,
+                callback_data=data(action=value).pack()
+            )
+
+    builder.adjust(3)
+    return builder.as_markup()
+
+def build_form_pronoun_kb(action, data):
+    builder = InlineKeyboardBuilder()
+    for key, value in action._member_map_.items():
         if key != 'cancel':
             button = builder.button(
                 text=str(value.value),

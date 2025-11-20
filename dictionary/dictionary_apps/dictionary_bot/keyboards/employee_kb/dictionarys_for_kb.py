@@ -34,7 +34,11 @@ kb_dict_cancel = {
             'A': build_admin_kb,
             'E': build_employee_kb,
         },
-        'present_forms:cancel': {
+        'perfect_forms:cancel': {
+            'A': build_admin_kb,
+            'E': build_employee_kb,
+        },
+        'pronouns:cancel': {
             'A': build_admin_kb,
             'E': build_employee_kb,
         },
