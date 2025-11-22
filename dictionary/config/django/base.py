@@ -35,6 +35,7 @@ LOCAL_APPS = [
     'dictionary.dictionary_apps.users.apps.UsersConfig',
     'dictionary.dictionary_apps.words.apps.WordsConfig',
     'dictionary.dictionary_apps.callback.apps.CallbackConfig',
+    'dictionary.dictionary_apps.dictionary_bot_aiogram_webhook.apps.DictionaryBotAiogramWebhookConfig',
 
 ]
 

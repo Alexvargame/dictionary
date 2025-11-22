@@ -9,6 +9,8 @@ urlpatterns =[
     path('words/', include(('dictionary.dictionary_apps.words.urls','words'), namespace='words')),
     path('exercises/', include(('dictionary.dictionary_apps.exercises.urls','exercises'), namespace='exercises')),
     path('callback/', include(('dictionary.dictionary_apps.callback.urls', 'callback'), namespace='callback')),
+    path('telegram_bot/', include(('dictionary.dictionary_apps.dictionary_bot_aiogram_webhook.urls', 'telegram_bot_aiogram_webhook'),namespace='telegram_bot_aiogram_webhook')),
+
     # #path('propertys/', include('estate_agency.estate_agency_apps.property.urls')),
     # path('propertys/', include(('estate_agency.estate_agency_apps.property.urls', 'propertys'), namespace='propertys')),
     # path('property_searches/', include('estate_agency.estate_agency_apps.property_search.urls', 'property_searches')),
