@@ -24,7 +24,7 @@ async def set_commands(bot: Bot):
     await bot.set_my_commands(commands)
 
 async def main():
-
+    print('POLLING____________________________________________________________')
     # Настройка логирования в stdout
     logging.basicConfig(
         level=logging.INFO,
@@ -33,7 +33,6 @@ async def main():
     logger.error("Starting bot")
 
     # Объявление и инициализация объектов бота и диспетчера
-    print('TOKEN', type(BOT_TOKEN_2))
     bot = Bot(token=BOT_TOKEN_2)#, parse_mode=ParseMode.HTML)
     dp = Dispatcher(storage=MemoryStorage())
     dp.include_router(main_router)
