@@ -34,7 +34,6 @@ LOCAL_APPS = [
     'dictionary.dictionary_apps.words.apps.WordsConfig',
     'dictionary.dictionary_apps.callback.apps.CallbackConfig',
 
-
 ]
 
 APPS = [
