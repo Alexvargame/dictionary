@@ -102,6 +102,7 @@ def send_quiz(chat_id, question, options, correct_option_id):
         "is_anonymous": False,
     }
     return requests.post(url, data=data).json()
+@method_decorator(csrf_exempt, name='dispatch')
 class CallBackTelegram(LoginRequiredMixin, APIView):
 
     def post(self, request):
