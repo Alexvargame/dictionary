@@ -99,6 +99,8 @@ class Verb(Word):
     past_prateritum_ihr_form = models.CharField(max_length=30, blank=True, null=True)
     past_prateritum_Sie_sie_form = models.CharField(max_length=30, blank=True, null=True)
     regal = models.BooleanField(default=True)
+    preposition = models.CharField(max_length=30, blank=True, null=True)
+    preposition_case = models.CharField(max_length=30, blank=True, null=True)
 
     class Meta:
         verbose_name = 'Глагол'

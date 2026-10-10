@@ -31,7 +31,7 @@ class UserCreateApi(LimitOffsetPagination, APIView):
         user_role = serializers.IntegerField(required=False)
         chat_id = serializers.IntegerField(required=False)
         telegram_username = serializers.CharField(required=False)
-
+        user_bot_pass = serializers.CharField(required=False)
     def post(self, request):
         serializer = self.InputSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)

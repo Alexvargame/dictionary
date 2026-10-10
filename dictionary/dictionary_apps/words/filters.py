@@ -19,9 +19,14 @@ class NounFilter(django_filters.FilterSet):
 
 class VerbFilter(django_filters.FilterSet):
     id = django_filters.BaseInFilter(field_name='id', lookup_expr='in')
+    # has_preposition = django_filters.BooleanFilter(
+    #     field_name='preposition',
+    #     lookup_expr='isnull',
+    #     exclude=True,  # has_preposition=True → preposition IS NOT NULL
+    # )
     class Meta:
         model = Verb
-        fields = ("id", )
+        fields = ("id", "preposition" )
 
 class NumeralFilter(django_filters.FilterSet):
     id = django_filters.BaseInFilter(field_name='id', lookup_expr='in')

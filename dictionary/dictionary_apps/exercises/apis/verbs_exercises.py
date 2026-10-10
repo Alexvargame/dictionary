@@ -46,6 +46,9 @@ def generate_exercise(tense=None, verbs=None, count=5):
         elif tense == "perfect":
             answer = verb.past_perfect_form
             question = f"{verb.word} — Partizip II?"
+        elif tense == "verb_prepositions":
+            answer = f"{verb.preposition}/{verb.preposition_case}"
+            question = f" {verb.word} - Preposition/Case"
     # else:
     #     continue
         exercises.append(
@@ -70,15 +73,28 @@ class VerbExercises(LoginRequiredMixin, APIView):
         tense = request.GET.get('tense')
         filters = {'word_type': 2}
         if lection_ids:
-            filters['lection_id__in'] = lection_ids
-        else:
-            # Если ничего не выбрано — можно взять все
-            pass  # или
+            filters['lection_ids__in'] = lection_ids
+        if tense == 'verb_prepositions':
+            filters['verb__preposition__isnull'] = False
         all_ids = list(Word.objects.filter(**filters).values_list('id', flat=True))
         if len(all_ids) >= 5:
             random_ids = random.sample(all_ids, 5)
         filters = {'id__in': random_ids}
         selected_words = WordService(WordRepository()).list_objects(filters)
+        # if lection_ids:
+        #     filters['lection_id__in'] = lection_ids
+        # else:
+        #     # Если ничего не выбрано — можно взять все
+        #     pass  # или
+        # all_ids = list(Word.objects.filter(**filters).values_list('id', flat=True))
+        # if len(all_ids) >= 5:
+        #     random_ids = random.sample(all_ids, 5)
+        # if tense != "verb_prepositions":
+        #     filters = {'id__in': random_ids}
+        # else:
+        #     filters = {'id__in': random_ids, 'verb__preposition__isnull': False}
+        # selected_words = WordService(WordRepository()).list_objects(filters)
+        print('Sel', selected_words)
         exercises = generate_exercise(tense=tense, verbs=selected_words)
         print('/TENSEGE', tense)
         context = {
@@ -143,12 +159,12 @@ class VerbExercises(LoginRequiredMixin, APIView):
 def verb_results_repeat(request):
     print('REQPOST', request.POST)
     if request.method == "POST":
-        points = int(request.POST.get("points", 0))
-        lives_lost = int(request.POST.get("lives_lost", 0))
+        # points = int(request.POST.get("points", 0))
+        # lives_lost = int(request.POST.get("lives_lost", 0))
         tense = str(request.POST.get('tense'))
         lection_ids = request.POST.getlist('lections')
 
-        user = request.user
+        # user = request.user
         # user.score += points
         # user.lifes = max(user.lifes - lives_lost, 0)
         # user.save()

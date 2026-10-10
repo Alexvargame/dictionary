@@ -362,6 +362,9 @@ class VerbRepository:
             past_prateritum_wir_form=dto.past_prateritum_wir_form,
             past_prateritum_ihr_form=dto.past_prateritum_ihr_form,
             past_prateritum_Sie_sie_form=dto.past_prateritum_Sie_sie_form,
+            preposition=dto.preposition,
+            preposition_case=dto.preposition_case
+
         )
         return verb
 
@@ -385,6 +388,8 @@ class VerbRepository:
             past_prateritum_wir_form=obj.past_prateritum_wir_form,
             past_prateritum_ihr_form=obj.past_prateritum_ihr_form,
             past_prateritum_Sie_sie_form=obj.past_prateritum_Sie_sie_form,
+            preposition=obj.preposition,
+            preposition_case=obj.preposition_case
         )
         return dto
 
@@ -410,6 +415,8 @@ class VerbRepository:
                 past_prateritum_wir_form=obj.past_prateritum_wir_form,
                 past_prateritum_ihr_form=obj.past_prateritum_ihr_form,
                 past_prateritum_Sie_sie_form=obj.past_prateritum_Sie_sie_form,
+                preposition=obj.preposition,
+                preposition_case=obj.preposition_case
             )
             lst_dto.append(tmp_dto)
         return lst_dto

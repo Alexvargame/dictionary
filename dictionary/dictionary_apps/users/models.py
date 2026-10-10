@@ -23,7 +23,7 @@ class BaseUserManager(BUM):
 
     def create_user(self, email, is_active=True, user_role=DEFAULT_USER_ROLE, is_admin=False, username=None,
                     name=None, surname=None, phone=None, password=None, score=None, chat_id=None,
-                    telegram_username=None):
+                    telegram_username=None, user_bot_pass = None):
         if not email:
             raise ValueError("Users musr have email address")
 

@@ -41,6 +41,8 @@ class VerbDTO:
     past_prateritum_Sie_sie_form: str
     lection: int
     word_type: int
+    preposition: str
+    preposition_case: str
 
 @dataclass
 class NounPaarExerciseGermanDTO:
