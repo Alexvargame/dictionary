@@ -2,17 +2,19 @@ from django.db import transaction
 
 from dictionary.dictionary_apps.words.models import (Word, Noun, Verb, Article,
                                                      Lection, Pronoun, Adjective, OtherWords,
-                                                     Numeral, WordType, NounDeclensionsForm)
+                                                     Numeral, WordType, NounDeclensionsForm,
+                                                     SentenceBuild)
 from dictionary.dictionary_apps.words.selectors import (word_list, noun_list, verb_list,
                                                         article_list, lection_list,
                                                         pronoun_list, numeral_list,
                                                         lection_get, word_type_get,
                                                         adjective_list, noundecl_list,
-                                                        noun_get, otherword_list)
+                                                        noun_get, otherword_list,
+                                                        sentebce_get)
 from dictionary.dictionary_apps.dtos.words.response_dto import (WordDTO, NounDTO,VerbDTO, ArticleDTO,
                                                                 LectionDTO, PronounDTO, AdjectiveDTO,
                                                                 NumeralDTO, NounDeclensionsFormDTO,
-                                                                OtherWordsDTO)
+                                                                OtherWordsDTO, SentenceDTO)
 # from dictionary.dictionary_apps.dtos.words.request_dto import (CreateWordDTO, CreateNounDTO,
 #                                                                CreatePronounDTO, CreateAdjectiveDTO,
 #                                                                CreateNumeralDTO, CreateNounDeclensionsFormDTO,
@@ -606,5 +608,49 @@ dto_dictionary = {
 
 
 
+class SentenceRepository:
+    model = SentenceBuild
+    dto = SentenceDTO
 
+    @transaction.atomic
+    def create_object(self, dto):
+        sentence = self.model.objects.create(
+            text=dto.text,
+            translate=dto.translate,
+            comment=dto.comment,
+            level=dto.level
+        )
+        return sentence
+
+    def detail_object(self, obj):
+        dto = self.dto (
+            id=obj.id,
+            text=obj.text,
+            translate=obj.translate,
+            comment=obj.comment,
+            level=obj.level,
+        )
+        return dto
+
+    def list_objects(self, filters=None):
+        lst_dto = []
+        for obj in noun_list(filters=filters):
+            tmp_dto = self.dto(
+                id=obj.id,
+                text=obj.text,
+                translate=obj.translate,
+                comment=obj.comment,
+                level=obj.level,
+            )
+            lst_dto.append(tmp_dto)
+        return lst_dto
+    @transaction.atomic
+    def update_object(self, dto):
+
+        sentence = self.model.objects.get(id=dto.id)
+        for key, value in dto.__dict__.items():
+           sentence.__dict__[key] = value
+        # user, has_updated = model_update(instance=user, fields=non_side_effect_fields, data=data)
+
+        sentence.save()
 

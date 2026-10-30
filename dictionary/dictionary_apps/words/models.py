@@ -186,3 +186,36 @@ class NounDeclensionsForm(models.Model):
     def __str__(self):
         return f'{self.noun}'
 
+class SentenceBuild(models.Model):
+    LEVEL_CHOICES = [
+        ('simple', 'Простое, прямой порядок'),
+        ('inversion', 'Простое с инверсией'),
+        ('modal', 'С модальным глаголом'),
+        ('question_yesno', 'Вопрос без W-Wort'),
+        ('question_w', 'Вопрос с W-Wort'),
+        ('complex', 'Сложноподчинённое'),
+        ('compound', 'Сложносочинённое'),
+        ('imperative', 'Повелительное'),
+    ]
+
+    text = models.CharField(max_length=500, verbose_name="Предложение")
+    translate = models.CharField(max_length=500, blank=True, verbose_name="Перевод")
+    comment = models.TextField(blank=True, verbose_name='Грамматическое объяснение')
+    level = models.CharField(max_length=20, choices=LEVEL_CHOICES, default='simple')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        verbose_name = 'Предложение (сборка)'
+        verbose_name_plural = 'Предложения (сборка)'
+
+    def tokens(self):
+        """Разбить на слова по пробелам. Пунктуация остаётся в слове."""
+        return self.text.split()
+
+    def __str__(self):
+        return self.text
+
+
+
+
+

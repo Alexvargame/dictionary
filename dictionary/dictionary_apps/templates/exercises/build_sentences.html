@@ -1,0 +1,113 @@
+{% extends 'main_page.html' %}
+
+{% block title %}Расставь слова в предложении{% endblock %}
+
+{% block content %}
+<main class="container mx-auto p-4">
+  <h1 class="text-2xl font-bold mb-6">Упражнение: Расставь слова в предложении</h1>
+  <div class="flex justify-center items-center mb-4 gap-4 text-lg font-semibold">
+    <div id="user-name" class="text-blue-700">{{ user.username }}</div>
+    <div id="lifes" class="text-red-600">❤️ {{ user.lifes }}</div>
+    <div id="lifes" class="text-red-600"> Всего баллов: {{ user.score }}</div>
+  </div>
+
+  <form method="post" id="sentence-form">
+ <!-- Скрытое поле для CSRF-токена (нужно для будущего JS) -->
+      {% csrf_token %}
+
+      <!-- Скрытое поле с ID предложения -->
+
+    <input type="hidden" name="sentence_id" value="{{ sentence_id }}">
+    <input type="hidden" name="words" id="words-input">
+      <div class="max-w-2xl mx-auto">
+        <!-- ВЕРХНЯЯ ЗОНА (куда юзер собирает) -->
+        <div id="zone-top" class="min-h-[80px] border-2 border-dashed border-gray-400 rounded-lg p-4 mb-8 bg-gray-50 flex flex-wrap gap-2 items-start">
+          <!-- Сюда будут прилетать слова при клике -->
+        </div>
+
+        <!-- НИЖНЯЯ ЗОНА (исходные перемешанные слова) -->
+        <div id="zone-bottom" class="min-h-[80px] border-2 border-dashed border-blue-400 rounded-lg p-4 mb-6 bg-blue-50 flex flex-wrap gap-2 items-start">
+          {% for word in words %}
+            <span class="word bg-gray-100 text-gray-900 border border-gray-400 rounded px-4 py-2 cursor-pointer shadow-sm hover:bg-gray-200 select-none text-lg font-medium">
+              {{ word }}
+            </span>
+          {% endfor %}
+        </div>
+
+        <div class="text-center mt-6">
+          <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">Проверить</button>
+        </div>
+      </div>
+    </form>
+</main>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const zoneTop = document.getElementById('zone-top');
+    const zoneBottom = document.getElementById('zone-bottom');
+    const checkBtn = document.getElementById('check-btn');
+
+    // Функция проверяет: если внизу пусто — показывает кнопку
+    function toggleCheckButton() {
+      const wordsInBottom = zoneBottom.querySelectorAll('.word').length;
+      if (wordsInBottom === 0) {
+        checkBtn.classList.remove('hidden');
+      } else {
+        checkBtn.classList.add('hidden');
+      }
+    }
+
+    // Слушаем клики по обеим зонам
+    [zoneTop, zoneBottom].forEach(zone => {
+      zone.addEventListener('click', function(e) {
+        // Если кликнули именно по слову
+        if (e.target.classList.contains('word')) {
+          const word = e.target;
+
+          // Если слово внизу — переносим наверх, и наоборот
+          if (word.parentElement === zoneBottom) {
+            zoneTop.appendChild(word);
+          } else {
+            zoneBottom.appendChild(word);
+          }
+
+          // Проверяем, не пора ли показать кнопку
+          toggleCheckButton();
+        }
+      });
+    });
+  // Слушаем клик по кнопке "Проверить"
+    checkBtn.addEventListener('click', function() {
+      // 1. Собираем все слова из верхней зоны в массив
+      const wordsInTop = Array.from(zoneTop.querySelectorAll('.word')).map(el => el.textContent.trim());
+
+      // 2. Получаем ID предложения из скрытого поля
+      const sentenceId = document.getElementById('sentence-id').value;
+
+      // 3. Получаем CSRF-токен (Django без него не пропустит POST)
+      const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+
+      // 4. Отправляем запрос
+      fetch(window.location.href, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken
+        },
+        body: JSON.stringify({
+          sentence_id: sentenceId,
+          words: wordsInTop
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Пока просто выведем ответ сервера в консоль браузера,
+        // чтобы убедиться, что он пришел
+        console.log("Ответ сервера:", data);
+      })
+      .catch(error => {
+        console.error("Ошибка при отправке:", error);
+      });
+    });
+  });
+</script>
+{% endblock %}

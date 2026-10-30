@@ -1,7 +1,7 @@
 from django.contrib import admin
 from .models import (Book, Lection, Article, WordType, Word,
                      Noun, Verb, Adjective, Numeral, Pronoun,
-                     NounDeclensionsForm, OtherWords)
+                     NounDeclensionsForm, OtherWords, SentenceBuild)
 
 
 @admin.register(WordType)
@@ -82,3 +82,10 @@ class NounDeclensionsFormAdmin(admin.ModelAdmin):
 class OtherWordsAdmin(admin.ModelAdmin):
     list_display = ('id', 'word', 'word_translate')
     readonly_fields = ("word_type",)
+
+
+@admin.register(SentenceBuild)
+class AdminSentenceBuild(admin.ModelAdmin):
+    list_display = ('id', 'text', 'translate', 'comment', 'level')
+    list_filter = ('level',)
+    search_fields = ('text',)

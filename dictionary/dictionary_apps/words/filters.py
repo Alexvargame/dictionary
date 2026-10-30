@@ -2,7 +2,8 @@ import django_filters
 
 from dictionary.dictionary_apps.words.models import (Word, Noun, Verb, Article,
                                                      Lection, Numeral, Adjective, Pronoun,
-                                                     NounDeclensionsForm, OtherWords)
+                                                     NounDeclensionsForm, OtherWords,
+                                                     SentenceBuild)
 
 
 class WordFilter(django_filters.FilterSet):
@@ -67,4 +68,11 @@ class OtherWordsFilter(django_filters.FilterSet):
     id = django_filters.BaseInFilter(field_name='id', lookup_expr='in')
     class Meta:
         model = OtherWords
+        fields = ("id",)
+
+
+class SentenceBuildFilter(django_filters.FilterSet):
+    id = django_filters.BaseInFilter(field_name='id', lookup_expr='in')
+    class Meta:
+        model = SentenceBuild
         fields = ("id",)

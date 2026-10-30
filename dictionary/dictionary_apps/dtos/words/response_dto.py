@@ -141,3 +141,13 @@ class OtherWordsDTO:
     word_type: int
     word: Optional[str] = None
     word_translate: Optional[str] = None
+
+
+@dataclass
+class SentenceDTO:
+    id: int
+    text: str
+    translate: str
+    level: str
+    comment: str
+

@@ -7,11 +7,11 @@ from dictionary.dictionary_apps.words.filters import (WordFilter, NounFilter, Ve
                                                       ArticleFilter, LectionFilter,
                                                       AdjectiveFilter, NumeralFilter,
                                                       PronounFilter, NounDeclensionsFormFilter,
-                                                      OtherWordsFilter)
+                                                      OtherWordsFilter, SentenceBuildFilter)
 from dictionary.dictionary_apps.words.models import (Word, Lection, Article, Book,
                                                      Noun, WordType, Verb, Adjective,
                                                      Numeral, Pronoun, NounDeclensionsForm,
-                                                     OtherWords)
+                                                     OtherWords, SentenceBuild)
 
 
 def word_list(*, filters=None):
@@ -119,7 +119,9 @@ def otherword_list(*, filters=None):
 
 
 
-
+def sentebce_get(sentence_id):
+    sentence = get_object_or_404(SentenceBuild.objects.select_subclasses(), id=sentence_id)
+    return sentence
 
 
 

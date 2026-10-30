@@ -150,3 +150,12 @@ class CreateOtherWordsDTO:
     word_type: int
     word_translate: str
     lection: int
+
+
+@dataclass
+class CreateSentenceDTO:
+    text: str
+    translate: str
+    level: str
+    comment: str
+
